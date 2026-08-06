@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="medianoche">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard Ventas Agencia Chalco</title>
+<style>
+/* ---------------------------------------------------------------
+   TEMAS. Cada paleta sólo redefine estas variables; todo el resto
+   del CSS las usa, así que agregar un tema nuevo es copiar un bloque.
+   --------------------------------------------------------------- */
+:root,
+[data-theme="medianoche"]{
+  --bg:#020617; --surface:#0b1120; --border:#1f2937;
+  --text:#e5e7eb; --muted:#9ca3af; --accent:#38bdf8; --on-accent:#020617;
+  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
+}
+[data-theme="esmeralda"]{
+  --bg:#04120c; --surface:#071a13; --border:#1b3a2c;
+  --text:#e6f2ec; --muted:#8fae9f; --accent:#34d399; --on-accent:#04120c;
+  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
+}
+[data-theme="purpura"]{
+  --bg:#0f0a1e; --surface:#171029; --border:#2e2148;
+  --text:#ece8f7; --muted:#a99fc4; --accent:#a78bfa; --on-accent:#0f0a1e;
+  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
+}
+[data-theme="vino"]{
+  --bg:#17090c; --surface:#221014; --border:#3d1f26;
+  --text:#f5e9ec; --muted:#c09aa4; --accent:#fb7185; --on-accent:#17090c;
+  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
+}
+[data-theme="grafito"]{
+  --bg:#0d0d0d; --surface:#1a1a1a; --border:#2e2e2e;
+  --text:#ededed; --muted:#a3a3a3; --accent:#fb923c; --on-accent:#0d0d0d;
+  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
+}
+[data-theme="claro"]{
+  --bg:#f4f6fa; --surface:#ffffff; --border:#dde3ec;
+  --text:#1f2937; --muted:#6b7280; --accent:#2563eb; --on-accent:#ffffff;
+  --ok:#16a34a; --warn:#ca8a04; --alert:#ea580c; --bad:#dc2626;
+}
+
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{margin:0;color:var(--accent);font-size:20px}
+.subtitle{color:var(--muted);font-size:14px}
+.header-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;padding:9px 16px;border-radius:20px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s,transform .1s}
+.btn svg{flex-shrink:0}
+.btn:hover:not(:disabled){opacity:.85}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Selector de tema */
+.tema-row{padding:8px 20px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.tema-swatch{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;outline-offset:2px}
+.tema-swatch[aria-pressed="true"]{border-color:var(--text)}
+
+.opt-row{padding:8px 20px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.opt-toggle{display:flex;align-items:center;gap:6px;cursor:pointer}
+.opt-toggle input{accent-color:var(--accent);cursor:pointer}
+
+main{padding:15px;max-width:900px;margin:auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px}
+.card-title{color:var(--text);font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.card-tag{color:var(--accent);font-size:11px;text-transform:uppercase}
+.kpi-main{font-size:22px;font-weight:bold}
+.meta-edit-row{display:flex;align-items:baseline;gap:2px;margin-top:4px}
+.meta-currency{font-size:22px;font-weight:bold;color:var(--text)}
+.kpi-main-input{background:transparent;border:none;border-bottom:2px dashed var(--border);color:var(--text);font-size:22px;font-weight:bold;font-family:inherit;width:140px;padding:2px 0;-moz-appearance:textfield}
+.kpi-main-input:focus{outline:none;border-bottom-color:var(--accent)}
+.kpi-main-input::-webkit-inner-spin-button,.kpi-main-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.kpi-row{display:flex;justify-content:space-between;margin-top:6px;font-size:14px;color:var(--muted);gap:12px}
+.value{color:var(--text);font-weight:bold}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+th,td{border-bottom:1px solid var(--border);padding:6px}
+th{color:var(--muted);text-transform:uppercase;font-size:11px}
+.text-right{text-align:right}
+.text-center{text-align:center}
+.badge{padding:3px 7px;border-radius:10px;font-size:11px;white-space:nowrap}
+.chart-container{height:180px;position:relative;width:100%}
+.small{font-size:12px;color:var(--muted);margin-top:6px}
+.table-scroll{overflow-x:auto}
+.table-asesores{min-width:680px}
+.table-asesores th,.table-asesores td{white-space:nowrap}
+.table-formas{min-width:560px}
+.table-formas th,.table-formas td{white-space:nowrap}
+.aviso{color:var(--alert);font-size:12px;margin-top:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>DASHBOARD DE VENTAS · AGENCIA CHALCO</h1>
+    <div class="subtitle" id="subtitle-mes">Mes sin cargar</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-primary" id="btn-cargar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      <span>Cargar CSV</span>
+    </button>
+    <button class="btn btn-secondary" id="btn-captura" disabled>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span id="btn-captura-label">Captura</span>
+    </button>
+  </div>
+</header>
+
+<div class="tema-row">
+  <span>Tema:</span>
+  <div id="tema-swatches" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  <span id="tema-nombre" style="min-width:90px"></span>
+</div>
+
+<div class="opt-row">
+  <span>Incluir en la captura:</span>
+  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-meta" checked><span>Meta y avance</span></label>
+  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-asesores" checked><span>Asesores</span></label>
+  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-participacion" checked><span>Participación</span></label>
+  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-formas" checked><span>Formas de pago</span></label>
+  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-modelos" checked><span>Top 5 modelos</span></label>
+</div>
+
+<input type="file" id="input-csv" accept=".csv,.txt" style="display:none">
+
+<!-- Todo lo que se debe incluir en la captura va dentro de este contenedor -->
+<div id="captura-area">
+<main>
+
+<div id="loader"><p>Carga un archivo CSV…</p></div>
+<div id="dashboard" style="display:none">
+
+  <div class="card" data-seccion="meta">
+    <div class="card-title">Meta y avance de la agencia</div>
+    <div class="card-tag" id="corte-label"></div>
+    <div class="meta-edit-row">
+      <span class="meta-currency">$</span>
+      <input type="number" id="input-meta" class="kpi-main-input" min="0" step="1000">
+    </div>
+    <div class="kpi-row"><span>Venta acumulada</span><span class="value" id="kpi-venta-acumulada">$0</span></div>
+    <div class="kpi-row"><span>Avance</span><span class="value" id="kpi-avance">0%</span></div>
+    <div class="kpi-row"><span>Brecha</span><span class="value" id="kpi-brecha">$0</span></div>
+    <div class="kpi-row"><span>Proyección</span><span class="value" id="kpi-proyeccion">$0</span></div>
+    <div class="kpi-row"><span>% Proyección</span><span class="value" id="kpi-proyeccion-pct">0%</span></div>
+    <div class="small" id="base-proyeccion"></div>
+  </div>
+
+  <div class="card" data-seccion="asesores">
+    <div class="card-title">Rendimiento de asesores</div>
+    <div class="table-scroll">
+      <table class="table-asesores">
+        <thead><tr>
+          <th>Vendedor</th><th class="text-right">Meta</th><th class="text-right">Venta</th>
+          <th class="text-right">% Cumpl</th><th class="text-right">Faltante</th>
+          <th class="text-center">Unidades</th><th class="text-right">Ticket</th>
+          <th class="text-right">Proy</th><th class="text-right">% Proy</th>
+        </tr></thead>
+        <tbody id="tabla-asesores"></tbody>
+      </table>
+    </div>
+    <div class="small" id="nota-asesores"></div>
+  </div>
+
+  <div class="card" data-seccion="participacion">
+    <div class="card-title">Participación de asesores</div>
+    <div class="chart-container"><canvas id="chart-participacion"></canvas></div>
+    <div class="small" id="texto-participacion"></div>
+    <div id="ritmo-asesores"></div>
+  </div>
+
+  <div class="card" data-seccion="formas">
+    <div class="card-title">Formas de pago</div>
+    <div class="table-scroll">
+      <table class="table-formas">
+        <thead id="head-formas"></thead>
+        <tbody id="tabla-formas"></tbody>
+      </table>
+    </div>
+    <div class="small">Unid. = motos vendidas con esa forma de pago · Monto = venta sin IVA.</div>
+  </div>
+
+  <div class="card" data-seccion="modelos">
+    <div class="card-title">Top 5 modelos (unidades)</div>
+    <table><thead>
+      <tr><th>#</th><th>Modelo</th><th class="text-center">Unidades</th><th class="text-right">% Part</th></tr>
+    </thead><tbody id="tabla-modelos"></tbody></table>
+    <div class="small" id="resumen-modelos"></div>
+  </div>
+
+</div>
+</main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+/* =====================  TEMAS  ===================== */
+const TEMAS=[
+  {id:"medianoche",nombre:"Medianoche",dot:"#38bdf8"},
+  {id:"esmeralda", nombre:"Esmeralda", dot:"#34d399"},
+  {id:"purpura",   nombre:"Púrpura",   dot:"#a78bfa"},
+  {id:"vino",      nombre:"Vino",      dot:"#fb7185"},
+  {id:"grafito",   nombre:"Grafito",   dot:"#fb923c"},
+  {id:"claro",     nombre:"Claro",     dot:"#2563eb"}
+];
+const TEMA_KEY="temaDashboardChalco";
+
+function aplicarTema(id,redibujar){
+  const tema=TEMAS.find(t=>t.id===id)||TEMAS[0];
+  document.documentElement.setAttribute("data-theme",tema.id);
+  localStorage.setItem(TEMA_KEY,tema.id);
+  document.getElementById("tema-nombre").textContent=tema.nombre;
+  document.querySelectorAll(".tema-swatch").forEach(b=>{
+    b.setAttribute("aria-pressed",String(b.dataset.tema===tema.id));
+  });
+  // La gráfica dibuja sus colores en canvas, así que hay que rehacerla al cambiar de tema
+  if(redibujar&&datosActuales.length)renderDashboard(datosActuales);
+}
+
+(function construirSwatches(){
+  const cont=document.getElementById("tema-swatches");
+  TEMAS.forEach(t=>{
+    const b=document.createElement("button");
+    b.className="tema-swatch";
+    b.dataset.tema=t.id;
+    b.style.background=t.dot;
+    b.title=t.nombre;
+    b.setAttribute("aria-label","Tema "+t.nombre);
+    b.onclick=()=>aplicarTema(t.id,true);
+    cont.appendChild(b);
+  });
+  aplicarTema(localStorage.getItem(TEMA_KEY)||"medianoche",false);
+})();
+
+function cssVar(nombre){
+  return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+}
+
+/* =====================  ESTADO  ===================== */
+const META_KEY="metaAgenciaChalco";
+let META_AGENCIA=1545000;
+
+const metaGuardada=parseFloat(localStorage.getItem(META_KEY));
+if(!isNaN(metaGuardada)&&metaGuardada>0)META_AGENCIA=metaGuardada;
+
+const btnCargar=document.getElementById("btn-cargar");
+const btnCaptura=document.getElementById("btn-captura");
+const inputCSV=document.getElementById("input-csv");
+const inputMeta=document.getElementById("input-meta");
+const dashboard=document.getElementById("dashboard");
+const loader=document.getElementById("loader");
+const capturaArea=document.getElementById("captura-area");
+let chartParticipacion=null;
+let datosActuales=[];   // último CSV cargado y ya filtrado (sin filas vacías)
+
+const SECCIONES=["meta","asesores","participacion","formas","modelos"];
+const SECCIONES_KEY="seccionesCapturaChalco";
+
+try{
+  const guardado=JSON.parse(localStorage.getItem(SECCIONES_KEY));
+  if(guardado){
+    SECCIONES.forEach(sec=>{
+      const chk=document.getElementById(`chk-seccion-${sec}`);
+      if(chk&&typeof guardado[sec]==="boolean")chk.checked=guardado[sec];
+    });
+  }
+}catch(err){/* si el valor guardado está corrupto, se usa el default (todo marcado) */}
+
+SECCIONES.forEach(sec=>{
+  document.getElementById(`chk-seccion-${sec}`).addEventListener("change",()=>{
+    const estado={};
+    SECCIONES.forEach(s=>estado[s]=document.getElementById(`chk-seccion-${s}`).checked);
+    localStorage.setItem(SECCIONES_KEY,JSON.stringify(estado));
+  });
+});
+
+function ocultarSeccionesNoSeleccionadas(){
+  SECCIONES.forEach(sec=>{
+    const el=document.querySelector(`[data-seccion="${sec}"]`);
+    const chk=document.getElementById(`chk-seccion-${sec}`);
+    if(el&&chk&&!chk.checked)el.style.display="none";
+  });
+}
+function restaurarSecciones(){
+  SECCIONES.forEach(sec=>{
+    const el=document.querySelector(`[data-seccion="${sec}"]`);
+    if(el)el.style.display="";
+  });
+}
+
+inputMeta.value=META_AGENCIA;
+inputMeta.addEventListener("change",()=>{
+  const nuevo=parseFloat(inputMeta.value);
+  if(!nuevo||nuevo<=0){
+    inputMeta.value=META_AGENCIA;   // valor inválido, se revierte al anterior
+    return;
+  }
+  META_AGENCIA=nuevo;
+  localStorage.setItem(META_KEY,String(META_AGENCIA));
+  if(datosActuales.length)renderDashboard(datosActuales);
+});
+
+btnCargar.onclick=()=>{inputCSV.value="";inputCSV.click();};
+
+inputCSV.onchange=()=>{
+  const file=inputCSV.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const registros=parseCSV(e.target.result);
+    const validos=registros.filter(filaValida);
+    if(!validos.length){
+      alert("El archivo no tiene filas con FECHA, VENDEDOR y PRECIO. Revisa que sea el CSV de ventas y que los encabezados estén en la primera línea.");
+      return;
+    }
+    renderDashboard(validos);
+    loader.style.display="none";
+    dashboard.style.display="block";
+    btnCaptura.disabled=false;
+  };
+  reader.readAsText(file);
+};
+
+/* =====================  CAPTURA  ===================== */
+btnCaptura.onclick=()=>{
+  if(typeof html2canvas==="undefined"){
+    alert("No se pudo cargar la librería de captura (html2canvas). Revisa tu conexión a internet.");
+    return;
+  }
+  if(!SECCIONES.some(sec=>document.getElementById(`chk-seccion-${sec}`).checked)){
+    alert("Selecciona al menos una sección para la captura.");
+    return;
+  }
+  btnCaptura.disabled=true;
+  const label=document.getElementById("btn-captura-label");
+  const textoOriginal=label.textContent;
+  label.textContent="Generando…";
+
+  ocultarSeccionesNoSeleccionadas();
+
+  html2canvas(capturaArea,{
+    backgroundColor:cssVar("--bg")||"#020617",
+    scale:2,
+    useCORS:true,
+    windowWidth:1000,
+    windowHeight:capturaArea.scrollHeight
+  }).then(canvas=>{
+    const fecha=new Date().toISOString().slice(0,10);
+    const link=document.createElement("a");
+    link.download=`dashboard-ventas-chalco-${fecha}.png`;
+    link.href=canvas.toDataURL("image/png");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }).catch(err=>{
+    console.error("Error al generar la captura:",err);
+    alert("No se pudo generar la captura: "+err.message);
+  }).finally(()=>{
+    restaurarSecciones();
+    btnCaptura.disabled=false;
+    label.textContent=textoOriginal;
+  });
+};
+
+/* =====================  LECTURA DEL CSV  ===================== */
+// Parser que respeta comillas: "45,000" o "DM 150, roja" ya no rompen las columnas.
+function parseCSV(texto){
+  const filas=[];
+  let campo="",fila=[],dentroDeComillas=false;
+  texto=texto.replace(/^﻿/,"");   // BOM que mete Excel al exportar
+
+  for(let i=0;i<texto.length;i++){
+    const c=texto[i];
+    if(dentroDeComillas){
+      if(c==='"'){
+        if(texto[i+1]==='"'){campo+='"';i++;}   // comilla escapada
+        else dentroDeComillas=false;
+      }else campo+=c;
+    }else{
+      if(c==='"')dentroDeComillas=true;
+      else if(c===","){fila.push(campo);campo="";}
+      else if(c==="\n"){fila.push(campo);filas.push(fila);fila=[];campo="";}
+      else if(c==="\r"){/* se ignora */}
+      else campo+=c;
+    }
+  }
+  fila.push(campo);
+  filas.push(fila);
+
+  const utiles=filas.filter(f=>f.some(x=>x.trim()!==""));
+  if(!utiles.length)return [];
+
+  const encabezados=utiles[0].map(x=>x.trim().toUpperCase());
+  return utiles.slice(1).map(f=>{
+    const o={};
+    encabezados.forEach((k,i)=>o[k]=(f[i]||"").trim());
+    return o;
+  });
+}
+
+// Acepta 45000 · 45,000 · 45,000.00 · 45.000 · $45,000.50 · 1,234,567
+function numMiles(t){
+  if(typeof t==="number")return isFinite(t)?t:0;
+  let s=String(t||"").replace(/[^0-9.,-]/g,"").trim();
+  if(!s)return 0;
+  const negativo=s.indexOf("-")===0;
+  s=s.replace(/-/g,"");
+  if(!s)return 0;
+
+  const ultimaComa=s.lastIndexOf(","),ultimoPunto=s.lastIndexOf(".");
+  let posDecimal=-1;
+  if(ultimaComa>-1&&ultimoPunto>-1){
+    // Conviven los dos: el último es el decimal (45.000,50 o 45,000.50)
+    posDecimal=Math.max(ultimaComa,ultimoPunto);
+  }else if(ultimaComa>-1){
+    // Sólo comas: son miles salvo que haya una sola y no deje 3 dígitos detrás
+    if(s.split(",").length===2&&s.length-ultimaComa-1!==3)posDecimal=ultimaComa;
+  }else if(ultimoPunto>-1){
+    if(s.split(".").length===2&&s.length-ultimoPunto-1!==3)posDecimal=ultimoPunto;
+  }
+
+  let entera=s,decimal="";
+  if(posDecimal>-1){entera=s.slice(0,posDecimal);decimal=s.slice(posDecimal+1);}
+  entera=entera.replace(/[.,]/g,"");
+  decimal=decimal.replace(/[.,]/g,"");
+  const n=parseFloat((entera||"0")+(decimal?"."+decimal:""));
+  if(!isFinite(n))return 0;
+  return negativo?-n:n;
+}
+
+// Descarta filas sin datos reales (celdas con formato pero vacías, típicas al exportar Sheets)
+function filaValida(d){
+  return (d["FECHA"]||"").trim()!==""&&(d["PRECIO"]||"").trim()!==""&&(d["VENDEDOR"]||"").trim()!=="";
+}
+
+// Convierte "15/07/2026" -> Date. Admite día sin cero a la izquierda y años de 2 dígitos.
+function parseFechaLatina(str){
+  const p=(str||"").trim().split(/[\/\-]/);
+  if(p.length!==3)return null;
+  let dia=parseInt(p[0],10),mes=parseInt(p[1],10),anio=parseInt(p[2],10);
+  if(!dia||!mes||!anio)return null;
+  if(anio<100)anio+=2000;
+  if(mes>12)return null;
+  return new Date(anio,mes-1,dia);
+}
+
+// Fecha más reciente encontrada en los datos = fecha de corte
+function obtenerFechaCorte(datos){
+  let max=null;
+  datos.forEach(d=>{
+    const f=parseFechaLatina(d["FECHA"]);
+    if(f&&(!max||f>max))max=f;
+  });
+  return max;
+}
+
+const MESES=["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+
+function titulo(txt){
+  return String(txt).toLowerCase().split(/\s+/).map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(" ");
+}
+
+/* =====================  RENDER  ===================== */
+function renderDashboard(datosCrudos){
+  const datos=datosCrudos.filter(filaValida);
+  datosActuales=datos;
+
+  // --- Base temporal: la FECHA DE CORTE del archivo, no el día del dispositivo.
+  //     Así un CSV de julio abierto en agosto proyecta sobre julio y no se distorsiona.
+  const fechaCorte=obtenerFechaCorte(datos)||new Date();
+  const diasTranscurridos=fechaCorte.getDate();
+  const diasDelMes=new Date(fechaCorte.getFullYear(),fechaCorte.getMonth()+1,0).getDate();
+  const diasRestantes=Math.max(diasDelMes-diasTranscurridos,1);
+
+  const dd=String(fechaCorte.getDate()).padStart(2,"0");
+  const mm=String(fechaCorte.getMonth()+1).padStart(2,"0");
+  document.getElementById("subtitle-mes").textContent=`Corte al ${dd}/${mm}`;
+  document.getElementById("corte-label").textContent=`${MESES[fechaCorte.getMonth()]} ${fechaCorte.getFullYear()}`;
+  document.getElementById("base-proyeccion").textContent=
+    `Proyección calculada sobre el corte: día ${diasTranscurridos} de ${diasDelMes}.`;
+
+  const ventaConIVA=datos.reduce((a,d)=>a+numMiles(d["PRECIO"]),0);
+  const ventaSinIVA=ventaConIVA/1.16;
+  const unidades=datos.length;
+  const proyeccionAgencia=diasTranscurridos>0?ventaSinIVA/diasTranscurridos*diasDelMes:ventaSinIVA;
+
+  document.getElementById("kpi-venta-acumulada").textContent=fmt(ventaSinIVA);
+  document.getElementById("kpi-avance").textContent=pct(ventaSinIVA/META_AGENCIA*100);
+  document.getElementById("kpi-brecha").textContent=fmt(META_AGENCIA-ventaSinIVA);
+  document.getElementById("kpi-proyeccion").textContent=fmt(proyeccionAgencia);
+  document.getElementById("kpi-proyeccion-pct").textContent=pct(proyeccionAgencia/META_AGENCIA*100);
+
+  // --- Asesores detectados del propio archivo (ya no están fijos en el código)
+  const vendedores=groupVend(datos);
+  const nombres=Object.keys(vendedores).sort();
+  const metaIndividual=nombres.length?META_AGENCIA/nombres.length:META_AGENCIA;
+
+  renderTablaAsesores(nombres,vendedores,metaIndividual,diasTranscurridos,diasDelMes);
+  renderParticipacion(nombres,vendedores,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes);
+  renderFormas(datos,nombres);
+  renderTopModelos(datos,unidades);
+}
+
+function groupVend(datos){
+  const r={};
+  datos.forEach(d=>{
+    const v=(d["VENDEDOR"]||"").trim().toUpperCase();
+    if(!v)return;
+    if(!r[v])r[v]={v:0,u:0};
+    r[v].v+=numMiles(d["PRECIO"])/1.16;
+    r[v].u++;
+  });
+  return r;
+}
+
+const COLORES_BADGE=[
+  {bg:"#1f3d1f",fg:"#22c55e"},{bg:"#211e3d",fg:"#6366f1"},
+  {bg:"#3d2a1f",fg:"#f59e0b"},{bg:"#1f333d",fg:"#06b6d4"},
+  {bg:"#3d1f33",fg:"#ec4899"},{bg:"#2b3d1f",fg:"#84cc16"}
+];
+
+function badge(nombre,i){
+  const c=COLORES_BADGE[i%COLORES_BADGE.length];
+  return `<span class="badge" style="background:${c.bg};color:${c.fg}">${titulo(nombre)}</span>`;
+}
+
+function renderTablaAsesores(nombres,vendedores,metaIndividual,diasTranscurridos,diasDelMes){
+  const tb=document.getElementById("tabla-asesores");
+  tb.innerHTML="";
+
+  let totV=0,totU=0;
+  nombres.forEach((n,i)=>{
+    const o=vendedores[n];
+    totV+=o.v;totU+=o.u;
+    tb.innerHTML+=filaAsesor(badge(n,i),o,metaIndividual,diasTranscurridos,diasDelMes);
+  });
+  tb.innerHTML+=filaAsesor("<strong>Totales</strong>",{v:totV,u:totU},META_AGENCIA,diasTranscurridos,diasDelMes);
+
+  const nota=document.getElementById("nota-asesores");
+  if(nombres.length===0){
+    nota.textContent="El archivo no trae vendedores identificables.";
+  }else{
+    nota.textContent=`${nombres.length} asesor${nombres.length===1?"":"es"} detectado${nombres.length===1?"":"s"} en el archivo (${nombres.map(titulo).join(", ")}). `+
+      `La meta individual es la meta de la agencia dividida entre ${nombres.length}.`;
+  }
+}
+
+function filaAsesor(etiqueta,o,meta,diasTranscurridos,diasDelMes){
+  const proy=diasTranscurridos>0?o.v/diasTranscurridos*diasDelMes:o.v;
+  return `<tr>
+    <td>${etiqueta}</td>
+    <td class="text-right">${fmt(meta)}</td>
+    <td class="text-right">${fmt(o.v)}</td>
+    <td class="text-right">${pct(o.v/meta*100)}</td>
+    <td class="text-right">${fmt(Math.max(meta-o.v,0))}</td>
+    <td class="text-center">${o.u}</td>
+    <td class="text-right">${fmt(o.u?o.v/o.u:0)}</td>
+    <td class="text-right">${fmt(proy)}</td>
+    <td class="text-right">${pct(proy/meta*100)}</td>
+  </tr>`;
+}
+
+// Escala de color por % de tendencia hacia la meta individual (no por identidad del asesor)
+function colorPorRendimiento(pctCumpl){
+  if(!isFinite(pctCumpl))return cssVar("--bad");
+  if(pctCumpl>=90)return cssVar("--ok");
+  if(pctCumpl>=80)return cssVar("--warn");
+  if(pctCumpl>=70)return cssVar("--alert");
+  return cssVar("--bad");
+}
+
+function renderParticipacion(nombres,vendedores,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes){
+  const ventas=nombres.map(n=>vendedores[n].v);
+  const totalVenta=ventas.reduce((a,b)=>a+b,0);
+
+  // Tendencia: si mantienen el ritmo actual, ¿en cuánto van a terminar el mes?
+  const proyecciones=ventas.map(v=>diasTranscurridos>0?v/diasTranscurridos*diasDelMes:v);
+  const pcts=proyecciones.map(p=>metaIndividual?p/metaIndividual*100:0);
+
+  // Ritmo necesario: lo que le falta a cada quien ÷ los días que quedan del mes del corte
+  let ritmoHTML=`<div class="card-tag" style="margin-top:10px">Ritmo necesario (quedan ${diasRestantes} día${diasRestantes===1?"":"s"} del mes)</div>`;
+  nombres.forEach((n,i)=>{
+    const brecha=Math.max(metaIndividual-ventas[i],0);
+    const texto=brecha<=0?"Meta cumplida":`${fmt(brecha/diasRestantes)}/día`;
+    ritmoHTML+=`<div class="kpi-row"><span>${titulo(n)}</span><span class="value">${texto}</span></div>`;
+  });
+  document.getElementById("ritmo-asesores").innerHTML=ritmoHTML;
+
+  const resumen=nombres.map((n,i)=>{
+    const parte=totalVenta>0?(ventas[i]/totalVenta*100).toFixed(1)+"%":"—";
+    return `${titulo(n)} ${fmt(ventas[i])} (${parte})`;
+  }).join(" · ");
+
+  const leyenda=`<div style="margin-top:6px">Color según tendencia (% de meta que alcanzarían si mantienen su ritmo): `+
+    `<span style="color:${cssVar("--bad")}">●</span> &lt;70% &nbsp;`+
+    `<span style="color:${cssVar("--alert")}">●</span> 70-79% &nbsp;`+
+    `<span style="color:${cssVar("--warn")}">●</span> 80-89% &nbsp;`+
+    `<span style="color:${cssVar("--ok")}">●</span> ≥90%</div>`;
+
+  const canvas=document.getElementById("chart-participacion");
+  if(typeof Chart==="undefined"){
+    canvas.style.display="none";
+    document.getElementById("texto-participacion").innerHTML=
+      "Sin conexión para dibujar la gráfica. "+resumen+leyenda;
+    return;
+  }
+  canvas.style.display="";
+  try{
+    const ctx=canvas.getContext("2d");
+    if(chartParticipacion)chartParticipacion.destroy();
+    chartParticipacion=new Chart(ctx,{
+      type:"bar",
+      data:{
+        labels:nombres.map(titulo),
+        datasets:[{
+          data:ventas,
+          backgroundColor:pcts.map(colorPorRendimiento),
+          borderRadius:6,
+          barPercentage:0.6
+        }]
+      },
+      options:{
+        indexAxis:"y",
+        responsive:true,
+        maintainAspectRatio:false,
+        animation:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},
+        scales:{
+          x:{display:false},
+          y:{ticks:{color:cssVar("--text"),font:{size:13}},grid:{display:false},border:{display:false}}
+        }
+      }
+    });
+  }catch(err){
+    console.error("No se pudo dibujar la gráfica de participación:",err);
+  }
+  document.getElementById("texto-participacion").innerHTML=resumen+leyenda;
+}
+
+// Formas conocidas para normalizar; lo que no empate se agrupa con su texto original,
+// de modo que ninguna venta se pierda de la tabla.
+const FORMAS_CONOCIDAS=["T DEBITO","T CREDITO","MAXIKASH","VENTOCREDIT","GALGO","TRANSFERENCIA","DEPOSITO","EFECTIVO","CONTADO"];
+
+function normalizarForma(txt){
+  const f=(txt||"").trim().toUpperCase();
+  if(!f)return "SIN ESPECIFICAR";
+  return FORMAS_CONOCIDAS.find(x=>f.includes(x))||f;
+}
+
+function renderFormas(datos,nombres){
+  const r={};
+  datos.forEach(d=>{
+    const key=normalizarForma(d["FORMA DE PAGO"]);
+    const v=(d["VENDEDOR"]||"").trim().toUpperCase();
+    const p=numMiles(d["PRECIO"])/1.16;
+    if(!r[key]){r[key]={porVend:{},monto:0,unidades:0};nombres.forEach(n=>r[key].porVend[n]={monto:0,unidades:0});}
+    if(r[key].porVend[v]){r[key].porVend[v].monto+=p;r[key].porVend[v].unidades++;}
+    r[key].monto+=p;r[key].unidades++;
+  });
+
+  // Encabezado dinámico: dos columnas por asesor
+  let head=`<tr><th rowspan="2">Forma</th>`;
+  nombres.forEach(n=>head+=`<th colspan="2" class="text-center">${titulo(n)}</th>`);
+  head+=`<th colspan="2" class="text-center">Total</th><th rowspan="2" class="text-right">% del monto</th></tr><tr>`;
+  nombres.forEach(()=>head+=`<th class="text-right">Unid.</th><th class="text-right">Monto</th>`);
+  head+=`<th class="text-right">Unid.</th><th class="text-right">Monto</th></tr>`;
+  document.getElementById("head-formas").innerHTML=head;
+
+  const tb=document.getElementById("tabla-formas");
+  tb.innerHTML="";
+  const claves=Object.keys(r).sort((a,b)=>r[b].monto-r[a].monto);
+  if(!claves.length){
+    tb.innerHTML=`<tr><td colspan="${2+nombres.length*2+2}" class="small">Sin ventas registradas.</td></tr>`;
+    return;
+  }
+  const montoTotal=claves.reduce((a,k)=>a+r[k].monto,0);
+  claves.forEach(k=>{
+    let fila=`<tr><td>${k}</td>`;
+    nombres.forEach(n=>{
+      const c=r[k].porVend[n]||{monto:0,unidades:0};
+      fila+=`<td class="text-right">${c.unidades}</td><td class="text-right">${fmt(c.monto)}</td>`;
+    });
+    fila+=`<td class="text-right"><strong>${r[k].unidades}</strong></td>`+
+          `<td class="text-right"><strong>${fmt(r[k].monto)}</strong></td>`+
+          `<td class="text-right">${montoTotal>0?pct(r[k].monto/montoTotal*100):"—"}</td></tr>`;
+    tb.innerHTML+=fila;
+  });
+}
+
+function renderTopModelos(datos,totalU){
+  const m={};
+  datos.forEach(d=>{
+    const modelo=(d["MODELO"]||"").trim()||"SIN MODELO";
+    m[modelo]=(m[modelo]||0)+1;
+  });
+  const lista=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const tb=document.getElementById("tabla-modelos");
+  tb.innerHTML="";
+  if(!lista.length||!totalU){
+    tb.innerHTML=`<tr><td colspan="4" class="small">Sin unidades registradas.</td></tr>`;
+    document.getElementById("resumen-modelos").textContent="";
+    return;
+  }
+  lista.forEach((x,i)=>{
+    tb.innerHTML+=`<tr><td>${i+1}</td><td>${x[0]}</td><td class="text-center">${x[1]}</td><td class="text-right">${(x[1]/totalU*100).toFixed(1)}%</td></tr>`;
+  });
+  const suma=lista.reduce((a,x)=>a+x[1],0);
+  document.getElementById("resumen-modelos").textContent=
+    `Los ${lista.length} modelos más vendidos concentran ${suma} unidades (${(suma/totalU*100).toFixed(1)}% del total del mes).`;
+}
+
+function fmt(v){
+  if(typeof v!=="number"||!isFinite(v))v=0;
+  return v.toLocaleString("es-MX",{style:"currency",currency:"MXN",maximumFractionDigits:0});
+}
+function pct(v){
+  if(typeof v!=="number"||!isFinite(v))return "—";
+  return v.toFixed(2)+"%";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparador de semáforos — Inventario PEPS</title>
+<style>
+:root{
+  --azul:#1F3864; --azul2:#2E5090; --bg:#eef1f6; --panel:#fff; --line:#d6dce6;
+  --txt:#1c2430; --mut:#6b7684;
+  --verde:#1E7A3C; --amar:#B8860B; --rojo:#C0392B; --negro:#2C2C2C;
+  --vbg:#e6f4ea; --abg:#fdf3d7; --rbg:#fbe6e3; --nbg:#e6e7e9;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);
+     font:14px/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--azul);color:#fff;padding:14px 22px}
+header h1{margin:0;font-size:17px;font-weight:600}
+header p{margin:3px 0 0;font-size:12px;opacity:.8}
+main{max-width:1500px;margin:0 auto;padding:18px 22px 60px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:16px;margin-bottom:16px}
+h2{font-size:14px;color:var(--azul);margin:0 0 10px}
+h3{font-size:12.5px;color:#333;margin:16px 0 7px}
+
+/* ---- carga ---- */
+.carga{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dz{border:2px dashed var(--line);border-radius:8px;padding:16px;text-align:center;cursor:pointer;
+    transition:.15s;background:#fafbfd}
+.dz:hover,.dz.over{border-color:var(--azul2);background:#f0f4fb}
+.dz.ok{border-style:solid;border-color:var(--verde);background:var(--vbg)}
+.dz b{display:block;font-size:12px;color:var(--azul);text-transform:uppercase;letter-spacing:.5px}
+.dz .nom{font-size:13px;margin-top:6px;font-weight:600;word-break:break-all}
+.dz .info{font-size:11.5px;color:var(--mut);margin-top:3px}
+.barra{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:14px}
+.f{display:flex;flex-direction:column;gap:4px}
+.f label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+select,input[type=text]{border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:13px;
+     background:#fff;color:var(--txt);min-width:230px}
+button{border:none;border-radius:6px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer}
+.pri{background:var(--azul);color:#fff}
+.pri:disabled{background:#b3bcca;cursor:not-allowed}
+.sec{background:#fff;border:1px solid var(--line);color:var(--txt);font-weight:500;padding:7px 13px}
+.sec:hover{border-color:var(--azul2);color:var(--azul)}
+.err{color:var(--rojo);font-size:12.5px;margin-top:9px}
+
+/* ---- kpis ---- */
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
+.kpi div{background:#f7f9fc;border:1px solid var(--line);border-radius:7px;padding:11px;text-align:center}
+.kpi small{display:block;font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;
+           line-height:1.25;min-height:26px}
+.kpi b{display:block;font-size:23px;font-weight:700;margin-top:2px}
+
+/* ---- tabs ---- */
+nav.tabs{display:flex;gap:3px;border-bottom:2px solid var(--line);margin-bottom:14px;overflow-x:auto}
+nav.tabs button{background:none;color:var(--mut);border-bottom:3px solid transparent;border-radius:0;
+     padding:10px 15px;white-space:nowrap;font-weight:600;font-size:13px;margin-bottom:-2px}
+nav.tabs button.on{color:var(--azul);border-bottom-color:var(--azul)}
+nav.tabs button .n{background:#e2e7f0;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:5px}
+nav.tabs button.on .n{background:var(--azul);color:#fff}
+
+/* ---- tablas ---- */
+.tbar{display:flex;gap:9px;align-items:center;margin:0 0 7px;flex-wrap:wrap}
+.tbar input{min-width:200px;padding:6px 9px;font-size:12.5px}
+.tbar .cnt{font-size:12px;color:var(--mut);margin-left:auto}
+.tw{overflow:auto;max-height:72vh;border:1px solid var(--line);border-radius:7px}
+table{width:100%;border-collapse:collapse;font-size:12.2px}
+th,td{padding:6px 9px;text-align:left;border-bottom:1px solid #e9edf3;white-space:nowrap}
+th{background:var(--azul);color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.3px;
+   position:sticky;top:0;cursor:pointer;user-select:none}
+th:hover{background:var(--azul2)}
+th .ar{opacity:.5;font-size:9px;margin-left:3px}
+tbody tr:nth-child(even){background:#f7f9fc}
+tbody tr:hover{background:#eef3fb}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+tfoot td{background:#e4e8ef;font-weight:700;border-top:2px solid var(--line)}
+.vac{padding:16px;color:var(--mut);font-size:13px;text-align:center}
+
+.b{display:inline-block;padding:2px 9px;border-radius:11px;font-size:11px;font-weight:700}
+.b.Verde{background:var(--vbg);color:var(--verde)}
+.b.Amarillo{background:var(--abg);color:var(--amar)}
+.b.Rojo{background:var(--rbg);color:var(--rojo)}
+.b.Negro{background:var(--nbg);color:var(--negro)}
+.nota{font-size:11.5px;color:var(--mut);margin:6px 0 0}
+.aviso{background:#fdf3d7;border-left:4px solid var(--amar);padding:10px 13px;border-radius:0 6px 6px 0;
+       font-size:12.5px;margin:10px 0}
+.regla{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:8px}
+.hide{display:none}
+.tv-verde{color:var(--verde);font-weight:700}
+.tv-rojo{color:var(--rojo);font-weight:700}
+
+@media print{
+  body{background:#fff}
+  header{background:#fff;color:var(--azul);border-bottom:2px solid var(--azul);padding:0 0 8px}
+  .noprint,nav.tabs{display:none !important}
+  .panel{display:block !important;page-break-before:always}
+  .panel:first-of-type{page-break-before:auto}
+  main{padding:0;max-width:none}
+  .card{border:none;padding:0;margin-bottom:14px}
+  .tw{max-height:none;overflow:visible;border:none}
+  th{position:static;background:var(--azul) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .b,.kpi div,tbody tr:nth-child(even){-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  table{font-size:8.5px} th,td{padding:3px 5px}
+  @page{size:letter landscape;margin:11mm}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Comparador de semáforos de inventario</h1>
+  <p>Motos · identificación por MODELO + NÚMERO DE SERIE · control de venta por PEPS</p>
+</header>
+
+<main>
+
+<!-- ============ CARGA ============ -->
+<div class="card noprint" id="cCarga">
+  <h2>1 · Carga los dos cortes</h2>
+  <div class="carga">
+    <div class="dz" id="dzA" onclick="document.getElementById('fA').click()">
+      <b>Corte anterior</b>
+      <div class="nom" id="nomA">Haz clic o arrastra el CSV aquí</div>
+      <div class="info" id="infoA">El más viejo de los dos</div>
+      <input type="file" id="fA" accept=".csv,text/csv" class="hide" onchange="cargar('A',this.files[0])">
+    </div>
+    <div class="dz" id="dzB" onclick="document.getElementById('fB').click()">
+      <b>Corte actual</b>
+      <div class="nom" id="nomB">Haz clic o arrastra el CSV aquí</div>
+      <div class="info" id="infoB">El más reciente</div>
+      <input type="file" id="fB" accept=".csv,text/csv" class="hide" onchange="cargar('B',this.files[0])">
+    </div>
+  </div>
+
+  <div class="barra">
+    <div class="f">
+      <label>Alcance del reporte</label>
+      <select id="filtro"><option value="TODAS">Todas las sucursales</option></select>
+    </div>
+    <button class="pri" id="btn" disabled onclick="comparar()">Comparar</button>
+    <button class="sec" onclick="location.reload()">Limpiar</button>
+  </div>
+  <div class="regla">
+    <b style="color:var(--txt)">Regla del semáforo:</b>
+    <span><span class="b Verde">Verde</span> 1 a 30 días</span>
+    <span><span class="b Amarillo">Amarillo</span> 31 a 60 días</span>
+    <span><span class="b Rojo">Rojo</span> 61 a 90 días</span>
+    <span><span class="b Negro">Negro</span> 91 en adelante</span>
+  </div>
+  <div class="err hide" id="error"></div>
+</div>
+
+<div id="salida" class="hide"></div>
+
+</main>
+
+<script>
+/* ==========================================================================
+   PARÁMETROS DE NEGOCIO
+   ========================================================================== */
+// Regla única del semáforo, por días de antigüedad:
+//   Verde 1-30 · Amarillo 31-60 · Rojo 61-90 · Negro 91 en adelante
+const U = [30, 60, 90];
+
+const ZONA_23 = ['16006','16022','16025','16121','16123','16128',
+                 '16147','16177','16185','16205','16297'];
+const ZONA_6  = ['16017','16018','16034','16047','16095','16103',
+                 '16106','16124','16173','16202','16248','16283'];
+const SUFIJO  = {MEX:'ZONA 23', CMX:'ZONA 23', MOR:'ZONA 6'};
+const COLORES = ['Verde','Amarillo','Rojo','Negro'];
+const ORD = {Verde:0, Amarillo:1, Rojo:2, Negro:3};
+
+const semaforo = d => d==null||isNaN(d) ? 'Sin dato'
+                    : d<=U[0] ? 'Verde' : d<=U[1] ? 'Amarillo' : d<=U[2] ? 'Rojo' : 'Negro';
+const zonaDe = (clave, ubi) => ZONA_23.includes(clave) ? 'ZONA 23'
+                             : ZONA_6.includes(clave)  ? 'ZONA 6'
+                             : (SUFIJO[String(ubi).trim().split(/\s+/).pop().toUpperCase()] || 'SIN ZONA');
+const nueva = c => !ZONA_23.includes(c) && !ZONA_6.includes(c);
+
+/* ==========================================================================
+   LECTURA DE CSV
+   ========================================================================== */
+function parseCSV(txt){
+  txt = txt.replace(/^﻿/,'');
+  const filas=[]; let f=[], v='', q=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(q){
+      if(c==='"'){ if(txt[i+1]==='"'){v+='"';i++;} else q=false; } else v+=c;
+    } else if(c==='"') q=true;
+    else if(c===','){ f.push(v); v=''; }
+    else if(c==='\n'){ f.push(v); filas.push(f); f=[]; v=''; }
+    else if(c!=='\r') v+=c;
+  }
+  if(v!==''||f.length){ f.push(v); filas.push(f); }
+  return filas.filter(r=>r.some(x=>String(x).trim()!==''));
+}
+const norm = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                  .toLowerCase().replace(/[^a-z0-9]/g,'');
+const ALIAS = {
+  ubicacion:['ubicacion'], modelo:['modeloplaneacion','modelo'], articulo:['articulo'],
+  fisico:['fisico'], anio:['ano','anio'], serie:['numerodeserie','serie'],
+  repuve:['repuve'], dias:['diasantiguedad','dias'], semaforo:['semaforo'],
+  garantia:['ticketsgarantia','garantia']
+};
+
+function leerCorte(texto, nombre){
+  const filas = parseCSV(texto);
+  if(filas.length < 2) throw new Error(`${nombre}: el archivo está vacío.`);
+  const cab = filas[0].map(norm), idx = {};
+  for(const [dest, al] of Object.entries(ALIAS)){
+    const i = cab.findIndex(c => al.includes(c));
+    if(i >= 0) idx[dest] = i;
+  }
+  for(const req of ['ubicacion','modelo','articulo','serie','dias'])
+    if(idx[req] === undefined) throw new Error(`${nombre}: falta la columna "${req}".`);
+
+  const filtroFilas = [];
+  for(let i=1;i<filas.length;i++){
+    const r = filas[i], g = k => idx[k]===undefined ? '' : String(r[idx[k]]??'').trim();
+    const serie = g('serie').toUpperCase();
+    if(!serie) continue;
+    const ubi = g('ubicacion');
+    const clave = ubi.split(/\s+/)[0];
+    const dias = parseInt(String(g('dias')).replace(/[^\d-]/g,''), 10);
+    let sem = g('semaforo');
+    sem = sem ? sem.charAt(0).toUpperCase() + sem.slice(1).toLowerCase() : '';
+    filtroFilas.push({
+      ubicacion: ubi, clave, sucursal: ubi.replace(clave,'').trim(),
+      zona: zonaDe(clave, ubi),
+      modelo: g('modelo'), articulo: g('articulo'), serie,
+      repuve: g('repuve'), anio: g('anio'), garantia: g('garantia') || '—',
+      dias: isNaN(dias) ? null : dias,
+      semArchivo: sem, semaforo: sem || semaforo(dias)
+    });
+  }
+  if(!filtroFilas.length) throw new Error(`${nombre}: no se encontraron unidades.`);
+  return filtroFilas;
+}
+
+function fechaDeNombre(n){
+  const m = String(n).match(/(\d{2})(\d{2})(\d{4})/);
+  if(m){
+    const d = new Date(+m[3], +m[2]-1, +m[1]);
+    if(!isNaN(d)) return d;
+  }
+  return null;
+}
+const fmtF = d => d ? d.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',year:'numeric'}) : 'sin fecha';
+const nf = n => (n||0).toLocaleString('es-MX');
+
+/* ==========================================================================
+   ESTADO
+   ========================================================================== */
+const D = {A:null, B:null};
+
+function cargar(k, file){
+  if(!file) return;
+  const fr = new FileReader();
+  fr.onload = e => {
+    try{
+      const filas = leerCorte(e.target.result, file.name);
+      D[k] = {nombre:file.name, filas, fecha:fechaDeNombre(file.name)};
+      const dz = document.getElementById('dz'+k);
+      dz.classList.add('ok');
+      document.getElementById('nom'+k).textContent = file.name;
+      const suc = new Set(filas.map(f=>f.clave)).size;
+      document.getElementById('info'+k).textContent =
+        `${nf(filas.length)} unidades · ${suc} sucursal${suc!==1?'es':''} · ${
+          D[k].fecha ? fmtF(D[k].fecha) : 'fecha no detectada en el nombre'}`;
+      err('');
+      llenarFiltro();
+      document.getElementById('btn').disabled = !(D.A && D.B);
+    }catch(ex){ err(ex.message); }
+  };
+  fr.readAsText(file, 'UTF-8');
+}
+function err(m){
+  const e = document.getElementById('error');
+  e.textContent = m; e.classList.toggle('hide', !m);
+}
+['A','B'].forEach(k=>{
+  const dz = document.getElementById('dz'+k);
+  dz.addEventListener('dragover', e=>{e.preventDefault(); dz.classList.add('over');});
+  dz.addEventListener('dragleave', ()=>dz.classList.remove('over'));
+  dz.addEventListener('drop', e=>{
+    e.preventDefault(); dz.classList.remove('over');
+    if(e.dataTransfer.files[0]) cargar(k, e.dataTransfer.files[0]);
+  });
+});
+
+function llenarFiltro(){
+  if(!(D.A && D.B)) return;
+  const ca = new Set(D.A.filas.map(f=>f.clave)), cb = new Set(D.B.filas.map(f=>f.clave));
+  const comun = [...ca].filter(c=>cb.has(c)).sort();
+  const sel = document.getElementById('filtro'), prev = sel.value;
+  const nom = {};
+  D.B.filas.forEach(f=>nom[f.clave]=f.ubicacion);
+  const z23 = comun.filter(c=>ZONA_23.includes(c)).length;
+  const z6  = comun.filter(c=>ZONA_6.includes(c)).length;
+  let h = `<option value="TODAS">Todas las sucursales comparables (${comun.length})</option>`;
+  if(z23) h += `<option value="ZONA23">Zona 23 (${z23} sucursales)</option>`;
+  if(z6)  h += `<option value="ZONA6">Zona 6 (${z6} sucursales)</option>`;
+  h += comun.map(c=>`<option value="${c}">${nom[c]||c}</option>`).join('');
+  sel.innerHTML = h;
+  if([...sel.options].some(o=>o.value===prev)) sel.value = prev;
+}
+
+/* ==========================================================================
+   ANÁLISIS
+   ========================================================================== */
+function analizar(){
+  let ant = D.A.filas, act = D.B.filas;
+  let fa = D.A.fecha, fb = D.B.fecha, na = D.A.nombre, nb = D.B.nombre;
+  let invertido = false;
+  if(fa && fb && fa > fb){ [ant,act]=[act,ant]; [fa,fb]=[fb,fa]; [na,nb]=[nb,na]; invertido = true; }
+
+  // recalcular el color con la regla y conservar la discrepancia contra el archivo
+  const prep = arr => arr.map(r => ({...r, semCalc: semaforo(r.dias),
+                                     semaforo: r.semArchivo || semaforo(r.dias)}));
+  ant = prep(ant); act = prep(act);
+
+  // alcance común
+  const ca = new Set(ant.map(f=>f.clave)), cb = new Set(act.map(f=>f.clave));
+  const comun = new Set([...ca].filter(c=>cb.has(c)));
+  const soloAnt = [...ca].filter(c=>!comun.has(c)).sort();
+  const soloAct = [...cb].filter(c=>!comun.has(c)).sort();
+  ant = ant.filter(f=>comun.has(f.clave));
+  act = act.filter(f=>comun.has(f.clave));
+
+  // filtro
+  const fv = document.getElementById('filtro').value;
+  let etiqueta = 'Todas las sucursales';
+  if(fv === 'ZONA23'){ ant=ant.filter(f=>f.zona==='ZONA 23'); act=act.filter(f=>f.zona==='ZONA 23'); etiqueta='Zona 23'; }
+  else if(fv === 'ZONA6'){ ant=ant.filter(f=>f.zona==='ZONA 6'); act=act.filter(f=>f.zona==='ZONA 6'); etiqueta='Zona 6'; }
+  else if(fv !== 'TODAS'){
+    const n = (act.find(f=>f.clave===fv)||{}).ubicacion || fv;
+    ant=ant.filter(f=>f.clave===fv); act=act.filter(f=>f.clave===fv); etiqueta=n;
+  }
+  if(!ant.length && !act.length) throw new Error('El alcance seleccionado no tiene unidades en ambos cortes.');
+
+  const iAnt = new Map(ant.map(f=>[f.serie,f]));
+  const iAct = new Map(act.map(f=>[f.serie,f]));
+
+  const bajas = ant.filter(f=>!iAct.has(f.serie)).sort((a,b)=>b.dias-a.dias);
+  const altas = act.filter(f=>!iAnt.has(f.serie))
+                   .sort((a,b)=> a.ubicacion.localeCompare(b.ubicacion) || a.articulo.localeCompare(b.articulo));
+  const permanecen = act.filter(f=>iAnt.has(f.serie));
+
+  const cambios = [], traspasos = [], modeloRaro = [];
+  permanecen.forEach(c=>{
+    const a = iAnt.get(c.serie);
+    if(a.modelo !== c.modelo) modeloRaro.push({serie:c.serie, ma:a.modelo, mc:c.modelo});
+    if(a.clave !== c.clave) traspasos.push({serie:c.serie, articulo:c.articulo,
+                                            origen:a.ubicacion, destino:c.ubicacion, dias:c.dias});
+    if(a.semaforo !== c.semaforo)
+      cambios.push({...c, diasAnt:a.dias, semAnt:a.semaforo, semAct:c.semaforo});
+  });
+  cambios.sort((x,y)=> (ORD[y.semAct]??9)-(ORD[x.semAct]??9) || y.dias-x.dias);
+
+  // ---- PEPS: mismo ARTÍCULO, misma SUCURSAL ----
+  const violaciones = []; let pepsOK = 0;
+  bajas.forEach(b=>{
+    const quedaron = ant.filter(f => f.articulo===b.articulo && f.clave===b.clave
+                                  && f.dias > b.dias && iAct.has(f.serie));
+    if(quedaron.length){
+      quedaron.sort((x,y)=>y.dias-x.dias);
+      const peor = quedaron[0].dias;
+      violaciones.push({
+        ubicacion:b.ubicacion, zona:b.zona, articulo:b.articulo, modelo:b.modelo,
+        serie:b.serie, dias:b.dias, sem:b.semaforo,
+        nViejas:quedaron.length, diasViejo:peor, semViejo:semaforo(peor),
+        brecha:peor-b.dias,
+        seriesPiso: quedaron.slice(0,3).map(q=>`${q.serie} (${q.dias}d)`).join(', ')
+                    + (quedaron.length>3 ? ` +${quedaron.length-3} más` : '')
+      });
+    } else pepsOK++;
+  });
+  violaciones.sort((a,b)=>b.brecha-a.brecha);
+
+  const discrep = [...ant.filter(f=>f.semArchivo && f.semArchivo!==f.semCalc).map(f=>({...f,corte:'anterior'})),
+                   ...act.filter(f=>f.semArchivo && f.semArchivo!==f.semCalc).map(f=>({...f,corte:'actual'}))];
+  const agNuevas = [...new Map(act.filter(f=>nueva(f.clave))
+                    .map(f=>[f.clave,{clave:f.clave, ubicacion:f.ubicacion, zona:f.zona}])).values()];
+
+  return {ant, act, fa, fb, na, nb, invertido, etiqueta, soloAnt, soloAct,
+          bajas, altas, permanecen, cambios, traspasos, modeloRaro,
+          violaciones, pepsOK, discrep, agNuevas};
+}
+
+/* ==========================================================================
+   TABLAS REUTILIZABLES  (orden + búsqueda + exportación)
+   ========================================================================== */
+const T = {};
+function tabla(id, cols, rows, opts){
+  // Con argumentos: registra la tabla. Solo con el id: devuelve el hueco donde se pintará.
+  if(cols) T[id] = {cols, rows:rows||[], opts:opts||{}, sort:null, q:''};
+  return `<div id="w_${id}"></div>`;
+}
+function pintar(id){
+  const t = T[id]; if(!t) return;
+  const cont = document.getElementById('w_'+id); if(!cont) return;
+  let rows = t.rows;
+  if(t.q){
+    const q = t.q.toLowerCase();
+    rows = rows.filter(r => t.cols.some(c => String(r[c.k]??'').toLowerCase().includes(q)));
+  }
+  if(t.sort){
+    const {k, dir, num} = t.sort;
+    rows = [...rows].sort((a,b)=>{
+      let x=a[k], y=b[k];
+      if(num){ x=+x||0; y=+y||0; return dir*(x-y); }
+      return dir*String(x??'').localeCompare(String(y??''));
+    });
+  }
+  const th = t.cols.map(c=>{
+    const s = t.sort && t.sort.k===c.k ? (t.sort.dir>0?'▲':'▼') : '⇅';
+    return `<th class="${c.n?'n':c.c?'c':''}" onclick="ordenar('${id}','${c.k}',${!!c.n})">${c.t}<span class="ar">${s}</span></th>`;
+  }).join('');
+  const body = rows.length ? rows.map(r=>'<tr>'+t.cols.map(c=>{
+      let v = r[c.k];
+      if(c.color) return `<td class="c"><span class="b ${v}">${v}</span></td>`;
+      if(c.fmt) v = c.fmt(v, r);
+      return `<td class="${c.n?'n':c.c?'c':''}">${v===null||v===undefined||v===''?'—':v}</td>`;
+    }).join('')+'</tr>').join('')
+    : `<tr><td colspan="${t.cols.length}"><div class="vac">${t.opts.vacio||'Sin registros.'}</div></td></tr>`;
+  const foot = t.opts.foot ? `<tfoot><tr>${t.opts.foot.map((v,i)=>
+      `<td class="${t.cols[i]&&t.cols[i].n?'n':''}">${v}</td>`).join('')}</tr></tfoot>` : '';
+  cont.innerHTML = `
+    <div class="tbar noprint">
+      <input type="text" placeholder="Buscar en la tabla…" value="${t.q}" oninput="buscar('${id}',this.value)">
+      <button class="sec" onclick="exportar('${id}')">Descargar CSV</button>
+      <span class="cnt">${nf(rows.length)} de ${nf(t.rows.length)} registros</span>
+    </div>
+    <div class="tw"><table><thead><tr>${th}</tr></thead><tbody>${body}</tbody>${foot}</table></div>`;
+}
+function ordenar(id,k,num){
+  const t=T[id];
+  t.sort = (t.sort && t.sort.k===k) ? {k,num,dir:-t.sort.dir} : {k,num,dir:num?-1:1};
+  pintar(id);
+}
+function buscar(id,v){ T[id].q=v; pintar(id); }
+function exportar(id){
+  const t=T[id];
+  const esc = s => `"${String(s??'').replace(/"/g,'""')}"`;
+  const csv = [t.cols.map(c=>esc(c.t)).join(',')]
+    .concat(t.rows.map(r=>t.cols.map(c=>esc(r[c.k])).join(','))).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`${id}.csv`; a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* ==========================================================================
+   RENDER
+   ========================================================================== */
+let TAB = 0;
+const PANELES = [];
+
+function comparar(){
+  try{
+    const R = analizar();
+    render(R);
+    err('');
+    document.getElementById('salida').scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(ex){ err(ex.message); }
+}
+
+function render(R){
+  PANELES.length = 0;
+  const dias = (R.fa && R.fb) ? Math.round((R.fb-R.fa)/864e5) : null;
+  const nSuc = new Set(R.act.map(f=>f.clave)).size;
+  const nv = R.violaciones.length;
+  const cump = R.bajas.length ? R.pepsOK/R.bajas.length : 1;
+
+  /* ---------- RESUMEN ---------- */
+  const comp = COLORES.map(c=>{
+    const qa = R.ant.filter(f=>f.semaforo===c).length, qc = R.act.filter(f=>f.semaforo===c).length;
+    return {color:c, rango:['1 a '+U[0], (U[0]+1)+' a '+U[1], (U[1]+1)+' a '+U[2], (U[2]+1)+' o más'][ORD[c]],
+            qa, pa:(qa/Math.max(R.ant.length,1)*100).toFixed(1)+'%',
+            qc, pc:(qc/Math.max(R.act.length,1)*100).toFixed(1)+'%',
+            dif:(qc-qa>=0?'+':'')+(qc-qa)};
+  });
+  tabla('composicion',
+    [{k:'color',t:'Semáforo',color:true},{k:'rango',t:'Días de antigüedad'},
+     {k:'qa',t:'Corte anterior',n:1},{k:'pa',t:'%',n:1},
+     {k:'qc',t:'Corte actual',n:1},{k:'pc',t:'%',n:1},{k:'dif',t:'Variación',n:1}],
+    comp, {foot:['TOTAL','',nf(R.ant.length),'100.0%',nf(R.act.length),'100.0%',
+                 (R.act.length-R.ant.length>=0?'+':'')+(R.act.length-R.ant.length)]});
+
+  const porSuc = [...new Set(R.act.map(f=>f.clave))].sort().map(cl=>{
+    const sa=R.ant.filter(f=>f.clave===cl), sc=R.act.filter(f=>f.clave===cl);
+    const rn=sc.filter(f=>f.semaforo==='Rojo'||f.semaforo==='Negro').length;
+    return {zona:(sc[0]||sa[0]).zona, sucursal:(sc[0]||sa[0]).ubicacion,
+            ant:sa.length, act:sc.length,
+            bajas:R.bajas.filter(f=>f.clave===cl).length,
+            altas:R.altas.filter(f=>f.clave===cl).length,
+            v:sc.filter(f=>f.semaforo==='Verde').length,
+            a:sc.filter(f=>f.semaforo==='Amarillo').length,
+            r:sc.filter(f=>f.semaforo==='Rojo').length,
+            ng:sc.filter(f=>f.semaforo==='Negro').length,
+            prn:(rn/Math.max(sc.length,1)*100).toFixed(0)+'%',
+            viol:R.violaciones.filter(x=>x.ubicacion.startsWith(cl)).length};
+  });
+  tabla('sucursales',
+    [{k:'zona',t:'Zona'},{k:'sucursal',t:'Sucursal'},{k:'ant',t:'Anterior',n:1},{k:'act',t:'Actual',n:1},
+     {k:'bajas',t:'Bajas',n:1},{k:'altas',t:'Altas',n:1},{k:'v',t:'Verde',n:1},{k:'a',t:'Amarillo',n:1},
+     {k:'r',t:'Rojo',n:1},{k:'ng',t:'Negro',n:1},{k:'prn',t:'% Rojo+Negro',n:1},
+     {k:'viol',t:'Desv. PEPS',n:1,fmt:v=>v?`<b class="tv-rojo">${v}</b>`:'0'}],
+    porSuc);
+
+  PANELES.push({t:'Resumen', n:null, h:`
+    <div class="card"><h2>Composición del inventario por semáforo</h2>
+      ${tabla('composicion')}
+      <p class="nota">Regla aplicada: Verde 1–${U[0]} días · Amarillo ${U[0]+1}–${U[1]} ·
+         Rojo ${U[1]+1}–${U[2]} · Negro ${U[2]+1} o más. Cada unidad se identifica por MODELO + NÚMERO DE SERIE.</p>
+    </div>
+    <div class="card"><h2>Resumen por sucursal</h2>${tabla('sucursales')}</div>`});
+
+  /* ---------- CAMBIOS DE SEMÁFORO ---------- */
+  const deterioro = R.cambios.filter(c=>(ORD[c.semAct]??0) > (ORD[c.semAnt]??0)).length;
+  let matriz = '';
+  if(R.cambios.length){
+    const cols = COLORES.filter(c=>R.cambios.some(x=>x.semAct===c));
+    const rows = COLORES.filter(c=>R.cambios.some(x=>x.semAnt===c));
+    matriz = `<h3>Matriz de transiciones</h3><div class="tw" style="max-width:620px"><table>
+      <thead><tr><th>De \\ A</th>${cols.map(c=>`<th class="c">${c}</th>`).join('')}<th class="n">Total</th></tr></thead>
+      <tbody>${rows.map(f=>{
+        const cel = cols.map(c=>R.cambios.filter(x=>x.semAnt===f && x.semAct===c).length);
+        return `<tr><td><span class="b ${f}">${f}</span></td>${
+          cel.map(n=>`<td class="c">${n||'—'}</td>`).join('')}<td class="n"><b>${cel.reduce((a,b)=>a+b,0)}</b></td></tr>`;
+      }).join('')}</tbody></table></div>`;
+  }
+  tabla('cambios',
+    [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie'},
+     {k:'diasAnt',t:'Días antes',n:1},{k:'dias',t:'Días ahora',n:1},
+     {k:'semAnt',t:'Color anterior',color:true},{k:'semAct',t:'Color actual',color:true},
+     {k:'garantia',t:'Garantía'}],
+    R.cambios, {vacio:'Ninguna unidad cambió de color en el periodo.'});
+  PANELES.push({t:'Cambios de semáforo', n:R.cambios.length, h:`
+    <div class="card"><h2>Cambios de semáforo</h2>
+      <p class="nota">${R.cambios.length} unidades cambiaron de color; <b>${deterioro}</b> se deterioraron
+      (pasaron a un color de mayor riesgo).</p>
+      ${matriz}
+      <h3>Detalle</h3>${tabla('cambios')}
+    </div>`});
+
+  /* ---------- BAJAS Y ALTAS ---------- */
+  const porColor = COLORES.map(c=>`${c}: ${R.bajas.filter(b=>b.semaforo===c).length}`).join(' · ');
+  tabla('bajas',
+    [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie'},
+     {k:'dias',t:'Días al corte anterior',n:1},{k:'semaforo',t:'Semáforo al salir',color:true},
+     {k:'garantia',t:'Garantía'}],
+    R.bajas, {vacio:'Sin bajas en el periodo.'});
+  tabla('altas',
+    [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie'},
+     {k:'dias',t:'Días',n:1},{k:'semaforo',t:'Semáforo',color:true},{k:'garantia',t:'Garantía'}],
+    R.altas, {vacio:'Sin altas en el periodo.'});
+  tabla('traspasos',
+    [{k:'serie',t:'Serie'},{k:'articulo',t:'Artículo'},{k:'origen',t:'Sucursal origen'},
+     {k:'destino',t:'Sucursal destino'},{k:'dias',t:'Días',n:1}],
+    R.traspasos, {vacio:'Sin traspasos entre sucursales.'});
+  PANELES.push({t:'Bajas y altas', n:R.bajas.length+R.altas.length, h:`
+    <div class="card"><h2>Bajas y altas de inventario</h2>
+      <p class="nota"><b>${R.bajas.length}</b> unidades salieron y <b>${R.altas.length}</b> ingresaron.
+      <b>${R.permanecen.length}</b> permanecen en piso desde el corte anterior.</p>
+      <h3>Bajas — unidades que ya no aparecen al ${fmtF(R.fb)}</h3>${tabla('bajas')}
+      <p class="nota">Bajas por color: ${porColor}. Bajo PEPS lo deseable es que las bajas se concentren en Negro y Rojo.</p>
+      <h3>Altas — unidades nuevas al ${fmtF(R.fb)}</h3>${tabla('altas')}
+      <h3>Traspasos entre sucursales</h3>${tabla('traspasos')}
+    </div>`});
+
+  /* ---------- PEPS ---------- */
+  tabla('peps',
+    [{k:'ubicacion',t:'Sucursal'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie que salió'},
+     {k:'dias',t:'Días',n:1},{k:'sem',t:'Color',color:true},
+     {k:'nViejas',t:'Unid. más antiguas en piso',n:1},{k:'diasViejo',t:'Días de la más antigua',n:1},
+     {k:'semViejo',t:'Color',color:true},{k:'brecha',t:'Brecha (días)',n:1,fmt:v=>`<b class="tv-rojo">+${v}</b>`},
+     {k:'seriesPiso',t:'Series que debieron salir primero'}],
+    R.violaciones, {vacio:'Sin desviaciones: todas las salidas respetaron el orden de antigüedad.'});
+
+  const gViol = [...new Map(R.violaciones.map(v=>[v.ubicacion,null])).keys()].map(u=>{
+    const g = R.violaciones.filter(v=>v.ubicacion===u);
+    return {sucursal:u, n:g.length, max:Math.max(...g.map(v=>v.brecha)),
+            prom:Math.round(g.reduce((a,v)=>a+v.brecha,0)/g.length)};
+  }).sort((a,b)=>b.n-a.n);
+  tabla('pepsSuc',
+    [{k:'sucursal',t:'Sucursal'},{k:'n',t:'Desviaciones',n:1},
+     {k:'max',t:'Brecha máxima (días)',n:1},{k:'prom',t:'Brecha promedio (días)',n:1}],
+    gViol, {vacio:'Sin desviaciones.'});
+
+  const viejos = R.act.filter(f=>f.semaforo==='Rojo'||f.semaforo==='Negro')
+                      .sort((a,b)=>b.dias-a.dias).slice(0,60);
+  tabla('prioridad',
+    [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie'},
+     {k:'dias',t:'Días en piso',n:1},{k:'semaforo',t:'Semáforo',color:true},{k:'garantia',t:'Garantía'}],
+    viejos, {vacio:'No hay unidades en Rojo ni Negro.'});
+
+  PANELES.push({t:'Cumplimiento PEPS', n:nv, h:`
+    <div class="card"><h2>Cumplimiento PEPS</h2>
+      <p class="nota">Se marca una desviación cuando una unidad salió existiendo, en la <b>misma sucursal</b>
+      y con el <b>mismo artículo</b> (clave exacta con color y año), al menos una unidad <b>más antigua</b>
+      que permaneció en piso al corte actual. Si la más antigua también salió, no se considera desviación.</p>
+      <div class="kpi" style="max-width:760px;margin:12px 0">
+        <div><small>Bajas evaluadas</small><b>${R.bajas.length}</b></div>
+        <div><small>Conforme a PEPS</small><b class="tv-verde">${R.pepsOK}</b></div>
+        <div><small>Desviaciones</small><b class="${nv?'tv-rojo':'tv-verde'}">${nv}</b></div>
+        <div><small>% de cumplimiento</small><b class="${cump===1?'tv-verde':'tv-rojo'}">${(cump*100).toFixed(1)}%</b></div>
+      </div>
+      <h3>Detalle de desviaciones</h3>${tabla('peps')}
+      <p class="nota">La brecha es la diferencia en días entre la unidad que debió salir y la que salió.
+      A mayor brecha, mayor el impacto.</p>
+      <h3>Desviaciones por sucursal</h3>${tabla('pepsSuc')}
+      <h3>Prioridad de desplazamiento — las más antiguas aún en piso</h3>${tabla('prioridad')}
+      <p class="nota">Se muestran hasta 60 unidades en Rojo o Negro ordenadas por antigüedad. Estas deben venderse primero.</p>
+    </div>`});
+
+  /* ---------- ANEXO ---------- */
+  tabla('agencias',
+    [{k:'clave',t:'Clave'},{k:'ubicacion',t:'Ubicación'},{k:'zona',t:'Zona asignada tentativamente'}],
+    R.agNuevas, {vacio:'Todas las agencias del reporte están en el catálogo de zonas.'});
+  tabla('discrep',
+    [{k:'corte',t:'Corte'},{k:'ubicacion',t:'Sucursal'},{k:'serie',t:'Serie'},{k:'dias',t:'Días',n:1},
+     {k:'semArchivo',t:'Semáforo en el archivo'},{k:'semCalc',t:'Semáforo según la regla'}],
+    R.discrep, {vacio:'El semáforo del archivo coincide con la regla en todos los registros.'});
+  tabla('modeloRaro',
+    [{k:'serie',t:'Serie'},{k:'ma',t:'Modelo en corte anterior'},{k:'mc',t:'Modelo en corte actual'}],
+    R.modeloRaro, {vacio:'Ninguna serie cambió de modelo entre cortes.'});
+
+  const fuera = (R.soloAnt.length || R.soloAct.length) ? `
+    <div class="aviso"><b>Sucursales fuera del alcance comparable.</b><br>
+      ${R.soloAnt.length?`Solo en el corte anterior: ${R.soloAnt.join(', ')}.<br>`:''}
+      ${R.soloAct.length?`Solo en el corte actual: ${R.soloAct.join(', ')}.<br>`:''}
+      La comparación se restringe a las sucursales presentes en ambos archivos para no reportar
+      altas ni bajas falsas.</div>` : '';
+
+  PANELES.push({t:'Anexo', n:null, h:`
+    <div class="card"><h2>Anexo — control de calidad de la información</h2>
+      ${fuera}
+      <h3>Agencias sin zona confirmada</h3>${tabla('agencias')}
+      <p class="nota">Claves que no están en el catálogo. Se clasifican por el sufijo de estado
+      (MEX/CMX → Zona 23, MOR → Zona 6) y requieren validación.</p>
+      <h3>Discrepancias entre el semáforo del archivo y la regla</h3>${tabla('discrep')}
+      <h3>Series con modelo distinto entre cortes</h3>${tabla('modeloRaro')}
+      <p class="nota">Archivos comparados: <b>${R.na}</b> y <b>${R.nb}</b>.
+      ${R.invertido?'Se invirtió el orden según la fecha detectada en los nombres. ':''}
+      Generado el ${new Date().toLocaleString('es-MX')}.</p>
+    </div>`});
+
+  /* ---------- ARMADO ---------- */
+  document.getElementById('salida').className = '';
+  document.getElementById('salida').innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+        <div>
+          <h2 style="font-size:16px;margin:0">Comparativo ${fmtF(R.fa)} → ${fmtF(R.fb)}</h2>
+          <p class="nota">${dias!==null?`Periodo de ${dias} días · `:''}Alcance:
+             <b>${R.etiqueta}</b> (${nSuc} sucursal${nSuc!==1?'es':''} comparable${nSuc!==1?'s':''})</p>
+        </div>
+        <button class="sec noprint" onclick="window.print()">Imprimir / Guardar como PDF</button>
+      </div>
+      <div class="kpi" style="margin-top:12px">
+        <div><small>Unid. corte anterior</small><b>${nf(R.ant.length)}</b></div>
+        <div><small>Unid. corte actual</small><b>${nf(R.act.length)}</b></div>
+        <div><small>Variación</small><b>${R.act.length-R.ant.length>=0?'+':''}${nf(R.act.length-R.ant.length)}</b></div>
+        <div><small>Bajas (salidas)</small><b>${nf(R.bajas.length)}</b></div>
+        <div><small>Altas (entradas)</small><b>${nf(R.altas.length)}</b></div>
+        <div><small>Cambios de color</small><b>${nf(R.cambios.length)}</b></div>
+        <div><small>Desviaciones PEPS</small><b class="${nv?'tv-rojo':'tv-verde'}">${nf(nv)}</b></div>
+      </div>
+    </div>
+    <nav class="tabs noprint">${PANELES.map((p,i)=>
+      `<button class="${i===0?'on':''}" onclick="verTab(${i})">${p.t}${
+        p.n!==null?`<span class="n">${nf(p.n)}</span>`:''}</button>`).join('')}</nav>
+    ${PANELES.map((p,i)=>`<div class="panel" id="pan${i}" ${i?'style="display:none"':''}>${p.h}</div>`).join('')}`;
+
+  Object.keys(T).forEach(pintar);
+  TAB = 0;
+}
+function verTab(i){
+  PANELES.forEach((_,j)=>document.getElementById('pan'+j).style.display = i===j?'block':'none');
+  document.querySelectorAll('nav.tabs button').forEach((b,j)=>b.classList.toggle('on', i===j));
+  TAB = i;
+}
+</script>
+</body>
+</html>
