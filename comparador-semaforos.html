@@ -51,17 +51,32 @@ button{border:none;border-radius:6px;padding:9px 18px;font-size:13px;font-weight
 .kpi b{display:block;font-size:23px;font-weight:700;margin-top:2px}
 
 /* ---- tabs ---- */
-nav.tabs{display:flex;gap:3px;border-bottom:2px solid var(--line);margin-bottom:14px;overflow-x:auto}
+nav.tabs{display:flex;gap:3px;border-bottom:2px solid var(--line);margin-bottom:14px;overflow-x:auto;
+     position:sticky;top:0;z-index:30;background:var(--bg);padding-top:8px;
+     box-shadow:0 6px 10px -8px rgba(31,56,100,.35)}
 nav.tabs button{background:none;color:var(--mut);border-bottom:3px solid transparent;border-radius:0;
      padding:10px 15px;white-space:nowrap;font-weight:600;font-size:13px;margin-bottom:-2px}
-nav.tabs button.on{color:var(--azul);border-bottom-color:var(--azul)}
+nav.tabs button.on{color:var(--azul);border-bottom-color:var(--azul);background:#fff}
 nav.tabs button .n{background:#e2e7f0;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:5px}
 nav.tabs button.on .n{background:var(--azul);color:#fff}
+nav.tabs button .n.alerta{background:var(--rbg);color:var(--rojo)}
+nav.tabs button.on .n.alerta{background:var(--rojo);color:#fff}
+.tituloTab{position:sticky;top:44px;z-index:25;background:var(--bg);padding:4px 0 8px;
+     font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.tituloTab b{color:var(--azul)}
 
 /* ---- tablas ---- */
 .tbar{display:flex;gap:9px;align-items:center;margin:0 0 7px;flex-wrap:wrap}
 .tbar input{min-width:200px;padding:6px 9px;font-size:12.5px}
+.tbar select{min-width:auto;padding:6px 9px;font-size:12.5px}
 .tbar .cnt{font-size:12px;color:var(--mut);margin-left:auto}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:#fff;border-radius:14px;padding:4px 11px;font-size:12px;
+      font-weight:600;cursor:pointer;color:var(--mut)}
+.chip:hover{border-color:var(--azul2)}
+.chip.on{border-color:transparent;color:#fff;background:var(--azul)}
+.chip.on.Verde{background:var(--verde)} .chip.on.Amarillo{background:var(--amar)}
+.chip.on.Rojo{background:var(--rojo)} .chip.on.Negro{background:var(--negro)}
 .tw{overflow:auto;max-height:72vh;border:1px solid var(--line);border-radius:7px}
 table{width:100%;border-collapse:collapse;font-size:12.2px}
 th,td{padding:6px 9px;text-align:left;border-bottom:1px solid #e9edf3;white-space:nowrap}
@@ -88,6 +103,13 @@ tfoot td{background:#e4e8ef;font-weight:700;border-top:2px solid var(--line)}
 .hide{display:none}
 .tv-verde{color:var(--verde);font-weight:700}
 .tv-rojo{color:var(--rojo);font-weight:700}
+.g-si{display:inline-block;padding:2px 8px;border-radius:11px;font-size:10.5px;font-weight:700;
+      background:#e8eefc;color:var(--azul2)}
+.g-no{color:var(--mut);font-size:11.5px}
+.j-si{display:inline-block;padding:2px 8px;border-radius:11px;font-size:10.5px;font-weight:700;
+      background:var(--vbg);color:var(--verde)}
+.j-no{display:inline-block;padding:2px 8px;border-radius:11px;font-size:10.5px;font-weight:700;
+      background:var(--rbg);color:var(--rojo)}
 
 @media print{
   body{background:#fff}
@@ -201,8 +223,21 @@ const ALIAS = {
   ubicacion:['ubicacion'], modelo:['modeloplaneacion','modelo'], articulo:['articulo'],
   fisico:['fisico'], anio:['ano','anio'], serie:['numerodeserie','serie'],
   repuve:['repuve'], dias:['diasantiguedad','dias'], semaforo:['semaforo'],
-  garantia:['ticketsgarantia','garantia']
+  garantia:['ticketsgarantia','ticketgarantia','estatusgarantia','garantia']
 };
+
+/* Garantía: el archivo puede traer "Garantía", "Sin garantía", un folio, un conteo o venir vacío.
+   Vacío, 0, NO o cualquier texto que empiece con "sin" se considera SIN garantía.        */
+function tieneGarantia(v){
+  const s = norm(v);
+  if(!s) return false;
+  if(s.startsWith('sin') || s.startsWith('nogar')) return false;
+  if(['0','no','na','nd','ninguno','ninguna','n'].includes(s)) return false;
+  return true;
+}
+const etiqGarantia = v => tieneGarantia(v)
+      ? (String(v).trim() && norm(v)!=='garantia' ? 'Con garantía ('+String(v).trim()+')' : 'Con garantía')
+      : 'Sin garantía';
 
 function leerCorte(texto, nombre){
   const filas = parseCSV(texto);
@@ -229,7 +264,9 @@ function leerCorte(texto, nombre){
       ubicacion: ubi, clave, sucursal: ubi.replace(clave,'').trim(),
       zona: zonaDe(clave, ubi),
       modelo: g('modelo'), articulo: g('articulo'), serie,
-      repuve: g('repuve'), anio: g('anio'), garantia: g('garantia') || '—',
+      repuve: g('repuve'), anio: g('anio'),
+      garantia: etiqGarantia(g('garantia')), conGar: tieneGarantia(g('garantia')),
+      gar: tieneGarantia(g('garantia')) ? 'Con garantía' : 'Sin garantía',
       dias: isNaN(dias) ? null : dias,
       semArchivo: sem, semaforo: sem || semaforo(dias)
     });
@@ -359,33 +396,46 @@ function analizar(){
   cambios.sort((x,y)=> (ORD[y.semAct]??9)-(ORD[x.semAct]??9) || y.dias-x.dias);
 
   // ---- PEPS: mismo ARTÍCULO, misma SUCURSAL ----
-  const violaciones = []; let pepsOK = 0;
+  // El estatus de garantía se toma del CORTE ACTUAL (la unidad sigue en piso hoy).
+  const violaciones = [], justificadas = []; let pepsOK = 0;
   bajas.forEach(b=>{
-    const quedaron = ant.filter(f => f.articulo===b.articulo && f.clave===b.clave
-                                  && f.dias > b.dias && iAct.has(f.serie));
-    if(quedaron.length){
-      quedaron.sort((x,y)=>y.dias-x.dias);
-      const peor = quedaron[0].dias;
-      violaciones.push({
-        ubicacion:b.ubicacion, zona:b.zona, articulo:b.articulo, modelo:b.modelo,
-        serie:b.serie, dias:b.dias, sem:b.semaforo,
-        nViejas:quedaron.length, diasViejo:peor, semViejo:semaforo(peor),
-        brecha:peor-b.dias,
-        seriesPiso: quedaron.slice(0,3).map(q=>`${q.serie} (${q.dias}d)`).join(', ')
-                    + (quedaron.length>3 ? ` +${quedaron.length-3} más` : '')
-      });
-    } else pepsOK++;
+    let quedaron = ant.filter(f => f.articulo===b.articulo && f.clave===b.clave
+                                && f.dias > b.dias && iAct.has(f.serie));
+    if(!quedaron.length){ pepsOK++; return; }
+    // estatus de garantía vigente al corte actual
+    quedaron = quedaron.map(f=>{
+      const hoy = iAct.get(f.serie);
+      return {...f, conGar: hoy ? hoy.conGar : f.conGar, gar: hoy ? hoy.gar : f.gar};
+    }).sort((x,y)=>y.dias-x.dias);
+
+    const libres = quedaron.filter(f=>!f.conGar);       // sí debieron salir antes
+    const enGar  = quedaron.filter(f=>f.conGar);        // bloqueadas por ticket
+    const base   = libres.length ? libres : quedaron;
+    const peor   = base[0].dias;
+    const reg = {
+      ubicacion:b.ubicacion, zona:b.zona, articulo:b.articulo, modelo:b.modelo,
+      serie:b.serie, dias:b.dias, sem:b.semaforo, garSalida:b.gar,
+      nViejas:quedaron.length, nGar:enGar.length, nLibres:libres.length,
+      diasViejo:peor, semViejo:semaforo(peor), brecha:peor-b.dias,
+      estado: libres.length ? 'Desviación real' : 'Justificada por garantía',
+      seriesPiso: base.slice(0,3).map(q=>`${q.serie} (${q.dias}d${q.conGar?' · gar.':''})`).join(', ')
+                  + (base.length>3 ? ` +${base.length-3} más` : ''),
+      seriesGar: enGar.slice(0,3).map(q=>`${q.serie} (${q.dias}d)`).join(', ')
+                  + (enGar.length>3 ? ` +${enGar.length-3} más` : '')
+    };
+    if(libres.length) violaciones.push(reg); else justificadas.push(reg);
   });
   violaciones.sort((a,b)=>b.brecha-a.brecha);
+  justificadas.sort((a,b)=>b.brecha-a.brecha);
 
   const discrep = [...ant.filter(f=>f.semArchivo && f.semArchivo!==f.semCalc).map(f=>({...f,corte:'anterior'})),
                    ...act.filter(f=>f.semArchivo && f.semArchivo!==f.semCalc).map(f=>({...f,corte:'actual'}))];
   const agNuevas = [...new Map(act.filter(f=>nueva(f.clave))
                     .map(f=>[f.clave,{clave:f.clave, ubicacion:f.ubicacion, zona:f.zona}])).values()];
 
-  return {ant, act, fa, fb, na, nb, invertido, etiqueta, soloAnt, soloAct,
+  return {ant, act, fa, fb, na, nb, invertido, etiqueta, soloAnt, soloAct, iAnt, iAct,
           bajas, altas, permanecen, cambios, traspasos, modeloRaro,
-          violaciones, pepsOK, discrep, agNuevas};
+          violaciones, justificadas, pepsOK, discrep, agNuevas};
 }
 
 /* ==========================================================================
@@ -394,13 +444,18 @@ function analizar(){
 const T = {};
 function tabla(id, cols, rows, opts){
   // Con argumentos: registra la tabla. Solo con el id: devuelve el hueco donde se pintará.
-  if(cols) T[id] = {cols, rows:rows||[], opts:opts||{}, sort:null, q:''};
+  if(cols) T[id] = {cols, rows:rows||[], opts:opts||{},
+                    sort:(opts&&opts.sort)||null, q:'', f:{}, sem:''};
   return `<div id="w_${id}"></div>`;
 }
-function pintar(id){
-  const t = T[id]; if(!t) return;
-  const cont = document.getElementById('w_'+id); if(!cont) return;
+// filas visibles = filtros + búsqueda + orden (lo mismo que se exporta a CSV)
+function vista(t){
   let rows = t.rows;
+  (t.opts.filtros||[]).forEach(fl=>{
+    const v = t.f[fl.k];
+    if(v) rows = rows.filter(r => String(r[fl.k]??'') === v);
+  });
+  if(t.opts.chips && t.sem) rows = rows.filter(r => String(r[t.opts.chips]??'') === t.sem);
   if(t.q){
     const q = t.q.toLowerCase();
     rows = rows.filter(r => t.cols.some(c => String(r[c.k]??'').toLowerCase().includes(q)));
@@ -410,9 +465,15 @@ function pintar(id){
     rows = [...rows].sort((a,b)=>{
       let x=a[k], y=b[k];
       if(num){ x=+x||0; y=+y||0; return dir*(x-y); }
-      return dir*String(x??'').localeCompare(String(y??''));
+      return dir*String(x??'').localeCompare(String(y??''),'es',{numeric:true});
     });
   }
+  return rows;
+}
+function pintar(id){
+  const t = T[id]; if(!t) return;
+  const cont = document.getElementById('w_'+id); if(!cont) return;
+  const rows = vista(t);
   const th = t.cols.map(c=>{
     const s = t.sort && t.sort.k===c.k ? (t.sort.dir>0?'▲':'▼') : '⇅';
     return `<th class="${c.n?'n':c.c?'c':''}" onclick="ordenar('${id}','${c.k}',${!!c.n})">${c.t}<span class="ar">${s}</span></th>`;
@@ -426,9 +487,29 @@ function pintar(id){
     : `<tr><td colspan="${t.cols.length}"><div class="vac">${t.opts.vacio||'Sin registros.'}</div></td></tr>`;
   const foot = t.opts.foot ? `<tfoot><tr>${t.opts.foot.map((v,i)=>
       `<td class="${t.cols[i]&&t.cols[i].n?'n':''}">${v}</td>`).join('')}</tr></tfoot>` : '';
+  // selects de filtro
+  const selects = (t.opts.filtros||[]).map(fl=>{
+    const vals = [...new Set(t.rows.map(r=>String(r[fl.k]??'')))].filter(v=>v!=='' && v!=='—');
+    vals.sort(fl.ord ? (a,b)=>(fl.ord[a]??99)-(fl.ord[b]??99)
+                     : (a,b)=>a.localeCompare(b,'es',{numeric:true}));
+    return `<select onchange="filtrar('${id}','${fl.k}',this.value)">
+      <option value="">${fl.t}: todos (${vals.length})</option>${
+      vals.map(v=>`<option value="${v}"${t.f[fl.k]===v?' selected':''}>${v}</option>`).join('')}</select>`;
+  }).join('');
+  // chips de semáforo
+  const chips = t.opts.chips ? `<div class="chips">
+      <button class="chip${t.sem?'':' on'}" onclick="chip('${id}','')">Todos (${nf(t.rows.length)})</button>${
+      COLORES.map(c=>{
+        const n = t.rows.filter(r=>r[t.opts.chips]===c).length;
+        return `<button class="chip ${c}${t.sem===c?' on':''}" onclick="chip('${id}','${c}')">${c} (${nf(n)})</button>`;
+      }).join('')}</div>` : '';
+
   cont.innerHTML = `
     <div class="tbar noprint">
+      ${chips}
+      ${selects}
       <input type="text" placeholder="Buscar en la tabla…" value="${t.q}" oninput="buscar('${id}',this.value)">
+      <button class="sec" onclick="limpiarT('${id}')">Quitar filtros</button>
       <button class="sec" onclick="exportar('${id}')">Descargar CSV</button>
       <span class="cnt">${nf(rows.length)} de ${nf(t.rows.length)} registros</span>
     </div>
@@ -440,11 +521,14 @@ function ordenar(id,k,num){
   pintar(id);
 }
 function buscar(id,v){ T[id].q=v; pintar(id); }
+function filtrar(id,k,v){ T[id].f[k]=v; pintar(id); }
+function chip(id,v){ T[id].sem = (T[id].sem===v?'':v); pintar(id); }
+function limpiarT(id){ const t=T[id]; t.f={}; t.sem=''; t.q=''; pintar(id); }
 function exportar(id){
   const t=T[id];
   const esc = s => `"${String(s??'').replace(/"/g,'""')}"`;
   const csv = [t.cols.map(c=>esc(c.t)).join(',')]
-    .concat(t.rows.map(r=>t.cols.map(c=>esc(r[c.k])).join(','))).join('\n');
+    .concat(vista(t).map(r=>t.cols.map(c=>esc(r[c.k])).join(','))).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));
   a.download=`${id}.csv`; a.click(); URL.revokeObjectURL(a.href);
@@ -470,7 +554,9 @@ function render(R){
   const dias = (R.fa && R.fb) ? Math.round((R.fb-R.fa)/864e5) : null;
   const nSuc = new Set(R.act.map(f=>f.clave)).size;
   const nv = R.violaciones.length;
-  const cump = R.bajas.length ? R.pepsOK/R.bajas.length : 1;
+  const njust = R.justificadas.length;
+  const cump = R.bajas.length ? (R.pepsOK + njust)/R.bajas.length : 1;   // garantía justifica
+  const cumpEstricto = R.bajas.length ? R.pepsOK/R.bajas.length : 1;     // sin justificar nada
 
   /* ---------- RESUMEN ---------- */
   const comp = COLORES.map(c=>{
@@ -499,14 +585,18 @@ function render(R){
             r:sc.filter(f=>f.semaforo==='Rojo').length,
             ng:sc.filter(f=>f.semaforo==='Negro').length,
             prn:(rn/Math.max(sc.length,1)*100).toFixed(0)+'%',
-            viol:R.violaciones.filter(x=>x.ubicacion.startsWith(cl)).length};
+            gar:sc.filter(f=>f.conGar).length,
+            viol:R.violaciones.filter(x=>x.ubicacion.startsWith(cl)).length,
+            just:R.justificadas.filter(x=>x.ubicacion.startsWith(cl)).length};
   });
   tabla('sucursales',
     [{k:'zona',t:'Zona'},{k:'sucursal',t:'Sucursal'},{k:'ant',t:'Anterior',n:1},{k:'act',t:'Actual',n:1},
      {k:'bajas',t:'Bajas',n:1},{k:'altas',t:'Altas',n:1},{k:'v',t:'Verde',n:1},{k:'a',t:'Amarillo',n:1},
      {k:'r',t:'Rojo',n:1},{k:'ng',t:'Negro',n:1},{k:'prn',t:'% Rojo+Negro',n:1},
-     {k:'viol',t:'Desv. PEPS',n:1,fmt:v=>v?`<b class="tv-rojo">${v}</b>`:'0'}],
-    porSuc);
+     {k:'gar',t:'En garantía',n:1},
+     {k:'viol',t:'Desv. PEPS',n:1,fmt:v=>v?`<b class="tv-rojo">${v}</b>`:'0'},
+     {k:'just',t:'Justif. garantía',n:1}],
+    porSuc, {filtros:[{k:'zona',t:'Zona'}]});
 
   PANELES.push({t:'Resumen', n:null, h:`
     <div class="card"><h2>Composición del inventario por semáforo</h2>
@@ -515,6 +605,83 @@ function render(R){
          Rojo ${U[1]+1}–${U[2]} · Negro ${U[2]+1} o más. Cada unidad se identifica por MODELO + NÚMERO DE SERIE.</p>
     </div>
     <div class="card"><h2>Resumen por sucursal</h2>${tabla('sucursales')}</div>`});
+
+  /* ---------- INVENTARIO COMPLETO ---------- */
+  const inv = R.act.map(f=>{
+    const a = R.iAnt.get(f.serie);
+    return {zona:f.zona, ubicacion:f.ubicacion, modelo:f.modelo||'—', articulo:f.articulo,
+            anio:f.anio, serie:f.serie, dias:f.dias, semaforo:f.semaforo, gar:f.gar,
+            garantia:f.garantia, conGar:f.conGar,
+            estatus: a ? 'Permanece' : 'Alta del periodo',
+            diasAnt: a ? a.dias : null, semAnt: a ? a.semaforo : '—'};
+  });
+  const totGar = inv.filter(r=>r.conGar).length;
+  const diasProm = inv.length ? Math.round(inv.reduce((s,r)=>s+(r.dias||0),0)/inv.length) : 0;
+
+  tabla('inventario',
+    [{k:'zona',t:'Zona'},{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},
+     {k:'articulo',t:'Artículo'},{k:'anio',t:'Año',c:1},{k:'serie',t:'Serie'},
+     {k:'dias',t:'Días en piso',n:1},{k:'semaforo',t:'Semáforo',color:true},
+     {k:'diasAnt',t:'Días al corte anterior',n:1},{k:'semAnt',t:'Color anterior'},
+     {k:'estatus',t:'Estatus'},
+     {k:'gar',t:'Garantía',fmt:(v,r)=>r.conGar?`<span class="g-si">${r.garantia}</span>`
+                                              :`<span class="g-no">Sin garantía</span>`}],
+    inv, {sort:{k:'dias',num:true,dir:-1}, chips:'semaforo',
+          filtros:[{k:'zona',t:'Zona'},{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},
+                   {k:'gar',t:'Garantía'},{k:'estatus',t:'Estatus'}],
+          vacio:'Sin unidades en el alcance seleccionado.'});
+
+  const porModelo = [...new Set(R.act.map(f=>f.modelo||'—'))].map(m=>{
+    const u = R.act.filter(f=>(f.modelo||'—')===m);
+    const rn = u.filter(f=>f.semaforo==='Rojo'||f.semaforo==='Negro').length;
+    return {modelo:m, total:u.length,
+            v:u.filter(f=>f.semaforo==='Verde').length, a:u.filter(f=>f.semaforo==='Amarillo').length,
+            r:u.filter(f=>f.semaforo==='Rojo').length, ng:u.filter(f=>f.semaforo==='Negro').length,
+            prn:(rn/Math.max(u.length,1)*100).toFixed(0)+'%',
+            prom:Math.round(u.reduce((s,f)=>s+(f.dias||0),0)/Math.max(u.length,1)),
+            max:Math.max(...u.map(f=>f.dias||0)),
+            gar:u.filter(f=>f.conGar).length,
+            bajas:R.bajas.filter(f=>(f.modelo||'—')===m).length,
+            altas:R.altas.filter(f=>(f.modelo||'—')===m).length};
+  }).sort((a,b)=>b.total-a.total);
+
+  tabla('porModelo',
+    [{k:'modelo',t:'Modelo'},{k:'total',t:'Unidades',n:1},
+     {k:'v',t:'Verde',n:1},{k:'a',t:'Amarillo',n:1},{k:'r',t:'Rojo',n:1},{k:'ng',t:'Negro',n:1},
+     {k:'prn',t:'% Rojo+Negro',n:1},{k:'prom',t:'Días promedio',n:1},{k:'max',t:'Día máximo',n:1},
+     {k:'gar',t:'En garantía',n:1},{k:'bajas',t:'Bajas',n:1},{k:'altas',t:'Altas',n:1}],
+    porModelo, {sort:{k:'total',num:true,dir:-1},
+      foot:['TOTAL', nf(R.act.length),
+            nf(R.act.filter(f=>f.semaforo==='Verde').length),
+            nf(R.act.filter(f=>f.semaforo==='Amarillo').length),
+            nf(R.act.filter(f=>f.semaforo==='Rojo').length),
+            nf(R.act.filter(f=>f.semaforo==='Negro').length),
+            (R.act.filter(f=>f.semaforo==='Rojo'||f.semaforo==='Negro').length
+              /Math.max(R.act.length,1)*100).toFixed(0)+'%',
+            nf(diasProm), nf(Math.max(...R.act.map(f=>f.dias||0))), nf(totGar),
+            nf(R.bajas.length), nf(R.altas.length)]});
+
+  PANELES.push({t:'Inventario completo', n:R.act.length, h:`
+    <div class="card"><h2>Inventario completo al ${fmtF(R.fb)} — todas las unidades</h2>
+      <p class="nota">Vista única de las <b>${nf(R.act.length)}</b> unidades del corte actual.
+      Usa los botones de color para aislar un semáforo, los menús para filtrar por zona, sucursal,
+      modelo o garantía, y haz clic en cualquier encabezado para ordenar (un segundo clic invierte el orden).
+      Viene ordenada de mayor a menor antigüedad.</p>
+      <div class="kpi" style="margin:12px 0">
+        <div><small>Unidades totales</small><b>${nf(R.act.length)}</b></div>
+        <div><small>Modelos distintos</small><b>${nf(porModelo.length)}</b></div>
+        <div><small>Días promedio en piso</small><b>${nf(diasProm)}</b></div>
+        <div><small>Antigüedad máxima</small><b class="tv-rojo">${nf(Math.max(...R.act.map(f=>f.dias||0)))}</b></div>
+        <div><small>Rojo + Negro</small><b class="tv-rojo">${
+          nf(R.act.filter(f=>f.semaforo==='Rojo'||f.semaforo==='Negro').length)}</b></div>
+        <div><small>Con ticket de garantía</small><b>${nf(totGar)}</b></div>
+      </div>
+      ${tabla('inventario')}
+    </div>
+    <div class="card"><h2>Concentrado por modelo</h2>${tabla('porModelo')}
+      <p class="nota">Ordena por “% Rojo+Negro” o por “Día máximo” para detectar qué modelos están
+      envejeciendo el inventario.</p>
+    </div>`});
 
   /* ---------- CAMBIOS DE SEMÁFORO ---------- */
   const deterioro = R.cambios.filter(c=>(ORD[c.semAct]??0) > (ORD[c.semAnt]??0)).length;
@@ -534,8 +701,11 @@ function render(R){
     [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie'},
      {k:'diasAnt',t:'Días antes',n:1},{k:'dias',t:'Días ahora',n:1},
      {k:'semAnt',t:'Color anterior',color:true},{k:'semAct',t:'Color actual',color:true},
-     {k:'garantia',t:'Garantía'}],
-    R.cambios, {vacio:'Ninguna unidad cambió de color en el periodo.'});
+     {k:'gar',t:'Garantía',fmt:(v,r)=>r.conGar?`<span class="g-si">Con garantía</span>`
+                                              :`<span class="g-no">Sin garantía</span>`}],
+    R.cambios, {sort:{k:'dias',num:true,dir:-1}, chips:'semAct',
+      filtros:[{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'gar',t:'Garantía'}],
+      vacio:'Ninguna unidad cambió de color en el periodo.'});
   PANELES.push({t:'Cambios de semáforo', n:R.cambios.length, h:`
     <div class="card"><h2>Cambios de semáforo</h2>
       <p class="nota">${R.cambios.length} unidades cambiaron de color; <b>${deterioro}</b> se deterioraron
@@ -549,12 +719,19 @@ function render(R){
   tabla('bajas',
     [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie'},
      {k:'dias',t:'Días al corte anterior',n:1},{k:'semaforo',t:'Semáforo al salir',color:true},
-     {k:'garantia',t:'Garantía'}],
-    R.bajas, {vacio:'Sin bajas en el periodo.'});
+     {k:'gar',t:'Garantía al salir',fmt:(v,r)=>r.conGar?`<span class="g-si">Con garantía</span>`
+                                                      :`<span class="g-no">Sin garantía</span>`}],
+    R.bajas, {sort:{k:'dias',num:true,dir:-1}, chips:'semaforo',
+      filtros:[{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'gar',t:'Garantía'}],
+      vacio:'Sin bajas en el periodo.'});
   tabla('altas',
     [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie'},
-     {k:'dias',t:'Días',n:1},{k:'semaforo',t:'Semáforo',color:true},{k:'garantia',t:'Garantía'}],
-    R.altas, {vacio:'Sin altas en el periodo.'});
+     {k:'dias',t:'Días',n:1},{k:'semaforo',t:'Semáforo',color:true},
+     {k:'gar',t:'Garantía',fmt:(v,r)=>r.conGar?`<span class="g-si">Con garantía</span>`
+                                              :`<span class="g-no">Sin garantía</span>`}],
+    R.altas, {sort:{k:'dias',num:true,dir:-1}, chips:'semaforo',
+      filtros:[{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'}],
+      vacio:'Sin altas en el periodo.'});
   tabla('traspasos',
     [{k:'serie',t:'Serie'},{k:'articulo',t:'Artículo'},{k:'origen',t:'Sucursal origen'},
      {k:'destino',t:'Sucursal destino'},{k:'dias',t:'Días',n:1}],
@@ -570,48 +747,93 @@ function render(R){
     </div>`});
 
   /* ---------- PEPS ---------- */
-  tabla('peps',
-    [{k:'ubicacion',t:'Sucursal'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie que salió'},
+  const colPeps = [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie que salió'},
      {k:'dias',t:'Días',n:1},{k:'sem',t:'Color',color:true},
-     {k:'nViejas',t:'Unid. más antiguas en piso',n:1},{k:'diasViejo',t:'Días de la más antigua',n:1},
+     {k:'nViejas',t:'Unid. más antiguas en piso',n:1},
+     {k:'nGar',t:'De ellas, en garantía',n:1},
+     {k:'diasViejo',t:'Días de la más antigua',n:1},
      {k:'semViejo',t:'Color',color:true},{k:'brecha',t:'Brecha (días)',n:1,fmt:v=>`<b class="tv-rojo">+${v}</b>`},
-     {k:'seriesPiso',t:'Series que debieron salir primero'}],
-    R.violaciones, {vacio:'Sin desviaciones: todas las salidas respetaron el orden de antigüedad.'});
+     {k:'seriesPiso',t:'Series que debieron salir primero'}];
 
-  const gViol = [...new Map(R.violaciones.map(v=>[v.ubicacion,null])).keys()].map(u=>{
+  tabla('peps', colPeps, R.violaciones,
+    {sort:{k:'brecha',num:true,dir:-1}, filtros:[{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'}],
+     vacio:'Sin desviaciones reales: todas las salidas respetaron el orden de antigüedad o están justificadas por garantía.'});
+
+  tabla('pepsJust',
+    [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie que salió'},
+     {k:'dias',t:'Días',n:1},{k:'sem',t:'Color',color:true},
+     {k:'nGar',t:'Unid. más antiguas, todas en garantía',n:1},
+     {k:'diasViejo',t:'Días de la más antigua',n:1},{k:'semViejo',t:'Color',color:true},
+     {k:'brecha',t:'Brecha (días)',n:1},
+     {k:'seriesGar',t:'Series retenidas por ticket de garantía'}],
+    R.justificadas, {sort:{k:'brecha',num:true,dir:-1},
+     vacio:'Ninguna desviación quedó justificada por garantía en el periodo.'});
+
+  const clavesViol = [...new Set([...R.violaciones, ...R.justificadas].map(v=>v.ubicacion))];
+  const gViol = clavesViol.map(u=>{
     const g = R.violaciones.filter(v=>v.ubicacion===u);
-    return {sucursal:u, n:g.length, max:Math.max(...g.map(v=>v.brecha)),
-            prom:Math.round(g.reduce((a,v)=>a+v.brecha,0)/g.length)};
-  }).sort((a,b)=>b.n-a.n);
+    const j = R.justificadas.filter(v=>v.ubicacion===u);
+    return {sucursal:u, n:g.length, just:j.length,
+            max:g.length?Math.max(...g.map(v=>v.brecha)):0,
+            prom:g.length?Math.round(g.reduce((a,v)=>a+v.brecha,0)/g.length):0};
+  }).sort((a,b)=>b.n-a.n || b.just-a.just);
   tabla('pepsSuc',
-    [{k:'sucursal',t:'Sucursal'},{k:'n',t:'Desviaciones',n:1},
+    [{k:'sucursal',t:'Sucursal'},{k:'n',t:'Desviaciones reales',n:1},
+     {k:'just',t:'Justificadas por garantía',n:1},
      {k:'max',t:'Brecha máxima (días)',n:1},{k:'prom',t:'Brecha promedio (días)',n:1}],
-    gViol, {vacio:'Sin desviaciones.'});
+    gViol, {sort:{k:'n',num:true,dir:-1}, vacio:'Sin desviaciones.'});
 
-  const viejos = R.act.filter(f=>f.semaforo==='Rojo'||f.semaforo==='Negro')
-                      .sort((a,b)=>b.dias-a.dias).slice(0,60);
+  const viejos = R.act.filter(f=>f.semaforo==='Rojo'||f.semaforo==='Negro');
   tabla('prioridad',
     [{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'articulo',t:'Artículo'},{k:'serie',t:'Serie'},
-     {k:'dias',t:'Días en piso',n:1},{k:'semaforo',t:'Semáforo',color:true},{k:'garantia',t:'Garantía'}],
-    viejos, {vacio:'No hay unidades en Rojo ni Negro.'});
+     {k:'dias',t:'Días en piso',n:1},{k:'semaforo',t:'Semáforo',color:true},
+     {k:'gar',t:'Garantía',fmt:(v,r)=>r.conGar?`<span class="g-si">Con garantía</span>`
+                                              :`<span class="g-no">Sin garantía</span>`},
+     {k:'accion',t:'Acción'}],
+    viejos.map(f=>({...f, accion: f.conGar
+        ? 'Dar seguimiento al ticket — no vendible'
+        : 'Desplazar de inmediato'})),
+    {sort:{k:'dias',num:true,dir:-1}, chips:'semaforo',
+     filtros:[{k:'ubicacion',t:'Sucursal'},{k:'modelo',t:'Modelo'},{k:'gar',t:'Garantía'}],
+     vacio:'No hay unidades en Rojo ni Negro.'});
 
-  PANELES.push({t:'Cumplimiento PEPS', n:nv, h:`
+  const bloq = viejos.filter(f=>f.conGar).length;
+  const garTot = R.act.filter(f=>f.conGar).length;
+
+  PANELES.push({t:'Cumplimiento PEPS', n:nv, alerta:nv>0, h:`
     <div class="card"><h2>Cumplimiento PEPS</h2>
       <p class="nota">Se marca una desviación cuando una unidad salió existiendo, en la <b>misma sucursal</b>
       y con el <b>mismo artículo</b> (clave exacta con color y año), al menos una unidad <b>más antigua</b>
       que permaneció en piso al corte actual. Si la más antigua también salió, no se considera desviación.</p>
-      <div class="kpi" style="max-width:760px;margin:12px 0">
-        <div><small>Bajas evaluadas</small><b>${R.bajas.length}</b></div>
-        <div><small>Conforme a PEPS</small><b class="tv-verde">${R.pepsOK}</b></div>
-        <div><small>Desviaciones</small><b class="${nv?'tv-rojo':'tv-verde'}">${nv}</b></div>
-        <div><small>% de cumplimiento</small><b class="${cump===1?'tv-verde':'tv-rojo'}">${(cump*100).toFixed(1)}%</b></div>
+      <p class="nota"><b>Tratamiento de la garantía:</b> si todas las unidades más antiguas que se quedaron
+      en piso traían ticket de garantía, la unidad no era vendible y la desviación se clasifica como
+      <span class="j-si">Justificada</span>. Si al menos una unidad más antigua estaba libre de garantía,
+      se clasifica como <span class="j-no">Desviación real</span> y la brecha se calcula contra esa unidad libre.</p>
+      <div class="kpi" style="max-width:1000px;margin:12px 0">
+        <div><small>Bajas evaluadas</small><b>${nf(R.bajas.length)}</b></div>
+        <div><small>Conforme a PEPS</small><b class="tv-verde">${nf(R.pepsOK)}</b></div>
+        <div><small>Justificadas por garantía</small><b>${nf(njust)}</b></div>
+        <div><small>Desviaciones reales</small><b class="${nv?'tv-rojo':'tv-verde'}">${nf(nv)}</b></div>
+        <div><small>% cumplimiento ajustado</small><b class="${cump===1?'tv-verde':'tv-rojo'}">${(cump*100).toFixed(1)}%</b></div>
+        <div><small>% cumplimiento estricto</small><b>${(cumpEstricto*100).toFixed(1)}%</b></div>
       </div>
-      <h3>Detalle de desviaciones</h3>${tabla('peps')}
+      <h3>Detalle de desviaciones reales</h3>${tabla('peps')}
       <p class="nota">La brecha es la diferencia en días entre la unidad que debió salir y la que salió.
-      A mayor brecha, mayor el impacto.</p>
+      A mayor brecha, mayor el impacto. Estas son las que hay que explicar.</p>
+      <h3>Desviaciones justificadas por ticket de garantía</h3>${tabla('pepsJust')}
+      <p class="nota">Estas ${nf(njust)} salidas rompen el orden de antigüedad, pero la unidad más vieja
+      estaba retenida por garantía. Sirven como soporte documental cuando se cuestione el PEPS.</p>
       <h3>Desviaciones por sucursal</h3>${tabla('pepsSuc')}
-      <h3>Prioridad de desplazamiento — las más antiguas aún en piso</h3>${tabla('prioridad')}
-      <p class="nota">Se muestran hasta 60 unidades en Rojo o Negro ordenadas por antigüedad. Estas deben venderse primero.</p>
+      <h3>Prioridad de desplazamiento — unidades en Rojo y Negro aún en piso</h3>
+      <div class="kpi" style="max-width:640px;margin:10px 0">
+        <div><small>Rojo + Negro en piso</small><b class="tv-rojo">${nf(viejos.length)}</b></div>
+        <div><small>Bloqueadas por garantía</small><b>${nf(bloq)}</b></div>
+        <div><small>Vendibles de inmediato</small><b class="tv-verde">${nf(viejos.length-bloq)}</b></div>
+        <div><small>Total en garantía (todo el inventario)</small><b>${nf(garTot)}</b></div>
+      </div>
+      ${tabla('prioridad')}
+      <p class="nota">Las unidades marcadas “no vendible” explican por qué siguen en piso; el resto
+      no tiene justificación y debe desplazarse primero.</p>
     </div>`});
 
   /* ---------- ANEXO ---------- */
@@ -665,13 +887,18 @@ function render(R){
         <div><small>Bajas (salidas)</small><b>${nf(R.bajas.length)}</b></div>
         <div><small>Altas (entradas)</small><b>${nf(R.altas.length)}</b></div>
         <div><small>Cambios de color</small><b>${nf(R.cambios.length)}</b></div>
-        <div><small>Desviaciones PEPS</small><b class="${nv?'tv-rojo':'tv-verde'}">${nf(nv)}</b></div>
+        <div><small>Desviaciones PEPS reales</small><b class="${nv?'tv-rojo':'tv-verde'}">${nf(nv)}</b></div>
+        <div><small>Justificadas por garantía</small><b>${nf(njust)}</b></div>
+        <div><small>Unidades en garantía</small><b>${nf(R.act.filter(f=>f.conGar).length)}</b></div>
       </div>
+      <p class="nota noprint">Atajo: <b>Ctrl + →</b> y <b>Ctrl + ←</b> cambian de pestaña.
+      La barra de pestañas queda fija al hacer scroll.</p>
     </div>
     <nav class="tabs noprint">${PANELES.map((p,i)=>
       `<button class="${i===0?'on':''}" onclick="verTab(${i})">${p.t}${
-        p.n!==null?`<span class="n">${nf(p.n)}</span>`:''}</button>`).join('')}</nav>
-    ${PANELES.map((p,i)=>`<div class="panel" id="pan${i}" ${i?'style="display:none"':''}>${p.h}</div>`).join('')}`;
+        p.n!==null?`<span class="n${p.alerta?' alerta':''}">${nf(p.n)}</span>`:''}</button>`).join('')}</nav>
+    ${PANELES.map((p,i)=>`<div class="panel" id="pan${i}" ${i?'style="display:none"':''}>
+        <div class="tituloTab noprint">Sección ${i+1} de ${PANELES.length} · <b>${p.t}</b></div>${p.h}</div>`).join('')}`;
 
   Object.keys(T).forEach(pintar);
   TAB = 0;
@@ -680,7 +907,15 @@ function verTab(i){
   PANELES.forEach((_,j)=>document.getElementById('pan'+j).style.display = i===j?'block':'none');
   document.querySelectorAll('nav.tabs button').forEach((b,j)=>b.classList.toggle('on', i===j));
   TAB = i;
+  const nav = document.querySelector('nav.tabs');
+  if(nav) window.scrollTo({top: nav.offsetTop - 4, behavior:'smooth'});
 }
+// Ctrl + flechas para moverse entre pestañas sin perderlas de vista
+document.addEventListener('keydown', e=>{
+  if(!PANELES.length || !e.ctrlKey) return;
+  if(e.key==='ArrowRight'){ e.preventDefault(); verTab((TAB+1)%PANELES.length); }
+  if(e.key==='ArrowLeft'){ e.preventDefault(); verTab((TAB-1+PANELES.length)%PANELES.length); }
+});
 </script>
 </body>
 </html>
