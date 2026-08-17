@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Herramientas · Agencia Chalco</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef1f6;color:#1c2430;font:15px/1.5 -apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:#1F3864;color:#fff;padding:26px 22px}
+header h1{margin:0;font-size:21px;font-weight:600}
+header p{margin:5px 0 0;font-size:13px;opacity:.8}
+main{max-width:900px;margin:0 auto;padding:26px 22px 60px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
+a.card{display:block;background:#fff;border:1px solid #d6dce6;border-radius:10px;padding:18px;
+       text-decoration:none;color:inherit;transition:.15s}
+a.card:hover{border-color:#2E5090;box-shadow:0 3px 12px rgba(31,56,100,.13);transform:translateY(-2px)}
+a.card h2{margin:0 0 6px;font-size:15.5px;color:#1F3864}
+a.card p{margin:0;font-size:13px;color:#6b7684}
+.tag{display:inline-block;margin-top:10px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+     color:#2E5090;background:#eef2fb;border-radius:20px;padding:3px 10px}
+.tag.ext{color:#8a5a00;background:#fdf3e2}
+h3.sec{margin:30px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#1F3864;
+       border-bottom:1px solid #d6dce6;padding-bottom:8px}
+h3.sec:first-of-type{margin-top:0}
+p.nota{margin:0 0 14px;font-size:12.5px;color:#6b7684}
+a.chico{display:block;background:#fff;border:1px solid #d6dce6;border-radius:8px;padding:11px 14px;
+        text-decoration:none;color:inherit;transition:.15s}
+a.chico:hover{border-color:#2E5090;background:#f7f9fd}
+a.chico b{display:block;font-size:13.5px;color:#1F3864}
+a.chico span{font-size:12px;color:#6b7684}
+.avisillo{margin-top:22px;background:#fdf3e2;border-left:3px solid #d9a441;border-radius:6px;
+          padding:11px 14px;font-size:12.5px;color:#6b5320}
+footer{margin-top:26px;font-size:12px;color:#6b7684}
+</style>
+</head>
+<body>
+<header>
+  <h1>Herramientas · Agencia Chalco</h1>
+  <p>Utilidades web que corren en el navegador. Sin servidor: los archivos que cargas nunca salen de tu equipo.</p>
+</header>
+<main>
+
+  <h3 class="sec">Herramientas</h3>
+  <p class="nota">Un solo archivo cada una. Se pueden compartir por separado.</p>
+  <div class="grid">
+    <a class="card" href="dashboard-ventas-chalco.html">
+      <h2>Dashboard de ventas</h2>
+      <p>Meta del mes, desempeño por asesor, participación, formas de pago y modelos.</p>
+      <span class="tag">Ventas</span>
+    </a>
+    <a class="card" href="https://jesus-trapala.github.io/ChalcoCheck/" target="_blank" rel="noopener">
+      <h2>Checklist diario</h2>
+      <p>Lo llena cada asesor durante su turno. De aquí salen los CSV que lee el Concentrador.</p>
+      <span class="tag ext">Operación · otro sitio</span>
+    </a>
+    <a class="card" href="concentrador.html">
+      <h2>Concentrador de reportes</h2>
+      <p>Junta los CSV del Checklist diario: cumplimiento por asesor y seguimiento de prospectos.</p>
+      <span class="tag">Operación</span>
+    </a>
+    <a class="card" href="comparador-semaforos.html">
+      <h2>Comparador de semáforos</h2>
+      <p>Compara dos cortes de inventario PEPS: cambios de color, traspasos y violaciones de antigüedad.</p>
+      <span class="tag">Inventario</span>
+    </a>
+    <a class="card" href="checklist-entrega.html">
+      <h2>Checklist de entrega</h2>
+      <p>Lee la factura en PDF, llena solos los datos de la unidad y genera el checklist de entrega listo para firmar.</p>
+      <span class="tag">Entregas</span>
+    </a>
+    <a class="card" href="https://jesus-trapala.github.io/cotizador-vento-chalco/" target="_blank" rel="noopener">
+      <h2>Cotizador de motos</h2>
+      <p>Precios en vivo desde el Sheet, envío por WhatsApp y registro automático de cada cotización.</p>
+      <span class="tag ext">Ventas · otro sitio</span>
+    </a>
+  </div>
+
+  <h3 class="sec">Registro y seguimiento</h3>
+  <p class="nota">Piden cuenta de Google. Solo entra quien tenga acceso.</p>
+  <div class="grid">
+    <a class="chico" href="https://docs.google.com/spreadsheets/d/18JbnNzCXjH9Dn8jiaYz6qojHj0kIYSlNMyiwFdVnFuU/edit" target="_blank" rel="noopener">
+      <b>Hoja de seguimiento</b>
+      <span>Las cotizaciones registradas. Aquí se mueve el ESTATUS.</span>
+    </a>
+    <a class="chico" href="https://docs.google.com/spreadsheets/d/18JbnNzCXjH9Dn8jiaYz6qojHj0kIYSlNMyiwFdVnFuU/edit#gid=394431904" target="_blank" rel="noopener">
+      <b>Lista de precios</b>
+      <span>Cambia un precio y en 5 minutos ya cotizan con el nuevo.</span>
+    </a>
+    <a class="chico" href="https://script.google.com/home/triggers" target="_blank" rel="noopener">
+      <b>Activadores</b>
+      <span>El correo diario de las 10. Debe salir <code>correoSeguimiento</code>.</span>
+    </a>
+    <a class="chico" href="https://script.google.com/home/executions" target="_blank" rel="noopener">
+      <b>Ejecuciones</b>
+      <span>Si algo falló, aquí sale. Primer lugar donde buscar.</span>
+    </a>
+  </div>
+
+  <h3 class="sec">Mantenimiento</h3>
+  <p class="nota">Solo cuando haya que cambiarle algo a una herramienta.</p>
+  <div class="grid">
+    <a class="chico" href="https://github.com/jesus-trapala/reportes-agencia-chalco/upload/main" target="_blank" rel="noopener">
+      <b>Subir archivo · este sitio</b>
+      <span>Arrastrar y commit. Nunca pegar código: se corta.</span>
+    </a>
+    <a class="chico" href="https://github.com/jesus-trapala/cotizador-vento-chalco/upload/main" target="_blank" rel="noopener">
+      <b>Subir archivo · cotizador</b>
+      <span>Mismo camino para actualizar el cotizador.</span>
+    </a>
+    <a class="chico" href="https://script.google.com/home/my" target="_blank" rel="noopener">
+      <b>Apps Script</b>
+      <span>Al cambiar el código, re-implementar como <b>Nueva versión</b>.</span>
+    </a>
+  </div>
+
+  <div class="avisillo">
+    <b>Si los vendedores ven precios viejos:</b> que presionen <code>Ctrl+F5</code>. Es la caché del navegador, no el cotizador.
+  </div>
+
+  <footer>Los datos se procesan localmente en tu navegador.</footer>
+</main>
+</body>
+</html>
