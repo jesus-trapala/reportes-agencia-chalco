@@ -580,18 +580,59 @@ const Campos = (function(){
     }
     put("serie", serie); put("motor", motor);
 
-    /* --- Modelo / CC / Año / Porta casco --- */
-    let desc = find(/MODELO\s*:\s*([^,\n]+)/i);
-    if (desc){
-      desc = desc.replace(/\s+/g," ").trim();
-      const mcc = desc.match(/(\d{2,4})\s*CC\b/i);
-      if (mcc) put("cc", mcc[1]);
-      const modelo = mcc ? desc.slice(0, desc.toUpperCase().indexOf(" CC")).trim() : desc;
-      put("modelo", modelo.toUpperCase());
-    } else {
-      put("modelo", find(/^\s*\d{8}\s+(\S+)/m));
+    /* --- Descripción del vehículo ---------------------------------
+       Se arma leyendo SOLO la columna "Descripcion": el texto se parte
+       en varios renglones y a la derecha viene la columna de impuestos,
+       que antes se colaba y ensuciaba el modelo.                      */
+    let desc = "";
+    const iMar = L.findIndex(l => /MARCA\s*:/i.test(l.txt));
+    if (iMar >= 0){
+      const k = L[iMar].items.findIndex(i => /^MARCA\b/i.test(i.s.trim()));
+      if (k >= 0){
+        /* Los limites de la columna salen de los encabezados de la tabla,
+           que estan en posicion fija. El hueco entre "MODELO:" y la columna
+           de impuestos llega a ser de solo 9 pt, muy poco para cortar por
+           espacios. */
+        const hDesc = items.find(i => /^Descripci/i.test(i.s.trim()));
+        const hImp  = items.find(i => /^Impuestos\b/i.test(i.s.trim()));
+        const xa = (hDesc ? hDesc.x : L[iMar].items[k].x) - 4;
+        let xb;
+        if (hImp && hImp.x > xa) xb = hImp.x - 4;
+        else {
+          const c = celda(L[iMar], k);
+          const sig = L[iMar].items[L[iMar].items.lastIndexOf(c[c.length-1]) + 1];
+          xb = sig ? sig.x - 2 : 1e9;
+        }
+        const partes = [];
+        for (let j=iMar; j<L.length; j++){
+          if (j > iMar && /N[uú]mero Serial|Objeto de impuesto|Porta\s*Casco|^Notas/i.test(L[j].txt)) break;
+          const t = L[j].items.filter(i => i.x >= xa && i.x < xb).map(i=>i.s).join(" ").trim();
+          if (t) partes.push(t);
+        }
+        desc = partes.join(" ").replace(/\s+/g," ").trim();
+      }
     }
-    put("anio", find(/A[ÑN]O\s*:?\s*(\d{4})/i), "año");
+    if (!desc) desc = full;
+    r._desc = desc;
+
+    const noParte = find(/^\s*\d{8}\s+(\S+)/m);
+
+    const mMod = desc.match(/MODELO\s*:?\s*([^,]+)/i);
+    if (mMod){
+      const t = mMod[1].replace(/\s+/g," ").trim();
+      const mcc = t.match(/^(.*?[\d.]+)\s*CC\b/i);
+      if (mcc) put("modelo", mcc[1].trim().toUpperCase());
+      else if (!/^\d{3}\s|IVA/i.test(t)) put("modelo", t.toUpperCase());
+    }
+    if (!r.modelo && noParte) put("modelo", noParte.split("/")[0]);
+
+    const mcc2 = desc.match(/(\d{2,4})\s*CC\b/i);
+    if (mcc2) put("cc", mcc2[1]);
+
+    let anio = (desc.match(/A[ÑN]O\s*:?\s*(\d{4})/i) || [])[1] || find(/A[ÑN]O\s*:?\s*(\d{4})/i);
+    if (!anio && noParte){ const m2 = noParte.match(/(20\d{2})\s*$/); if (m2) anio = m2[1]; }
+    put("anio", anio, "año");
+
     const casco = find(/Porta\s*Casco\s*:?\s*(S[ií]|No)/i);
     if (casco) put("portaCasco", /^s/i.test(casco) ? "Sí" : "No", "porta casco");
     else if (/Concepto\s*1|N[uú]mero Serial/i.test(full)){
