@@ -1,50 +1,15 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="medianoche">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard Ventas Agencia Chalco</title>
 <style>
-/* ---------------------------------------------------------------
-   TEMAS. Cada paleta sólo redefine estas variables; todo el resto
-   del CSS las usa, así que agregar un tema nuevo es copiar un bloque.
-   --------------------------------------------------------------- */
-:root,
-[data-theme="medianoche"]{
+:root{
   --bg:#020617; --surface:#0b1120; --border:#1f2937;
   --text:#e5e7eb; --muted:#9ca3af; --accent:#38bdf8; --on-accent:#020617;
   --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
   --on-warn:#1a1a1a; --on-bad:#1a1a1a;
-}
-[data-theme="esmeralda"]{
-  --bg:#04120c; --surface:#071a13; --border:#1b3a2c;
-  --text:#e6f2ec; --muted:#8fae9f; --accent:#34d399; --on-accent:#04120c;
-  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
-  --on-warn:#1a1a1a; --on-bad:#1a1a1a;
-}
-[data-theme="purpura"]{
-  --bg:#0f0a1e; --surface:#171029; --border:#2e2148;
-  --text:#ece8f7; --muted:#a99fc4; --accent:#a78bfa; --on-accent:#0f0a1e;
-  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
-  --on-warn:#1a1a1a; --on-bad:#1a1a1a;
-}
-[data-theme="vino"]{
-  --bg:#17090c; --surface:#221014; --border:#3d1f26;
-  --text:#f5e9ec; --muted:#c09aa4; --accent:#fb7185; --on-accent:#17090c;
-  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
-  --on-warn:#1a1a1a; --on-bad:#1a1a1a;
-}
-[data-theme="grafito"]{
-  --bg:#0d0d0d; --surface:#1a1a1a; --border:#2e2e2e;
-  --text:#ededed; --muted:#a3a3a3; --accent:#fb923c; --on-accent:#0d0d0d;
-  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
-  --on-warn:#1a1a1a; --on-bad:#1a1a1a;
-}
-[data-theme="claro"]{
-  --bg:#f4f6fa; --surface:#ffffff; --border:#dde3ec;
-  --text:#1f2937; --muted:#6b7280; --accent:#2563eb; --on-accent:#ffffff;
-  --ok:#16a34a; --warn:#ca8a04; --alert:#ea580c; --bad:#dc2626;
-  --on-warn:#ffffff; --on-bad:#ffffff;
 }
 
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
@@ -59,26 +24,16 @@ h1{margin:0;color:var(--accent);font-size:20px}
 .btn-primary{background:var(--accent);color:var(--on-accent)}
 .btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-
-/* Selector de tema */
-.tema-row{padding:8px 20px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
-.tema-swatch{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;outline-offset:2px}
-.tema-swatch[aria-pressed="true"]{border-color:var(--text)}
-
-.opt-row{padding:8px 20px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
-.opt-toggle{display:flex;align-items:center;gap:6px;cursor:pointer}
-.opt-toggle input{accent-color:var(--accent);cursor:pointer}
+select.btn-secondary{-webkit-appearance:none;appearance:none}
 
 main{padding:15px;max-width:900px;margin:auto}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px}
-.card-title{color:var(--text);font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.card-title{color:var(--text);font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.card-title .chevron{color:var(--muted);font-size:13px;transition:transform .15s}
+.card.contraida .chevron{transform:rotate(-90deg)}
+.card.contraida .card-body{display:none}
 .card-tag{color:var(--accent);font-size:11px;text-transform:uppercase}
 .kpi-main{font-size:22px;font-weight:bold}
-.meta-edit-row{display:flex;align-items:baseline;gap:2px;margin-top:4px}
-.meta-currency{font-size:22px;font-weight:bold;color:var(--text)}
-.kpi-main-input{background:transparent;border:none;border-bottom:2px dashed var(--border);color:var(--text);font-size:22px;font-weight:bold;font-family:inherit;width:140px;padding:2px 0;-moz-appearance:textfield}
-.kpi-main-input:focus{outline:none;border-bottom-color:var(--accent)}
-.kpi-main-input::-webkit-inner-spin-button,.kpi-main-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .kpi-row{display:flex;justify-content:space-between;margin-top:6px;font-size:14px;color:var(--muted);gap:12px}
 .value{color:var(--text);font-weight:bold}
 table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
@@ -100,7 +55,6 @@ th{color:var(--muted);text-transform:uppercase;font-size:11px}
 .table-grupos th,.table-grupos td{white-space:nowrap}
 .aviso{color:var(--alert);font-size:12px;margin-top:6px}
 
-/* Panorama contado vs financiamiento */
 .grupo-bloque{border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:6px}
 .barra-grupo{display:flex;height:24px;border-radius:12px;overflow:hidden;margin-top:10px;background:var(--border)}
 .barra-grupo div{height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;overflow:hidden;white-space:nowrap}
@@ -110,11 +64,58 @@ th{color:var(--muted);text-transform:uppercase;font-size:11px}
 .leyenda-grupo{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--muted)}
 .punto{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
 
-/* Estados de entrega y de cuadre */
 .estado-ok{color:var(--ok);font-weight:bold}
 .estado-mal{color:var(--bad);font-weight:bold}
 .estado-warn{color:var(--warn);font-weight:bold}
+
+.vc-top{display:flex;align-items:baseline;justify-content:space-between;margin-top:4px}
+.vc-num{font-size:28px;font-weight:800;color:var(--text)}
+.vc-num span{font-size:15px;color:var(--muted);font-weight:600}
+.vc-pct{font-size:20px;font-weight:800}
+.barra-vc{height:14px;border-radius:7px;background:var(--border);margin-top:10px;overflow:hidden;position:relative}
+.barra-vc div{height:100%}
+.vc-marca{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--muted)}
+
+.rachas{display:flex;gap:10px;margin-bottom:12px}
+.racha-box{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.racha-num{font-size:24px;font-weight:800}
+.racha-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .dow{font-size:10px;color:var(--muted);text-align:center;font-weight:700}
+.cal .day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.d-venta{background:var(--ok);color:#06220d}
+.d-sin{background:var(--bad);color:#2a0b08}
+.d-domingo{background:var(--border);color:var(--muted);opacity:.6}
+.d-futuro{background:transparent;border:1px dashed var(--border);color:var(--muted)}
+.d-vacio{visibility:hidden}
+
+.leyenda{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
+
+.vendedores-grid{display:flex;gap:14px}
+.vendedor-col{flex:1}
+.vendedor-nombre{font-size:12px;font-weight:800;margin-bottom:6px;color:var(--text)}
 .kpi-grande{font-size:22px;font-weight:bold;margin-top:4px}
+
+/* Bienvenida + selector de usuario */
+#overlay-usuario{position:fixed;inset:0;background:rgba(2,6,23,.92);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.tarjeta-bienvenida{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:340px;width:100%;text-align:center}
+.tarjeta-bienvenida h2{margin:0 0 20px;color:var(--accent);font-size:19px}
+.btn-usuario{display:block;width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:15px;font-weight:600;cursor:pointer}
+.btn-usuario:hover{border-color:var(--accent);color:var(--accent)}
+
+.card-bienvenida{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.saludo{flex:1;min-width:160px}
+.saludo h2{margin:0;font-size:18px;color:var(--text)}
+.saludo .cambiar-usuario{color:var(--accent);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:4px;display:inline-block}
+.gauge-wrap{text-align:center;min-width:150px}
+.gauge-cara{font-size:38px;line-height:1}
+.gauge-etq{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.gauge-pct{font-size:26px;font-weight:bold;margin-top:2px}
+.gauge-msg{font-size:12px;color:var(--text);font-weight:600;max-width:170px;margin-top:6px}
+.linea-ritmo{color:var(--text)}
+.barra-hoy{height:10px;border-radius:5px;background:var(--border);margin-top:10px;overflow:hidden}
+.barra-hoy div{height:100%;transition:width .2s}
 </style>
 </head>
 <body>
@@ -122,383 +123,363 @@ th{color:var(--muted);text-transform:uppercase;font-size:11px}
 <header>
   <div>
     <h1>DASHBOARD DE VENTAS · AGENCIA CHALCO</h1>
-    <div class="subtitle" id="subtitle-mes">Mes sin cargar</div>
+    <div class="subtitle" id="subtitle-mes">Conectando…</div>
   </div>
   <div class="header-actions">
-    <button class="btn btn-primary" id="btn-cargar">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-      <span>Cargar CSV</span>
-    </button>
-    <button class="btn btn-secondary" id="btn-pilot" disabled>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>
-      <span id="btn-pilot-label">Cargar Pilot</span>
-    </button>
-    <button class="btn btn-secondary" id="btn-captura" disabled>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-      <span id="btn-captura-label">Captura</span>
+    <select id="select-mes" class="btn btn-secondary" disabled>
+      <option>Conectando con el Sheet…</option>
+    </select>
+    <button class="btn btn-primary" id="btn-actualizar-sheet" disabled title="Vuelve a pedir los datos de este mes al Sheet">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      <span>Actualizar</span>
     </button>
   </div>
 </header>
 
-<div class="tema-row">
-  <span>Tema:</span>
-  <div id="tema-swatches" style="display:flex;gap:8px;flex-wrap:wrap"></div>
-  <span id="tema-nombre" style="min-width:90px"></span>
+<div id="overlay-usuario" style="display:none">
+  <div class="tarjeta-bienvenida">
+    <h2>Bienvenido al Dashboard de Vento Chalco</h2>
+    <div id="botones-usuario"></div>
+  </div>
 </div>
 
-<div class="opt-row">
-  <span>Incluir en la captura:</span>
-  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-meta" checked><span>Meta y avance</span></label>
-  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-asesores" checked><span>Asesores</span></label>
-  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-participacion" checked><span>Participación</span></label>
-  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-formas" checked><span>Formas de pago</span></label>
-  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-modelos" checked><span>Top 5 modelos</span></label>
-  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-entregas" checked><span>Entregas</span></label>
-  <label class="opt-toggle"><input type="checkbox" id="chk-seccion-pilot" checked><span>Cuadre con Pilot</span></label>
-</div>
-
-<input type="file" id="input-csv" accept=".csv,.txt" style="display:none">
-<input type="file" id="input-pilot" accept=".csv,.txt" style="display:none">
-
-<!-- Todo lo que se debe incluir en la captura va dentro de este contenedor -->
-<div id="captura-area">
 <main>
 
-<div id="loader"><p>Carga un archivo CSV…</p></div>
+<div id="loader"><p>Conectando con tu Sheet…</p></div>
 <div id="dashboard" style="display:none">
 
-  <div class="card" data-seccion="meta">
-    <div class="card-title">Meta y avance de la agencia</div>
-    <div class="card-tag" id="corte-label"></div>
-    <div class="meta-edit-row">
-      <span class="meta-currency">$</span>
-      <input type="number" id="input-meta" class="kpi-main-input" min="0" step="1000">
+  <div class="card" data-seccion="bienvenida">
+    <div class="card-bienvenida">
+      <div class="saludo">
+        <h2 id="saludo-texto">Hola</h2>
+        <div class="small" id="saludo-sub"></div>
+        <span class="cambiar-usuario" id="btn-cambiar-usuario">¿No eres tú? Cambiar</span>
+      </div>
+      <div class="gauge-wrap">
+        <div class="gauge-cara" id="gauge-cara">🙂</div>
+        <div class="gauge-etq">Cumplimiento de meta</div>
+        <div class="gauge-pct" id="gauge-pct">0%</div>
+        <div class="gauge-msg" id="gauge-msg"></div>
+      </div>
     </div>
-    <div class="kpi-row"><span>Venta acumulada</span><span class="value" id="kpi-venta-acumulada">$0</span></div>
-    <div class="kpi-row"><span>Avance</span><span class="value" id="kpi-avance">0%</span></div>
-    <div class="kpi-row"><span>Brecha</span><span class="value" id="kpi-brecha">$0</span></div>
-    <div class="kpi-row"><span>Proyección</span><span class="value" id="kpi-proyeccion">$0</span></div>
-    <div class="kpi-row"><span>% Proyección</span><span class="value" id="kpi-proyeccion-pct">0%</span></div>
-    <div class="small" id="base-proyeccion"></div>
+  </div>
+
+  <div class="card" data-seccion="mi-dia" style="display:none">
+    <div class="card-title" data-toggle><span>Mi día de hoy</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="mi-dia-body"></div>
+  </div>
+
+  <div class="card" data-seccion="meta">
+    <div class="card-title" data-toggle><span>Meta y avance de la agencia</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="meta-agencia-body">
+      <div class="card-tag" id="corte-label"></div>
+    </div>
+  </div>
+
+  <div class="card" data-seccion="mi-resultado" style="display:none">
+    <div class="card-title" data-toggle><span>Mi resultado</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="mi-resultado-body"></div>
+  </div>
+
+  <div class="card" data-seccion="mis-dias-venta" style="display:none">
+    <div class="card-title" data-toggle><span>Mis días con venta</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="mis-dias-venta-body"></div>
   </div>
 
   <div class="card" data-seccion="asesores">
-    <div class="card-title">Rendimiento de asesores</div>
-    <div class="table-scroll">
-      <table class="table-asesores">
-        <thead><tr>
-          <th>Vendedor</th><th class="text-right">Meta</th><th class="text-right">Venta</th>
-          <th class="text-right">% Cumpl</th><th class="text-right">Faltante</th>
-          <th class="text-center">Unidades</th><th class="text-right">Ticket</th>
-          <th class="text-right">Proy</th><th class="text-right">% Proy</th>
-        </tr></thead>
-        <tbody id="tabla-asesores"></tbody>
-      </table>
+    <div class="card-title" data-toggle><span>Rendimiento de asesores</span><span class="chevron">▾</span></div>
+    <div class="card-body">
+      <div class="table-scroll">
+        <table class="table-asesores">
+          <thead><tr>
+            <th>Vendedor</th><th class="text-right">Meta</th><th class="text-right">Venta</th>
+            <th class="text-right">% Cumpl</th><th class="text-right">Por vender</th>
+            <th class="text-center">Unidades</th><th class="text-right">Ticket</th>
+            <th class="text-right">Proy</th><th class="text-right">% Proy</th>
+          </tr></thead>
+          <tbody id="tabla-asesores"></tbody>
+        </table>
+      </div>
+      <div class="small" id="nota-asesores"></div>
     </div>
-    <div class="small" id="nota-asesores"></div>
+  </div>
+
+  <div class="card" data-seccion="dias-venta-agencia">
+    <div class="card-title" data-toggle><span>Días con venta</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="dias-venta-agencia-body"></div>
+  </div>
+
+  <div class="card" data-seccion="dias-venta-asesores">
+    <div class="card-title" data-toggle><span>Días con venta — por asesor</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="dias-venta-asesores-body"></div>
   </div>
 
   <div class="card" data-seccion="participacion">
-    <div class="card-title">Participación de asesores</div>
-    <div class="chart-container"><canvas id="chart-participacion"></canvas></div>
-    <div class="small" id="texto-participacion"></div>
-    <div id="ritmo-asesores"></div>
+    <div class="card-title" data-toggle><span>Participación de asesores</span><span class="chevron">▾</span></div>
+    <div class="card-body">
+      <div class="chart-container"><canvas id="chart-participacion"></canvas></div>
+      <div class="small" id="texto-participacion"></div>
+      <div id="ritmo-asesores"></div>
+    </div>
+  </div>
+
+  <div class="card" data-seccion="ventocredit">
+    <div class="card-title" data-toggle><span>VentoCredit</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="ventocredit-body"></div>
   </div>
 
   <div class="card" data-seccion="formas">
-    <div class="card-title">Formas de pago</div>
-
-    <div class="grupo-bloque">
-      <div class="card-tag">Panorama general · contado vs financiamiento</div>
-      <div id="panorama-grupos"></div>
-      <div class="barra-grupo" id="barra-grupos"></div>
-      <div class="leyenda-grupo" id="leyenda-grupos"></div>
-      <div class="table-scroll">
-        <table class="table-grupos" id="tabla-grupos-asesor"></table>
+    <div class="card-title" data-toggle><span>Formas de pago</span><span class="chevron">▾</span></div>
+    <div class="card-body">
+      <div class="grupo-bloque">
+        <div class="card-tag">Panorama · contado vs financiamiento</div>
+        <div id="panorama-grupos"></div>
+        <div class="barra-grupo" id="barra-grupos"></div>
+        <div class="leyenda-grupo" id="leyenda-grupos"></div>
+        <div class="table-scroll">
+          <table class="table-grupos" id="tabla-grupos-asesor"></table>
+        </div>
+        <div class="aviso" id="aviso-sin-clasificar" style="display:none"></div>
       </div>
-      <div class="aviso" id="aviso-sin-clasificar" style="display:none"></div>
+      <div class="table-scroll">
+        <table class="table-formas">
+          <thead id="head-formas"></thead>
+          <tbody id="tabla-formas"></tbody>
+        </table>
+      </div>
+      <div class="small">Unid. = motos vendidas con esa forma de pago · Monto = venta sin IVA.</div>
     </div>
-
-    <div class="table-scroll">
-      <table class="table-formas">
-        <thead id="head-formas"></thead>
-        <tbody id="tabla-formas"></tbody>
-      </table>
-    </div>
-    <div class="small">Unid. = motos vendidas con esa forma de pago · Monto = venta sin IVA.</div>
   </div>
 
   <div class="card" data-seccion="modelos">
-    <div class="card-title">Top 5 modelos (unidades)</div>
-    <table><thead>
-      <tr><th>#</th><th>Modelo</th><th class="text-center">Unidades</th><th class="text-right">% Part</th></tr>
-    </thead><tbody id="tabla-modelos"></tbody></table>
-    <div class="small" id="resumen-modelos"></div>
+    <div class="card-title" data-toggle><span>Top 5 modelos (unidades)</span><span class="chevron">▾</span></div>
+    <div class="card-body">
+      <table><thead>
+        <tr><th>#</th><th>Modelo</th><th class="text-center">Unidades</th><th class="text-right">% Part</th></tr>
+      </thead><tbody id="tabla-modelos"></tbody></table>
+      <div class="small" id="resumen-modelos"></div>
+    </div>
   </div>
 
   <div class="card" data-seccion="entregas">
-    <div class="card-title">Motocicletas entregadas</div>
-    <div class="card-tag">Columna ENTREGADA del archivo de control</div>
-    <div id="entregas-resumen"></div>
-    <div id="entregas-por-asesor"></div>
-    <div id="entregas-pendientes"></div>
+    <div class="card-title" data-toggle><span>Motocicletas entregadas</span><span class="chevron">▾</span></div>
+    <div class="card-body">
+      <div class="card-tag">Columna ENTREGADA del Sheet</div>
+      <div id="entregas-resumen"></div>
+      <div id="entregas-por-asesor"></div>
+      <div id="entregas-pendientes"></div>
+    </div>
+  </div>
+
+  <div class="card" data-seccion="resenas">
+    <div class="card-title" data-toggle><span>Reseñas de Google</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="resenas-body"></div>
+  </div>
+
+  <div class="card" data-seccion="expediente">
+    <div class="card-title" data-toggle><span>Expediente</span><span class="chevron">▾</span></div>
+    <div class="card-body" id="expediente-body"></div>
   </div>
 
   <div class="card" data-seccion="pilot" style="display:none">
-    <div class="card-title">Cuadre con PILOT</div>
-    <div class="card-tag" id="pilot-tag"></div>
-    <div id="pilot-resumen"></div>
-    <div id="pilot-detalle"></div>
+    <div class="card-title" data-toggle><span>Cuadre con PILOT</span><span class="chevron">▾</span></div>
+    <div class="card-body">
+      <div class="card-tag" id="pilot-tag"></div>
+      <div id="pilot-resumen"></div>
+      <div id="pilot-detalle"></div>
+    </div>
   </div>
 
 </div>
 </main>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
-/* =====================  TEMAS  ===================== */
-const TEMAS=[
-  {id:"medianoche",nombre:"Medianoche",dot:"#38bdf8"},
-  {id:"esmeralda", nombre:"Esmeralda", dot:"#34d399"},
-  {id:"purpura",   nombre:"Púrpura",   dot:"#a78bfa"},
-  {id:"vino",      nombre:"Vino",      dot:"#fb7185"},
-  {id:"grafito",   nombre:"Grafito",   dot:"#fb923c"},
-  {id:"claro",     nombre:"Claro",     dot:"#2563eb"}
-];
-const TEMA_KEY="temaDashboardChalco";
-
-function aplicarTema(id,redibujar){
-  const tema=TEMAS.find(t=>t.id===id)||TEMAS[0];
-  document.documentElement.setAttribute("data-theme",tema.id);
-  localStorage.setItem(TEMA_KEY,tema.id);
-  document.getElementById("tema-nombre").textContent=tema.nombre;
-  document.querySelectorAll(".tema-swatch").forEach(b=>{
-    b.setAttribute("aria-pressed",String(b.dataset.tema===tema.id));
-  });
-  // La gráfica dibuja sus colores en canvas, así que hay que rehacerla al cambiar de tema
-  if(redibujar&&datosActuales.length)renderDashboard(datosActuales);
-}
-
-(function construirSwatches(){
-  const cont=document.getElementById("tema-swatches");
-  TEMAS.forEach(t=>{
-    const b=document.createElement("button");
-    b.className="tema-swatch";
-    b.dataset.tema=t.id;
-    b.style.background=t.dot;
-    b.title=t.nombre;
-    b.setAttribute("aria-label","Tema "+t.nombre);
-    b.onclick=()=>aplicarTema(t.id,true);
-    cont.appendChild(b);
-  });
-  aplicarTema(localStorage.getItem(TEMA_KEY)||"medianoche",false);
-})();
-
 function cssVar(nombre){
   return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
 }
 
+/* =====================  CONEXIÓN CON EL SHEET  =====================
+   1) En tu Sheet: Extensiones > Apps Script > pega el código que te dio
+      Claude (Code.gs) > Implementar > Nueva implementación > tipo
+      "Aplicación web" > Ejecutar como "Yo" > Acceso "Cualquier usuario".
+   2) Copia la URL que termina en /exec y pégala abajo en SHEETS_API_URL.
+   3) SHEETS_API_CLAVE debe ser IDÉNTICA a la constante CLAVE del script. */
+const SHEETS_API_URL="PON_AQUI_TU_URL_DE_APPS_SCRIPT"; // ej: https://script.google.com/macros/s/AKfycb.../exec
+const SHEETS_API_CLAVE="chalco16025";
+
+/* =====================  USUARIO / VISTA PERSONAL  ===================== */
+const USUARIOS=["JESUS","OSVALDO","KEVIN"];
+const USUARIO_KEY="usuarioDashboardChalco";
+let usuarioActual=null;
+
+function nombreBonito(u){return u?u.charAt(0)+u.slice(1).toLowerCase():"";}
+
+function mostrarSelectorUsuario(){
+  const cont=document.getElementById("botones-usuario");
+  cont.innerHTML="";
+  USUARIOS.forEach(u=>{
+    const b=document.createElement("button");
+    b.className="btn-usuario";
+    b.textContent=nombreBonito(u);
+    b.onclick=()=>{
+      localStorage.setItem(USUARIO_KEY,u);
+      usuarioActual=u;
+      document.getElementById("overlay-usuario").style.display="none";
+      if(datosActuales.length)renderDashboard(datosActuales);
+    };
+    cont.appendChild(b);
+  });
+  document.getElementById("overlay-usuario").style.display="flex";
+}
+
+document.getElementById("btn-cambiar-usuario").onclick=mostrarSelectorUsuario;
+
+(function initUsuario(){
+  const guardado=(localStorage.getItem(USUARIO_KEY)||"").toUpperCase();
+  if(USUARIOS.includes(guardado)){
+    usuarioActual=guardado;
+  }else{
+    mostrarSelectorUsuario();
+  }
+})();
+
+/* =====================  ACORDEÓN  ===================== */
+document.querySelectorAll('[data-toggle]').forEach(titulo=>{
+  titulo.addEventListener("click",()=>{
+    titulo.closest(".card").classList.toggle("contraida");
+  });
+});
+
 /* =====================  ESTADO  ===================== */
-const META_KEY="metaAgenciaChalco";
-let META_AGENCIA=1545000;
+let META_AGENCIA=1545000; // se sobreescribe con lo que diga CONFIGURACION
+let OBJETIVO_VC=13; // objetivo de financiamientos VentoCredit del mes (agencia); se sobreescribe con CONFIGURACION
 
-const metaGuardada=parseFloat(localStorage.getItem(META_KEY));
-if(!isNaN(metaGuardada)&&metaGuardada>0)META_AGENCIA=metaGuardada;
-
-const btnCargar=document.getElementById("btn-cargar");
-const btnCaptura=document.getElementById("btn-captura");
-const btnPilot=document.getElementById("btn-pilot");
-const inputCSV=document.getElementById("input-csv");
-const inputPilot=document.getElementById("input-pilot");
-const inputMeta=document.getElementById("input-meta");
+const btnCaptura=null; // ya no existe el botón de captura
+const selectMes=document.getElementById("select-mes");
+const btnActualizarSheet=document.getElementById("btn-actualizar-sheet");
 const dashboard=document.getElementById("dashboard");
 const loader=document.getElementById("loader");
-const capturaArea=document.getElementById("captura-area");
 let chartParticipacion=null;
-let datosActuales=[];   // último CSV de ventas cargado y ya filtrado (sin filas vacías)
+let datosActuales=[];   // último mes de ventas cargado desde el Sheet (agencia completa)
 let pilotIndex=null;    // mapa factura -> registro de Pilot; null mientras no se cargue
 
-const SECCIONES=["meta","asesores","participacion","formas","modelos","entregas","pilot"];
-const SECCIONES_KEY="seccionesCapturaChalco";
-
-try{
-  const guardado=JSON.parse(localStorage.getItem(SECCIONES_KEY));
-  if(guardado){
-    SECCIONES.forEach(sec=>{
-      const chk=document.getElementById(`chk-seccion-${sec}`);
-      if(chk&&typeof guardado[sec]==="boolean")chk.checked=guardado[sec];
-    });
-  }
-}catch(err){/* si el valor guardado está corrupto, se usa el default (todo marcado) */}
-
-SECCIONES.forEach(sec=>{
-  document.getElementById(`chk-seccion-${sec}`).addEventListener("change",()=>{
-    const estado={};
-    SECCIONES.forEach(s=>estado[s]=document.getElementById(`chk-seccion-${s}`).checked);
-    localStorage.setItem(SECCIONES_KEY,JSON.stringify(estado));
-  });
-});
-
-function ocultarSeccionesNoSeleccionadas(){
-  SECCIONES.forEach(sec=>{
-    const el=document.querySelector(`[data-seccion="${sec}"]`);
-    const chk=document.getElementById(`chk-seccion-${sec}`);
-    if(el&&chk&&!chk.checked)el.style.display="none";
-  });
-}
-function restaurarSecciones(){
-  SECCIONES.forEach(sec=>{
-    const el=document.querySelector(`[data-seccion="${sec}"]`);
-    if(!el)return;
-    // La tarjeta de Pilot sólo existe cuando se cargó su reporte
-    el.style.display=(sec==="pilot"&&!pilotIndex)?"none":"";
-  });
+/* =====================  CARGA DESDE EL SHEET  ===================== */
+function urlConfigurada(){
+  return SHEETS_API_URL&&!SHEETS_API_URL.includes("PON_AQUI");
 }
 
-inputMeta.value=META_AGENCIA;
-inputMeta.addEventListener("change",()=>{
-  const nuevo=parseFloat(inputMeta.value);
-  if(!nuevo||nuevo<=0){
-    inputMeta.value=META_AGENCIA;   // valor inválido, se revierte al anterior
+async function cargarMesesDesdeSheets(){
+  if(!urlConfigurada()){
+    selectMes.innerHTML="<option>Sin configurar</option>";
+    loader.innerHTML="<p>Todavía no se configuró la conexión con el Sheet.</p>";
     return;
   }
-  META_AGENCIA=nuevo;
-  localStorage.setItem(META_KEY,String(META_AGENCIA));
-  if(datosActuales.length)renderDashboard(datosActuales);
-});
+  selectMes.disabled=true;
+  selectMes.innerHTML="<option>Cargando meses…</option>";
+  try{
+    const resp=await fetch(`${SHEETS_API_URL}?accion=meses&clave=${encodeURIComponent(SHEETS_API_CLAVE)}`);
+    const data=await resp.json();
+    if(data.error){
+      selectMes.innerHTML="<option>Error</option>";
+      loader.innerHTML=`<p>El Sheet respondió con un error: ${data.error}</p>`;
+      return;
+    }
+    if(!data.meses||!data.meses.length){
+      selectMes.innerHTML="<option>Sin pestañas HMYP</option>";
+      loader.innerHTML="<p>No encontré pestañas que empiecen con HMYP en el Sheet.</p>";
+      return;
+    }
+    selectMes.innerHTML="";
+    data.meses.forEach(m=>{
+      const opt=document.createElement("option");
+      opt.value=m;opt.textContent=m;
+      selectMes.appendChild(opt);
+    });
+    selectMes.value=elegirMesActual(data.meses);
+    selectMes.disabled=false;
+    btnActualizarSheet.disabled=false;
+    cargarPilotDesdeSheets();
+    cargarDatosDesdeSheets();
+  }catch(err){
+    console.error("No se pudo conectar con el Sheet:",err);
+    selectMes.innerHTML="<option>Sin conexión</option>";
+    loader.innerHTML=`<p>No pude conectar con el Sheet (${err.message}).</p>`;
+  }
+}
 
-btnCargar.onclick=()=>{inputCSV.value="";inputCSV.click();};
-
-inputCSV.onchange=()=>{
-  const file=inputCSV.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const registros=parseCSV(e.target.result);
-    const validos=registros.filter(filaValida);
+async function cargarDatosDesdeSheets(){
+  if(!urlConfigurada()||!selectMes.value)return;
+  const mes=selectMes.value;
+  const label=btnActualizarSheet.querySelector("span");
+  const textoOriginal=label.textContent;
+  btnActualizarSheet.disabled=true;
+  label.textContent="Actualizando…";
+  try{
+    const resp=await fetch(`${SHEETS_API_URL}?accion=datos&mes=${encodeURIComponent(mes)}&clave=${encodeURIComponent(SHEETS_API_CLAVE)}`);
+    const data=await resp.json();
+    if(data.error){
+      alert("El Sheet respondió con un error: "+data.error);
+      return;
+    }
+    if(typeof data.objetivo==="number"&&data.objetivo>0)META_AGENCIA=data.objetivo;
+    if(typeof data.objetivoVentoCredit==="number"&&data.objetivoVentoCredit>0)OBJETIVO_VC=data.objetivoVentoCredit;
+    const validos=(data.filas||[]).filter(filaValida);
     if(!validos.length){
-      alert("El archivo no tiene filas con FECHA, VENDEDOR y PRECIO. Revisa que sea el CSV de ventas y que los encabezados estén en la primera línea.");
+      alert(`La pestaña "${mes}" no tiene todavía filas con FECHA, VENDEDOR y PRECIO.`);
       return;
     }
     renderDashboard(validos);
     loader.style.display="none";
     dashboard.style.display="block";
-    btnCaptura.disabled=false;
-    btnPilot.disabled=false;
-  };
-  reader.readAsText(file);
-};
-
-/* =====================  REPORTE DE PILOT (opcional)  ===================== */
-btnPilot.onclick=()=>{
-  if(!datosActuales.length){
-    alert("Primero carga el CSV de ventas.");
-    return;
+  }catch(err){
+    console.error("No se pudo conectar con el Sheet:",err);
+    alert("No pude conectar con el Sheet: "+err.message);
+  }finally{
+    btnActualizarSheet.disabled=false;
+    label.textContent=textoOriginal;
   }
-  inputPilot.value="";
-  inputPilot.click();
-};
+}
 
-inputPilot.onchange=()=>{
-  const file=inputPilot.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const registros=parseCSV(e.target.result);
-    if(!registros.length||!("CODIGO_INTERNO" in registros[0])){
-      alert("Ese archivo no parece el reporte de Pilot: no encontré la columna Codigo_Interno. Descárgalo de nuevo desde Pilot sin modificarlo.");
+async function cargarPilotDesdeSheets(){
+  if(!urlConfigurada())return;
+  try{
+    const resp=await fetch(`${SHEETS_API_URL}?accion=pilot&clave=${encodeURIComponent(SHEETS_API_CLAVE)}`);
+    const data=await resp.json();
+    if(data.error||!data.filas){
+      pilotIndex=null;
       return;
     }
     pilotIndex={};
-    registros.forEach(r=>{
+    data.filas.forEach(r=>{
       const f=normalizarFactura(r["CODIGO_INTERNO"]);
       if(f)pilotIndex[f]=r;
     });
-    document.getElementById("btn-pilot-label").textContent=`Pilot (${Object.keys(pilotIndex).length})`;
-    renderDashboard(datosActuales);
-  };
-  reader.readAsText(file);
-};
-
-/* =====================  CAPTURA  ===================== */
-btnCaptura.onclick=()=>{
-  if(typeof html2canvas==="undefined"){
-    alert("No se pudo cargar la librería de captura (html2canvas). Revisa tu conexión a internet.");
-    return;
+    if(datosActuales.length)renderDashboard(datosActuales);
+  }catch(err){
+    console.error("No se pudo cargar Pilot:",err);
+    pilotIndex=null;
   }
-  if(!SECCIONES.some(sec=>document.getElementById(`chk-seccion-${sec}`).checked)){
-    alert("Selecciona al menos una sección para la captura.");
-    return;
-  }
-  btnCaptura.disabled=true;
-  const label=document.getElementById("btn-captura-label");
-  const textoOriginal=label.textContent;
-  label.textContent="Generando…";
-
-  ocultarSeccionesNoSeleccionadas();
-
-  html2canvas(capturaArea,{
-    backgroundColor:cssVar("--bg")||"#020617",
-    scale:2,
-    useCORS:true,
-    windowWidth:1000,
-    windowHeight:capturaArea.scrollHeight
-  }).then(canvas=>{
-    const fecha=new Date().toISOString().slice(0,10);
-    const link=document.createElement("a");
-    link.download=`dashboard-ventas-chalco-${fecha}.png`;
-    link.href=canvas.toDataURL("image/png");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }).catch(err=>{
-    console.error("Error al generar la captura:",err);
-    alert("No se pudo generar la captura: "+err.message);
-  }).finally(()=>{
-    restaurarSecciones();
-    btnCaptura.disabled=false;
-    label.textContent=textoOriginal;
-  });
-};
-
-/* =====================  LECTURA DEL CSV  ===================== */
-// Parser que respeta comillas: "45,000" o "DM 150, roja" ya no rompen las columnas.
-function parseCSV(texto){
-  const filas=[];
-  let campo="",fila=[],dentroDeComillas=false;
-  texto=texto.replace(/^﻿/,"");   // BOM que mete Excel al exportar
-
-  for(let i=0;i<texto.length;i++){
-    const c=texto[i];
-    if(dentroDeComillas){
-      if(c==='"'){
-        if(texto[i+1]==='"'){campo+='"';i++;}   // comilla escapada
-        else dentroDeComillas=false;
-      }else campo+=c;
-    }else{
-      if(c==='"')dentroDeComillas=true;
-      else if(c===","){fila.push(campo);campo="";}
-      else if(c==="\n"){fila.push(campo);filas.push(fila);fila=[];campo="";}
-      else if(c==="\r"){/* se ignora */}
-      else campo+=c;
-    }
-  }
-  fila.push(campo);
-  filas.push(fila);
-
-  const utiles=filas.filter(f=>f.some(x=>x.trim()!==""));
-  if(!utiles.length)return [];
-
-  const encabezados=utiles[0].map(x=>x.trim().toUpperCase());
-  return utiles.slice(1).map(f=>{
-    const o={};
-    encabezados.forEach((k,i)=>o[k]=(f[i]||"").trim());
-    return o;
-  });
 }
 
+selectMes.addEventListener("change",cargarDatosDesdeSheets);
+btnActualizarSheet.onclick=()=>{cargarPilotDesdeSheets();cargarDatosDesdeSheets();};
+cargarMesesDesdeSheets();
+
+// Escoge, de la lista de pestañas HMYP, la del mes real de hoy (según la
+// fecha del teléfono) en vez de asumir que la última de la lista es la
+// más reciente — el orden de las pestañas en el Sheet no es confiable.
+function elegirMesActual(meses){
+  const hoy=new Date();
+  const nombreMes=MESES[hoy.getMonth()];
+  const anio=String(hoy.getFullYear());
+  let elegido=meses.find(m=>m.toUpperCase().includes(nombreMes)&&m.includes(anio));
+  if(!elegido)elegido=meses.find(m=>m.toUpperCase().includes(nombreMes));
+  if(!elegido)elegido=meses[meses.length-1];
+  return elegido;
+}
+
+/* =====================  UTILIDADES DE DATOS  ===================== */
 // Acepta 45000 · 45,000 · 45,000.00 · 45.000 · $45,000.50 · 1,234,567
 function numMiles(t){
   if(typeof t==="number")return isFinite(t)?t:0;
@@ -511,10 +492,8 @@ function numMiles(t){
   const ultimaComa=s.lastIndexOf(","),ultimoPunto=s.lastIndexOf(".");
   let posDecimal=-1;
   if(ultimaComa>-1&&ultimoPunto>-1){
-    // Conviven los dos: el último es el decimal (45.000,50 o 45,000.50)
     posDecimal=Math.max(ultimaComa,ultimoPunto);
   }else if(ultimaComa>-1){
-    // Sólo comas: son miles salvo que haya una sola y no deje 3 dígitos detrás
     if(s.split(",").length===2&&s.length-ultimaComa-1!==3)posDecimal=ultimaComa;
   }else if(ultimoPunto>-1){
     if(s.split(".").length===2&&s.length-ultimoPunto-1!==3)posDecimal=ultimoPunto;
@@ -529,12 +508,10 @@ function numMiles(t){
   return negativo?-n:n;
 }
 
-// Descarta filas sin datos reales (celdas con formato pero vacías, típicas al exportar Sheets)
 function filaValida(d){
   return (d["FECHA"]||"").trim()!==""&&(d["PRECIO"]||"").trim()!==""&&(d["VENDEDOR"]||"").trim()!=="";
 }
 
-// Convierte "15/07/2026" -> Date. Admite día sin cero a la izquierda y años de 2 dígitos.
 function parseFechaLatina(str){
   const p=(str||"").trim().split(/[\/\-]/);
   if(p.length!==3)return null;
@@ -545,7 +522,6 @@ function parseFechaLatina(str){
   return new Date(anio,mes-1,dia);
 }
 
-// Fecha más reciente encontrada en los datos = fecha de corte
 function obtenerFechaCorte(datos){
   let max=null;
   datos.forEach(d=>{
@@ -557,58 +533,301 @@ function obtenerFechaCorte(datos){
 
 const MESES=["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
 
+/* =====================  DÍAS CON VENTA / SIN VENTA  =====================
+   Calendario del mes (venta/sin venta/domingo/futuro) + racha actual y
+   racha más larga sin vender. Los domingos no cuentan para la racha
+   (el equipo baja el ritmo ese día porque el subgerente descansa). */
+function estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes){
+  const diasConVenta=new Set();
+  datos.forEach(d=>{
+    const f=parseFechaLatina(d["FECHA"]);
+    if(f)diasConVenta.add(f.getDate());
+  });
+  const anio=fechaBase.getFullYear(),mes=fechaBase.getMonth();
+  const estado={};
+  for(let d=1;d<=diasDelMes;d++){
+    const dow=new Date(anio,mes,d).getDay();
+    if(d>diasTranscurridos)estado[d]="futuro";
+    else if(dow===0)estado[d]="domingo";
+    else if(diasConVenta.has(d))estado[d]="venta";
+    else estado[d]="sin";
+  }
+  return estado;
+}
+
+function calcularRachasVenta(estado,diasTranscurridos){
+  let rachaActual=0;
+  for(let d=diasTranscurridos;d>=1;d--){
+    const e=estado[d];
+    if(e==="domingo")continue;
+    if(e==="venta")break;
+    rachaActual++;
+  }
+  let rachaMax=0,corrida=0;
+  for(let d=1;d<=diasTranscurridos;d++){
+    const e=estado[d];
+    if(e==="domingo")continue;
+    if(e==="sin"){corrida++;rachaMax=Math.max(rachaMax,corrida);}
+    else corrida=0;
+  }
+  return {rachaActual,rachaMax};
+}
+
+function colorRacha(n){
+  return n===0?cssVar("--ok"):(n<=2?cssVar("--warn"):cssVar("--bad"));
+}
+
+function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelMes){
+  const cont=document.getElementById(contId);
+  if(!cont)return;
+  const estado=estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes);
+  const {rachaActual,rachaMax}=calcularRachasVenta(estado,diasTranscurridos);
+  const anio=fechaBase.getFullYear(),mes=fechaBase.getMonth();
+  const primerDiaSemana=new Date(anio,mes,1).getDay();
+  const CLASE_DIA={venta:"d-venta",sin:"d-sin",domingo:"d-domingo",futuro:"d-futuro"};
+
+  let celdas="";
+  for(let i=0;i<primerDiaSemana;i++)celdas+='<div class="day d-vacio"></div>';
+  for(let d=1;d<=diasDelMes;d++)celdas+=`<div class="day ${CLASE_DIA[estado[d]]}">${d}</div>`;
+
+  cont.innerHTML=`
+    <div class="rachas">
+      <div class="racha-box"><div class="racha-num" style="color:${colorRacha(rachaActual)}">${rachaActual}</div><div class="racha-lbl">Racha actual sin venta</div></div>
+      <div class="racha-box"><div class="racha-num" style="color:${cssVar("--warn")}">${rachaMax}</div><div class="racha-lbl">Racha más larga del mes</div></div>
+    </div>
+    <div class="cal">
+      <div class="dow">D</div><div class="dow">L</div><div class="dow">M</div><div class="dow">M</div><div class="dow">J</div><div class="dow">V</div><div class="dow">S</div>
+      ${celdas}
+    </div>
+    <div class="leyenda">
+      <span><span class="punto" style="background:${cssVar("--ok")}"></span>Con venta</span>
+      <span><span class="punto" style="background:${cssVar("--bad")}"></span>Sin venta</span>
+      <span><span class="punto" style="background:${cssVar("--border")};opacity:.6"></span>Domingo (no cuenta)</span>
+    </div>`;
+}
+
+function renderDiasVentaPorAsesor(nombres,datosCompletos,fechaBase,diasTranscurridos,diasDelMes){
+  const cont=document.getElementById("dias-venta-asesores-body");
+  if(!cont)return;
+  let html=`<div class="vendedores-grid">`;
+  nombres.forEach(n=>{
+    const datosN=datosCompletos.filter(d=>vendedorDe(d)===n);
+    const estado=estadoDiasVenta(datosN,fechaBase,diasTranscurridos,diasDelMes);
+    const {rachaActual,rachaMax}=calcularRachasVenta(estado,diasTranscurridos);
+    html+=`<div class="vendedor-col">
+      <div class="vendedor-nombre">${titulo(n)}</div>
+      <div class="rachas" style="margin-bottom:0">
+        <div class="racha-box" style="padding:6px"><div class="racha-num" style="font-size:18px;color:${colorRacha(rachaActual)}">${rachaActual}</div><div class="racha-lbl">Actual</div></div>
+        <div class="racha-box" style="padding:6px"><div class="racha-num" style="font-size:18px;color:${cssVar("--warn")}">${rachaMax}</div><div class="racha-lbl">Máxima</div></div>
+      </div>
+    </div>`;
+  });
+  html+=`</div><div class="small">Racha = días hábiles consecutivos sin venta (los domingos no cuentan).</div>`;
+  cont.innerHTML=html;
+}
+
 function titulo(txt){
   return String(txt).toLowerCase().split(/\s+/).map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(" ");
 }
 
+function vendedorDe(d){return (d["VENDEDOR"]||"").trim().toUpperCase();}
+
 /* =====================  RENDER  ===================== */
 function renderDashboard(datosCrudos){
-  const datos=datosCrudos.filter(filaValida);
-  datosActuales=datos;
+  const datosCompletos=datosCrudos.filter(filaValida);
+  datosActuales=datosCompletos;
 
-  // --- Base temporal: la FECHA DE CORTE del archivo, no el día del dispositivo.
-  //     Así un CSV de julio abierto en agosto proyecta sobre julio y no se distorsiona.
-  const fechaCorte=obtenerFechaCorte(datos)||new Date();
-  const diasTranscurridos=fechaCorte.getDate();
-  const diasDelMes=new Date(fechaCorte.getFullYear(),fechaCorte.getMonth()+1,0).getDate();
+  const esPersonal=usuarioActual&&usuarioActual!=="JESUS";
+  const datosVista=esPersonal?datosCompletos.filter(d=>vendedorDe(d)===usuarioActual):datosCompletos;
+
+  document.querySelector('[data-seccion="meta"]').style.display=esPersonal?"none":"";
+  document.querySelector('[data-seccion="mi-resultado"]').style.display=esPersonal?"":"none";
+  document.querySelector('[data-seccion="mi-dia"]').style.display=esPersonal?"":"none";
+  document.querySelector('[data-seccion="asesores"]').style.display=esPersonal?"none":"";
+  document.querySelector('[data-seccion="participacion"]').style.display=esPersonal?"none":"";
+  document.querySelector('[data-seccion="mis-dias-venta"]').style.display=esPersonal?"":"none";
+  document.querySelector('[data-seccion="dias-venta-agencia"]').style.display=esPersonal?"none":"";
+  document.querySelector('[data-seccion="dias-venta-asesores"]').style.display=esPersonal?"none":"";
+
+  const mesTab=selectMes.value||"";
+  const fechaCorte=obtenerFechaCorte(datosCompletos)||new Date();
+
+  // La fecha "real" de hoy solo se usa para el ritmo/proyección cuando la
+  // pestaña que se está viendo es la del mes en curso; si es un mes ya
+  // cerrado, no tiene caso pedir el "ritmo de hoy" de un mes que ya pasó.
+  const hoyReal=new Date();
+  const nombreMesHoy=MESES[hoyReal.getMonth()];
+  const anioHoy=String(hoyReal.getFullYear());
+  const tieneAnio=/\d{4}/.test(mesTab);
+  const esMesActual=mesTab.toUpperCase().includes(nombreMesHoy)&&(!tieneAnio||mesTab.includes(anioHoy));
+
+  const fechaBase=esMesActual?hoyReal:fechaCorte;
+  const diasTranscurridos=fechaBase.getDate();
+  const diasDelMes=new Date(fechaBase.getFullYear(),fechaBase.getMonth()+1,0).getDate();
   const diasRestantes=Math.max(diasDelMes-diasTranscurridos,1);
 
   const dd=String(fechaCorte.getDate()).padStart(2,"0");
   const mm=String(fechaCorte.getMonth()+1).padStart(2,"0");
   document.getElementById("subtitle-mes").textContent=`Corte al ${dd}/${mm}`;
   document.getElementById("corte-label").textContent=`${MESES[fechaCorte.getMonth()]} ${fechaCorte.getFullYear()}`;
-  document.getElementById("base-proyeccion").textContent=
-    `Proyección calculada sobre el corte: día ${diasTranscurridos} de ${diasDelMes}.`;
 
-  const ventaConIVA=datos.reduce((a,d)=>a+numMiles(d["PRECIO"]),0);
-  const ventaSinIVA=ventaConIVA/1.16;
-  const unidades=datos.length;
-  const proyeccionAgencia=diasTranscurridos>0?ventaSinIVA/diasTranscurridos*diasDelMes:ventaSinIVA;
+  const vendedoresTodos=groupVend(datosCompletos);
+  const nombresTodos=Object.keys(vendedoresTodos).sort();
+  const metaIndividual=nombresTodos.length?META_AGENCIA/nombresTodos.length:META_AGENCIA;
 
-  document.getElementById("kpi-venta-acumulada").textContent=fmt(ventaSinIVA);
-  document.getElementById("kpi-avance").textContent=pct(ventaSinIVA/META_AGENCIA*100);
-  document.getElementById("kpi-brecha").textContent=fmt(META_AGENCIA-ventaSinIVA);
-  document.getElementById("kpi-proyeccion").textContent=fmt(proyeccionAgencia);
-  document.getElementById("kpi-proyeccion-pct").textContent=pct(proyeccionAgencia/META_AGENCIA*100);
+  renderTablaAsesores(nombresTodos,vendedoresTodos,metaIndividual,diasTranscurridos,diasDelMes);
 
-  // --- Asesores detectados del propio archivo (ya no están fijos en el código)
-  const vendedores=groupVend(datos);
-  const nombres=Object.keys(vendedores).sort();
-  const metaIndividual=nombres.length?META_AGENCIA/nombres.length:META_AGENCIA;
+  // --- Agencia completa: siempre se calcula (para la tarjeta de meta y,
+  //     cuando la ve Jesús, para el medidor) ---
+  const ventaConIVAAgencia=datosCompletos.reduce((a,d)=>a+numMiles(d["PRECIO"]),0);
+  const ventaSinIVAAgencia=ventaConIVAAgencia/1.16;
+  const totalUnidadesAgencia=datosCompletos.length;
+  renderMetaAgencia({v:ventaSinIVAAgencia,u:totalUnidadesAgencia},META_AGENCIA,diasTranscurridos,diasDelMes);
 
-  renderTablaAsesores(nombres,vendedores,metaIndividual,diasTranscurridos,diasDelMes);
-  renderParticipacion(nombres,vendedores,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes);
-  renderGrupos(datos,nombres);
-  renderFormas(datos,nombres);
-  renderTopModelos(datos,unidades);
-  renderEntregas(datos,nombres,fechaCorte);
-  renderPilot(datos);
+  // --- Bienvenida + medidor + tarjetas personales ---
+  let cumplimientoPct;
+  if(esPersonal){
+    const o=vendedoresTodos[usuarioActual]||{v:0,u:0};
+    cumplimientoPct=metaIndividual?o.v/metaIndividual*100:0;
+    renderMiResultado(o,metaIndividual,diasTranscurridos,diasDelMes);
+    renderMiDia(datosVista,o,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes,esMesActual);
+    renderCalendarioVenta("mis-dias-venta-body",datosVista,fechaBase,diasTranscurridos,diasDelMes);
+  }else{
+    renderCalendarioVenta("dias-venta-agencia-body",datosCompletos,fechaBase,diasTranscurridos,diasDelMes);
+    renderDiasVentaPorAsesor(nombresTodos,datosCompletos,fechaBase,diasTranscurridos,diasDelMes);
+    cumplimientoPct=META_AGENCIA?ventaSinIVAAgencia/META_AGENCIA*100:0;
+  }
+  renderBienvenida(cumplimientoPct,diasTranscurridos,diasDelMes);
+
+  // --- Secciones que sí se filtran a la vista personal ---
+  if(!esPersonal)renderParticipacion(nombresTodos,vendedoresTodos,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes);
+  const objetivoVCIndividual=nombresTodos.length?Math.ceil(OBJETIVO_VC/nombresTodos.length):OBJETIVO_VC;
+  renderVentoCredit(datosVista,esPersonal?objetivoVCIndividual:OBJETIVO_VC,diasTranscurridos,diasDelMes);
+  renderGrupos(datosVista,esPersonal?[usuarioActual]:nombresTodos);
+  renderFormas(datosVista,esPersonal?[usuarioActual]:nombresTodos);
+  renderTopModelos(datosVista,datosVista.length);
+  renderEntregas(datosVista,esPersonal?[usuarioActual]:nombresTodos,fechaCorte);
+  renderResenas(datosVista);
+  renderExpediente(datosVista);
+  renderPilot(datosVista);
+}
+
+// % que ya debería llevar a la fecha, según cuánto ha pasado del mes —
+// es el mismo número, en otra forma, que "proyección % de meta".
+function pctEsperadoAHoy(diasTranscurridos,diasDelMes){
+  return diasDelMes?diasTranscurridos/diasDelMes*100:0;
+}
+
+function renderBienvenida(cumplimientoPct,diasTranscurridos,diasDelMes){
+  const u=usuarioActual||"";
+  document.getElementById("saludo-texto").textContent=
+    usuarioActual==="JESUS"?"Hola, Jesús":`Hola, ${nombreBonito(u)}`;
+  document.getElementById("saludo-sub").textContent=
+    usuarioActual==="JESUS"?"Así va la agencia hoy":"Así vas tú este mes";
+
+  const p=isFinite(cumplimientoPct)?cumplimientoPct:0;
+  const esperado=pctEsperadoAHoy(diasTranscurridos,diasDelMes);
+  const diferencia=p-esperado;
+
+  document.getElementById("gauge-pct").textContent=pct2(p);
+  let cara,msg,color;
+  if(p>=100){cara="🎉";msg="¡Meta cumplida, felicidades!";color=cssVar("--ok");}
+  else if(diferencia>=0){cara="😄";msg="Vas al día con el ritmo del mes";color=cssVar("--ok");}
+  else if(diferencia>=-10){cara="😐";msg="Un poco abajo del ritmo, se puede parejar";color=cssVar("--warn");}
+  else if(diferencia>=-20){cara="😟";msg="Vas por debajo del ritmo del mes";color=cssVar("--alert");}
+  else{cara="😟";msg="Urge subir el ritmo de venta";color=cssVar("--bad");}
+  document.getElementById("gauge-cara").textContent=cara;
+  document.getElementById("gauge-pct").style.color=color;
+  document.getElementById("gauge-msg").textContent=msg;
+}
+
+// Renglón "Vs. tu ritmo": positivo si vas sobrado, negativo si traes
+// una deuda acumulada contra lo que ya deberías llevar a la fecha.
+function lineaVsRitmo(venta,deberiaLlevar){
+  const diff=venta-deberiaLlevar;
+  const color=diff>=0?cssVar("--ok"):cssVar("--bad");
+  const signo=diff>=0?"+":"-";
+  return `<div class="kpi-row"><span>Vs. tu ritmo</span><span class="value" style="color:${color}">${signo}${fmt(Math.abs(diff))}</span></div>`;
+}
+
+function renderMiResultado(o,meta,diasTranscurridos,diasDelMes){
+  const proy=diasTranscurridos>0?o.v/diasTranscurridos*diasDelMes:o.v;
+  const esperadoPct=pctEsperadoAHoy(diasTranscurridos,diasDelMes);
+  const deberiaLlevar=meta*esperadoPct/100;
+  const html=`
+    <div class="kpi-row"><span>Mi meta</span><span class="value">${fmt(meta)}</span></div>
+    <div class="kpi-row"><span>Mi venta</span><span class="value">${fmt(o.v)}</span></div>
+    <div class="kpi-row"><span>Por vender</span><span class="value">${fmt(Math.max(meta-o.v,0))}</span></div>
+    <div class="kpi-row"><span>% Cumplimiento</span><span class="value">${pct(meta?o.v/meta*100:0)}</span></div>
+    <div class="kpi-row linea-ritmo"><span>Deberías llevar (a hoy)</span><span class="value">${fmt(deberiaLlevar)}</span></div>
+    <div class="kpi-row linea-ritmo" style="margin-top:0"><span></span><span class="small" style="margin-top:0">${pct(esperadoPct)} de tu meta</span></div>
+    ${lineaVsRitmo(o.v,deberiaLlevar)}
+    <div class="kpi-row"><span>Ticket promedio</span><span class="value">${fmt(o.u?o.v/o.u:0)}</span></div>
+    <div class="kpi-row"><span>Unidades vendidas</span><span class="value">${o.u}</span></div>
+    <div class="small" style="margin-top:12px;color:var(--accent)">Si sigues a este ritmo, terminarías el mes con…</div>
+    <div class="kpi-row"><span>Proyección al cierre</span><span class="value">${fmt(proy)}</span></div>
+    <div class="kpi-row"><span>% de tu meta</span><span class="value">${pct(meta?proy/meta*100:0)}</span></div>`;
+  document.getElementById("mi-resultado-body").innerHTML=html;
+}
+
+function renderMetaAgencia(o,meta,diasTranscurridos,diasDelMes){
+  const proy=diasTranscurridos>0?o.v/diasTranscurridos*diasDelMes:o.v;
+  const esperadoPct=pctEsperadoAHoy(diasTranscurridos,diasDelMes);
+  const deberiaLlevar=meta*esperadoPct/100;
+  const html=`
+    <div class="kpi-row"><span>Objetivo del mes</span><span class="value">${fmt(meta)}</span></div>
+    <div class="kpi-row"><span>Venta acumulada</span><span class="value">${fmt(o.v)}</span></div>
+    <div class="kpi-row"><span>Por vender</span><span class="value">${fmt(Math.max(meta-o.v,0))}</span></div>
+    <div class="kpi-row"><span>Avance</span><span class="value">${pct(meta?o.v/meta*100:0)}</span></div>
+    <div class="kpi-row linea-ritmo"><span>Deberíamos llevar (a hoy)</span><span class="value">${fmt(deberiaLlevar)}</span></div>
+    <div class="kpi-row linea-ritmo" style="margin-top:0"><span></span><span class="small" style="margin-top:0">${pct(esperadoPct)} de la meta</span></div>
+    ${lineaVsRitmo(o.v,deberiaLlevar)}
+    <div class="kpi-row"><span>Ticket promedio</span><span class="value">${fmt(o.u?o.v/o.u:0)}</span></div>
+    <div class="kpi-row"><span>Unidades vendidas</span><span class="value">${o.u}</span></div>
+    <div class="small" style="margin-top:12px;color:var(--accent)">Si seguimos a este ritmo, terminaríamos el mes con…</div>
+    <div class="kpi-row"><span>Proyección al cierre</span><span class="value">${fmt(proy)}</span></div>
+    <div class="kpi-row"><span>% de la meta</span><span class="value">${pct(meta?proy/meta*100:0)}</span></div>`;
+  document.getElementById("meta-agencia-body").innerHTML=
+    document.getElementById("corte-label").outerHTML+html;
+}
+
+// Tarjeta "Mi día de hoy" (solo vendedores): objetivo del día vs lo que
+// llevas vendido con fecha de HOY (la del teléfono, no la de corte).
+function renderMiDia(datosVendedor,o,meta,diasTranscurridos,diasDelMes,diasRestantes,esMesActual){
+  const cont=document.getElementById("mi-dia-body");
+  if(!esMesActual){
+    cont.innerHTML=`<div class="small">Este indicador solo aplica cuando estás viendo el mes en curso.</div>`;
+    return;
+  }
+  const faltante=Math.max(meta-o.v,0);
+  const objetivoHoy=diasRestantes>0?faltante/diasRestantes:0;
+
+  const hoy=new Date();
+  const resultadoHoy=datosVendedor.reduce((a,d)=>{
+    const f=parseFechaLatina(d["FECHA"]);
+    const esHoy=f&&f.getFullYear()===hoy.getFullYear()&&f.getMonth()===hoy.getMonth()&&f.getDate()===hoy.getDate();
+    return esHoy?a+numMiles(d["PRECIO"])/1.16:a;
+  },0);
+
+  const avanceHoy=objetivoHoy?Math.min(resultadoHoy/objetivoHoy*100,100):100;
+  const color=resultadoHoy>=objetivoHoy?cssVar("--ok"):cssVar("--bad");
+  let mensaje;
+  if(faltante<=0)mensaje="Ya cumpliste tu meta del mes, cualquier venta de hoy es ganancia extra.";
+  else if(resultadoHoy>=objetivoHoy)mensaje="Ya cubriste tu objetivo de hoy.";
+  else if(resultadoHoy>0)mensaje="Vas bien encaminado, pero todavía te falta para el objetivo de hoy.";
+  else mensaje="Aún no registras venta hoy.";
+
+  cont.innerHTML=`
+    <div class="kpi-row"><span>Objetivo de hoy</span><span class="value">${fmt(objetivoHoy)}/día</span></div>
+    <div class="kpi-row"><span>Resultado de hoy</span><span class="value">${fmt(resultadoHoy)}</span></div>
+    <div class="barra-hoy"><div style="width:${avanceHoy}%;background:${color}"></div></div>
+    <div class="small">${mensaje} · faltan ${diasRestantes} día${diasRestantes===1?"":"s"} del mes</div>`;
 }
 
 function groupVend(datos){
   const r={};
   datos.forEach(d=>{
-    const v=(d["VENDEDOR"]||"").trim().toUpperCase();
+    const v=vendedorDe(d);
     if(!v)return;
     if(!r[v])r[v]={v:0,u:0};
     r[v].v+=numMiles(d["PRECIO"])/1.16;
@@ -642,9 +861,9 @@ function renderTablaAsesores(nombres,vendedores,metaIndividual,diasTranscurridos
 
   const nota=document.getElementById("nota-asesores");
   if(nombres.length===0){
-    nota.textContent="El archivo no trae vendedores identificables.";
+    nota.textContent="El Sheet no trae vendedores identificables.";
   }else{
-    nota.textContent=`${nombres.length} asesor${nombres.length===1?"":"es"} detectado${nombres.length===1?"":"s"} en el archivo (${nombres.map(titulo).join(", ")}). `+
+    nota.textContent=`${nombres.length} asesor${nombres.length===1?"":"es"} detectado${nombres.length===1?"":"s"} (${nombres.map(titulo).join(", ")}). `+
       `La meta individual es la meta de la agencia dividida entre ${nombres.length}.`;
   }
 }
@@ -664,7 +883,6 @@ function filaAsesor(etiqueta,o,meta,diasTranscurridos,diasDelMes){
   </tr>`;
 }
 
-// Escala de color por % de tendencia hacia la meta individual (no por identidad del asesor)
 function colorPorRendimiento(pctCumpl){
   if(!isFinite(pctCumpl))return cssVar("--bad");
   if(pctCumpl>=90)return cssVar("--ok");
@@ -677,11 +895,9 @@ function renderParticipacion(nombres,vendedores,metaIndividual,diasTranscurridos
   const ventas=nombres.map(n=>vendedores[n].v);
   const totalVenta=ventas.reduce((a,b)=>a+b,0);
 
-  // Tendencia: si mantienen el ritmo actual, ¿en cuánto van a terminar el mes?
   const proyecciones=ventas.map(v=>diasTranscurridos>0?v/diasTranscurridos*diasDelMes:v);
   const pcts=proyecciones.map(p=>metaIndividual?p/metaIndividual*100:0);
 
-  // Ritmo necesario: lo que le falta a cada quien ÷ los días que quedan del mes del corte
   let ritmoHTML=`<div class="card-tag" style="margin-top:10px">Ritmo necesario (quedan ${diasRestantes} día${diasRestantes===1?"":"s"} del mes)</div>`;
   nombres.forEach((n,i)=>{
     const brecha=Math.max(metaIndividual-ventas[i],0);
@@ -741,11 +957,6 @@ function renderParticipacion(nombres,vendedores,metaIndividual,diasTranscurridos
   document.getElementById("texto-participacion").innerHTML=resumen+leyenda;
 }
 
-/* Las 7 formas de pago de la agencia, repartidas en dos grupos.
-   CONTADO: el cliente paga completo, aunque sea con plástico.
-   FINANCIAMIENTO: crédito que otorga la agencia.
-   Si algún día aparece una forma que no está aquí, cae en SIN CLASIFICAR
-   y sale un aviso a la vista en vez de sumarse en silencio al grupo equivocado. */
 const GRUPOS_PAGO={
   "T DEBITO":"CONTADO",
   "T CREDITO":"CONTADO",
@@ -770,6 +981,44 @@ const ORDEN_GRUPOS=["CONTADO","FINANCIAMIENTO","SIN CLASIFICAR"];
 const CLASE_GRUPO={"CONTADO":"seg-contado","FINANCIAMIENTO":"seg-financiamiento","SIN CLASIFICAR":"seg-sin"};
 const VAR_GRUPO={"CONTADO":"--accent","FINANCIAMIENTO":"--warn","SIN CLASIFICAR":"--bad"};
 
+// Tarjeta "VentoCredit": financiamientos VentoCredit del mes vs el objetivo
+// (agencia completa para Jesús, o el objetivo repartido parejo entre los
+// vendedores cuando es la vista personal — ver objetivoVCIndividual).
+function renderVentoCredit(datos,objetivo,diasTranscurridos,diasDelMes){
+  const cont=document.getElementById("ventocredit-body");
+  if(!cont)return;
+
+  const llevas=datos.filter(d=>normalizarForma(d["FORMA DE PAGO"])==="VENTOCREDIT").length;
+  const deberiaLlevar=Math.max(Math.ceil(objetivo*diasTranscurridos/diasDelMes),0);
+  const pct=objetivo?llevas/objetivo*100:0;
+  const diferencia=llevas-deberiaLlevar;
+
+  let color,mensaje;
+  if(objetivo&&llevas>=objetivo){
+    color="--ok";mensaje="¡Meta de VentoCredit cumplida este mes!";
+  }else if(diferencia>=0){
+    color="--ok";mensaje="Vas en tiempo con tu ritmo de VentoCredit.";
+  }else if(diferencia>=-1){
+    color="--warn";mensaje=`Vas ${Math.abs(diferencia)} financiamiento${Math.abs(diferencia)===1?"":"s"} abajo del ritmo.`;
+  }else{
+    color="--bad";mensaje=`Vas ${Math.abs(diferencia)} financiamientos abajo del ritmo.`;
+  }
+
+  const anchoBarra=Math.min(pct,100);
+  const posMarca=objetivo?Math.min(deberiaLlevar/objetivo*100,100):0;
+
+  cont.innerHTML=`
+    <div class="vc-top">
+      <div class="vc-num">${llevas} <span>/ ${objetivo} financiamiento${objetivo===1?"":"s"}</span></div>
+      <div class="vc-pct" style="color:${cssVar(color)}">${pct.toFixed(0)}%</div>
+    </div>
+    <div class="barra-vc">
+      <div style="width:${anchoBarra}%;background:${cssVar(color)}"></div>
+      <div class="vc-marca" style="left:${posMarca}%"></div>
+    </div>
+    <div class="small">Deberías llevar a hoy: ${deberiaLlevar} · ${mensaje}</div>`;
+}
+
 function renderGrupos(datos,nombres){
   const g={};
   ORDEN_GRUPOS.forEach(k=>{
@@ -781,7 +1030,7 @@ function renderGrupos(datos,nombres){
   datos.forEach(d=>{
     const k=grupoDePago(d["FORMA DE PAGO"]);
     if(k==="SIN CLASIFICAR")sinClasificar.add(normalizarForma(d["FORMA DE PAGO"]));
-    const v=(d["VENDEDOR"]||"").trim().toUpperCase();
+    const v=vendedorDe(d);
     const p=numMiles(d["PRECIO"])/1.16;
     g[k].unidades++;g[k].monto+=p;
     if(g[k].porVend[v]){g[k].porVend[v].unidades++;g[k].porVend[v].monto+=p;}
@@ -791,7 +1040,6 @@ function renderGrupos(datos,nombres){
   const totalUnid=ORDEN_GRUPOS.reduce((a,k)=>a+g[k].unidades,0);
   const activos=ORDEN_GRUPOS.filter(k=>g[k].unidades>0);
 
-  // Resumen general
   let resumen="";
   activos.forEach(k=>{
     const o=g[k];
@@ -802,8 +1050,6 @@ function renderGrupos(datos,nombres){
     activos.map(k=>`${titulo(k)} ${fmt(g[k].unidades?g[k].monto/g[k].unidades:0)}`).join(" · ")+`</span></div>`;
   document.getElementById("panorama-grupos").innerHTML=resumen;
 
-  // Barra apilada por monto, con el porcentaje escrito dentro.
-  // Debajo del 9% el texto no cabe, así que ese segmento va sin etiqueta y el dato queda en la leyenda.
   document.getElementById("barra-grupos").innerHTML=
     activos.map(k=>{
       const ancho=totalMonto>0?g[k].monto/totalMonto*100:0;
@@ -817,7 +1063,6 @@ function renderGrupos(datos,nombres){
         `${titulo(k)} ${p.toFixed(1)}% · ${g[k].unidades} u.</span>`;
     }).join("");
 
-  // Desglose por asesor
   let tabla=`<thead><tr><th rowspan="2">Asesor</th>`;
   activos.forEach(k=>tabla+=`<th colspan="3" class="text-center">${titulo(k)}</th>`);
   tabla+=`<th rowspan="2" class="text-right">Total</th></tr><tr>`;
@@ -833,7 +1078,7 @@ function renderGrupos(datos,nombres){
     });
     tabla+=`<td class="text-right">${fmt(totalVend)}</td></tr>`;
   });
-  tabla+=`<tr><td><strong>Agencia</strong></td>`;
+  tabla+=`<tr><td><strong>Total</strong></td>`;
   activos.forEach(k=>{
     tabla+=`<td class="text-right"><strong>${g[k].unidades}</strong></td>`+
       `<td class="text-right"><strong>${fmt(g[k].monto)}</strong></td>`+
@@ -856,14 +1101,13 @@ function renderFormas(datos,nombres){
   const r={};
   datos.forEach(d=>{
     const key=normalizarForma(d["FORMA DE PAGO"]);
-    const v=(d["VENDEDOR"]||"").trim().toUpperCase();
+    const v=vendedorDe(d);
     const p=numMiles(d["PRECIO"])/1.16;
     if(!r[key]){r[key]={porVend:{},monto:0,unidades:0};nombres.forEach(n=>r[key].porVend[n]={monto:0,unidades:0});}
     if(r[key].porVend[v]){r[key].porVend[v].monto+=p;r[key].porVend[v].unidades++;}
     r[key].monto+=p;r[key].unidades++;
   });
 
-  // Encabezado dinámico: dos columnas por asesor
   let head=`<tr><th rowspan="2">Forma</th>`;
   nombres.forEach(n=>head+=`<th colspan="2" class="text-center">${titulo(n)}</th>`);
   head+=`<th colspan="2" class="text-center">Total</th><th rowspan="2" class="text-right">% del monto</th></tr><tr>`;
@@ -911,13 +1155,11 @@ function renderTopModelos(datos,totalU){
   });
   const suma=lista.reduce((a,x)=>a+x[1],0);
   document.getElementById("resumen-modelos").textContent=
-    `Los ${lista.length} modelos más vendidos concentran ${suma} unidades (${(suma/totalU*100).toFixed(1)}% del total del mes).`;
+    `Los ${lista.length} modelos más vendidos concentran ${suma} unidades (${(suma/totalU*100).toFixed(1)}% del total).`;
 }
 
 /* =====================  ENTREGAS  ===================== */
-// Sólo estos valores cuentan como entregada. Celda vacía o cualquier otra cosa = pendiente.
 const VALORES_ENTREGADA=["SI","SÍ","S","✔","✓","TRUE","1","ENTREGADA","ENTREGADO"];
-// La tacha (X, ✘) significa NO entregada, como se marcaba antes en la hoja.
 const VALORES_PENDIENTE=["NO","N","X","✘","✗","FALSE","0"];
 
 function estaEntregada(valor){
@@ -937,7 +1179,7 @@ function renderEntregas(datos,nombres,fechaCorte){
   const tabla=document.getElementById("entregas-pendientes");
 
   if(!datos.length||!("ENTREGADA" in datos[0])){
-    resumen.innerHTML=`<div class="small">El archivo no trae la columna ENTREGADA, así que no puedo calcular las entregas.</div>`;
+    resumen.innerHTML=`<div class="small">El Sheet no trae la columna ENTREGADA, así que no puedo calcular las entregas.</div>`;
     porAsesor.innerHTML="";tabla.innerHTML="";
     return;
   }
@@ -953,19 +1195,17 @@ function renderEntregas(datos,nombres,fechaCorte){
     `<div class="kpi-row"><span>Pendientes de entrega</span><span class="value">${pendientes.length} unidad${pendientes.length===1?"":"es"}</span></div>`+
     `<div class="kpi-row"><span>Monto pendiente de entregar</span><span class="value">${fmt(montoPendiente)}</span></div>`;
 
-  // Desglose por asesor
   let filas="";
   nombres.forEach(n=>{
-    const suyas=datos.filter(d=>(d["VENDEDOR"]||"").trim().toUpperCase()===n);
+    const suyas=datos.filter(d=>vendedorDe(d)===n);
     const ent=suyas.filter(d=>estaEntregada(d["ENTREGADA"])).length;
     const pend=suyas.length-ent;
     filas+=`<div class="kpi-row"><span>${titulo(n)}</span><span class="value">`+
       `${ent} de ${suyas.length}`+(pend?` · <span class="estado-mal">${pend} pendiente${pend===1?"":"s"}</span>`:"")+
       `</span></div>`;
   });
-  porAsesor.innerHTML=`<div class="card-tag" style="margin-top:12px">Por asesor</div>${filas}`;
+  porAsesor.innerHTML=nombres.length>1?`<div class="card-tag" style="margin-top:12px">Por asesor</div>${filas}`:"";
 
-  // Tabla de pendientes
   if(!pendientes.length){
     tabla.innerHTML=`<div class="small estado-ok" style="margin-top:12px">Todas las unidades vendidas están entregadas.</div>`;
     return;
@@ -989,18 +1229,59 @@ function renderEntregas(datos,nombres,fechaCorte){
       `<td class="text-right">${fmt(numMiles(d["PRECIO"])/1.16)}</td>`+
       `</tr>`;
   });
-  html+=`</tbody></table></div><div class="small">Días contados desde la venta hasta la fecha de corte del archivo. `+
+  html+=`</tbody></table></div><div class="small">Días contados desde la venta hasta la fecha de corte. `+
     `En amarillo 3 días o más, en rojo 7 o más.</div>`;
   tabla.innerHTML=html;
+}
+
+/* =====================  RESEÑAS DE GOOGLE  ===================== */
+function esReseñaSi(valor){
+  const v=(valor||"").trim().toUpperCase();
+  return ["SI","SÍ","S","TRUE","1"].includes(v);
+}
+
+function renderResenas(datos){
+  const cont=document.getElementById("resenas-body");
+  if(!datos.length||!("RESEÑA" in datos[0])){
+    cont.innerHTML=`<div class="small">El Sheet no trae la columna RESEÑA todavía.</div>`;
+    return;
+  }
+  const conReseña=datos.filter(d=>esReseñaSi(d["RESEÑA"])).length;
+  const total=datos.length;
+  const p=total?conReseña/total*100:0;
+  const clase=p>=70?"estado-ok":(p>=40?"estado-warn":"estado-mal");
+  cont.innerHTML=
+    `<div class="kpi-grande ${clase}">${conReseña} de ${total} clientes dejaron reseña · ${pct(p)}</div>`+
+    `<div class="small">Se captura a mano en la columna RESEÑA de cada venta.</div>`;
+}
+
+/* =====================  EXPEDIENTE  ===================== */
+function esExpedienteCompleto(valor){
+  const v=(valor||"").trim().toUpperCase();
+  return ["SI","SÍ","S","TRUE","1"].includes(v);
+}
+
+function renderExpediente(datos){
+  const cont=document.getElementById("expediente-body");
+  if(!datos.length||!("EXPEDIENTE" in datos[0])){
+    cont.innerHTML=`<div class="small">El Sheet no trae la columna EXPEDIENTE todavía.</div>`;
+    return;
+  }
+  const completos=datos.filter(d=>esExpedienteCompleto(d["EXPEDIENTE"])).length;
+  const total=datos.length;
+  const p=total?completos/total*100:0;
+  const clase=p>=70?"estado-ok":(p>=40?"estado-warn":"estado-mal");
+  cont.innerHTML=
+    `<div class="kpi-grande ${clase}">${completos} de ${total} expedientes completos · ${pct(p)}</div>`+
+    `<div class="small">Se captura a mano en la columna EXPEDIENTE de cada venta.</div>`;
 }
 
 /* =====================  CUADRE CON PILOT  ===================== */
 function normalizarFactura(txt){
   return (txt||"").replace(/\s+/g,"").toUpperCase();
 }
-// Quita acentos, espacios dobles y mayúsculas para que "SAÚL  DÍAZ" y "SAUL DIAZ" no cuenten como diferencia
 function normalizarNombre(txt){
-  return (txt||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  return (txt||"").normalize("NFD").replace(/[̀-ͯ]/g,"")
     .replace(/\s+/g," ").trim().toUpperCase();
 }
 
@@ -1080,6 +1361,10 @@ function fmt(v){
 function pct(v){
   if(typeof v!=="number"||!isFinite(v))return "—";
   return v.toFixed(2)+"%";
+}
+function pct2(v){
+  if(typeof v!=="number"||!isFinite(v))return "—";
+  return v.toFixed(0)+"%";
 }
 </script>
 
