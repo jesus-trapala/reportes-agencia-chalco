@@ -4,47 +4,145 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard Ventas Agencia Chalco</title>
+<script>
+// Modo claro/oscuro antes de pintar (ver diseño-vento.md)
+(function(){
+  let t=null;
+  try{t=localStorage.getItem("temaVento");}catch(e){}
+  if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+  document.documentElement.dataset.theme=t;
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&family=Oswald:wght@600&display=swap" rel="stylesheet">
 <style>
+/* =====================  TOKENS (diseño-vento.md)  ===================== */
 :root{
-  --bg:#020617; --surface:#0b1120; --border:#1f2937;
-  --text:#e5e7eb; --muted:#9ca3af; --accent:#38bdf8; --on-accent:#020617;
-  --ok:#6fbf73; --warn:#d9c15f; --alert:#e0985f; --bad:#e0685f;
-  --on-warn:#1a1a1a; --on-bad:#1a1a1a;
+  --bg:#f7f3ec; --card:#ffffff; --text:#16181d; --muted:#6b6f78; --border:#e6e0d6;
+  --accent:#2B6EF2; --on-accent:#ffffff; --alerta:#e63329;
+  --ok:#1e9e57; --warn:#d18a00; --alert:#d9661f; --bad:#e63329;
+  --on-warn:#1a1a1a; --on-bad:#ffffff;
+  --m-hoy:#2f7cf6; --m-asesores:#14a08f; --m-racha:#e2a21a; --m-vc:#7b5cf0;
+  --m-entregas:#e07a2e; --m-resenas:#2fa04a; --m-expedientes:#e04e93; --m-pilot:#3d5f93;
+  --m-meta:linear-gradient(135deg,#2B6EF2,#1846b8);
+  --ink-racha:#2a1d00;
+  --tag-bg:rgba(255,255,255,.94); --tag-ink:#16181d;
+  --sombra-mos:0 8px 18px -10px rgba(22,24,29,.45);
+  --overlay:rgba(22,24,29,.55);
+  --f-titulo:"Oswald",Impact,"Arial Narrow",sans-serif;
+  --f-texto:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+[data-theme="dark"]{
+  --bg:#0d0f14; --card:#141821; --text:#f2f4f8; --muted:#8d95a6; --border:#232733;
+  --ok:#3ecf7a; --warn:#f0b429; --alert:#f08a4b; --bad:#ff5a4f;
+  --on-bad:#1a1a1a;
+  --m-hoy:#1f55d6; --m-asesores:#0e7468; --m-racha:#9a5d0a; --m-vc:#5137b8;
+  --m-entregas:#a4521a; --m-resenas:#2a6f2e; --m-expedientes:#8f2b63; --m-pilot:#2e4a72;
+  --m-meta:linear-gradient(135deg,#2B6EF2,#163c9e);
+  --ink-racha:#ffffff;
+  --tag-bg:rgba(0,0,0,.35); --tag-ink:#ffffff;
+  --sombra-mos:0 8px 18px -10px rgba(0,0,0,.8);
+  --overlay:rgba(5,6,9,.8);
 }
 
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-header{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-h1{margin:0;color:var(--accent);font-size:20px}
-.subtitle{color:var(--muted);font-size:14px}
-.header-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:7px;border:none;padding:9px 16px;border-radius:20px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s,transform .1s}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--f-texto);background:var(--bg);color:var(--text);font-size:14px;line-height:1.4}
+.num,td,.value,.kpi-main,.kpi-grande,.vc-num,.racha-num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+button{font-family:inherit}
+
+/* =====================  BARRA SUPERIOR  ===================== */
+.topbar{max-width:1040px;margin:0 auto;padding:14px 16px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.marca{font-family:var(--f-titulo);font-weight:600;font-size:17px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+.marca span{color:var(--muted)}
+.top-acciones{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;padding:8px 14px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s,transform .1s;min-height:36px}
 .btn svg{flex-shrink:0}
-.btn:hover:not(:disabled){opacity:.85}
+.btn:hover:not(:disabled){opacity:.88}
 .btn:active:not(:disabled){transform:scale(.97)}
 .btn-primary{background:var(--accent);color:var(--on-accent)}
-.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-select.btn-secondary{-webkit-appearance:none;appearance:none}
+.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+select.btn-secondary{-webkit-appearance:none;appearance:none;max-width:190px}
+.btn-icono{width:36px;padding:0;justify-content:center}
 
-main{padding:15px;max-width:900px;margin:auto}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px}
-.card-title{color:var(--text);font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
-.card-title .chevron{color:var(--muted);font-size:13px;transition:transform .15s}
-.card.contraida .chevron{transform:rotate(-90deg)}
-.card.contraida .card-body{display:none}
-.card-tag{color:var(--accent);font-size:11px;text-transform:uppercase}
-.kpi-main{font-size:22px;font-weight:bold}
+main{padding:12px 16px 40px;max-width:1040px;margin:auto}
+#loader p{color:var(--muted)}
+
+/* =====================  PORTADA  ===================== */
+.encabezado{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:6px 0 16px}
+.fecha{color:var(--muted);font-size:13px;font-weight:500}
+.encabezado h1{font-family:var(--f-titulo);font-weight:600;font-size:30px;margin:2px 0 0;letter-spacing:.01em}
+.cambiar-usuario{background:none;border:none;padding:0;color:var(--accent);font-size:13px;cursor:pointer;text-decoration:underline;margin-top:4px}
+.vendido-hoy{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 16px;min-width:170px}
+.vendido-hoy .lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.vendido-hoy .monto{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600}
+.vendido-hoy .unid{font-size:12px;color:var(--muted)}
+
+.mosaicos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.mosaico{--m:var(--accent);--ink:#fff;position:relative;background:var(--m);color:var(--ink);border:none;border-radius:18px;padding:14px;text-align:left;cursor:pointer;box-shadow:var(--sombra-mos);display:flex;flex-direction:column;gap:4px;min-height:132px;min-width:0;transition:transform .12s,filter .12s}
+.mosaico:hover{filter:brightness(1.06)}
+.mosaico:active{transform:scale(.98)}
+.mosaico:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.mos-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:auto}
+.mos-ico{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mos-tag{display:inline-flex;align-items:center;gap:5px;background:var(--tag-bg);color:var(--tag-ink);font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.mos-tag i{width:8px;height:8px;border-radius:50%;background:var(--sem,var(--muted))}
+[data-estado="ok"]{--sem:var(--ok)} [data-estado="warn"]{--sem:var(--warn)} [data-estado="bad"]{--sem:var(--bad)}
+.mos-nombre{font-family:var(--f-titulo);font-weight:600;font-size:15px;letter-spacing:.05em;text-transform:uppercase;margin-top:10px;opacity:.95}
+.mos-dato{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-weight:600;font-size:20px;line-height:1.15;overflow-wrap:anywhere}
+.mos-sub{font-size:12px;opacity:.88;overflow-wrap:anywhere}
+
+.mosaico-grande{grid-column:span 2;grid-row:span 2;background:var(--m-meta);padding:18px;gap:8px}
+.grande-cuerpo{display:flex;align-items:center;gap:14px;margin-top:4px}
+.grande-cara{font-size:46px;line-height:1}
+.grande-pct{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-weight:600;font-size:46px;line-height:1}
+.grande-barra{height:10px;border-radius:5px;background:rgba(255,255,255,.22);overflow:hidden;position:relative;margin-top:4px}
+.grande-barra div{height:100%;background:#fff;border-radius:5px}
+.grande-barra span{position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.grande-msg{font-size:14px;font-weight:600}
+.grande-pie{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;font-weight:600;border-top:1px solid rgba(255,255,255,.22);padding-top:8px}
+.grande-pie b{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+
+.m-hoy{--m:var(--m-hoy)} .m-asesores{--m:var(--m-asesores)} .m-racha{--m:var(--m-racha);--ink:var(--ink-racha)}
+.m-vc{--m:var(--m-vc)} .m-entregas{--m:var(--m-entregas)} .m-resenas{--m:var(--m-resenas)}
+.m-expedientes{--m:var(--m-expedientes)} .m-pilot{--m:var(--m-pilot)}
+.m-racha .mos-ico{background:rgba(0,0,0,.08)}
+[data-theme="dark"] .m-racha .mos-ico{background:rgba(255,255,255,.18)}
+
+.cifras{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.cifra{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px 14px;min-width:0}
+.cifra .lbl{font-size:12px;color:var(--muted);font-weight:500}
+.cifra .val{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:19px;font-weight:600;margin-top:2px;overflow-wrap:anywhere}
+.corte{color:var(--muted);font-size:12px;margin-top:12px;text-align:center}
+
+/* =====================  DETALLE  ===================== */
+.detalle-top{display:flex;align-items:center;gap:12px;margin:6px 0 14px;flex-wrap:wrap}
+.btn-inicio{--m:var(--accent);background:var(--m);color:#fff;border:none;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--sombra-mos);min-height:40px}
+.btn-inicio.m-racha{color:var(--ink-racha)}
+#detalle-titulo{font-family:var(--f-titulo);font-weight:600;font-size:26px;margin:0;letter-spacing:.02em}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:12px;min-width:0}
+.card-title{font-family:var(--f-titulo);font-weight:600;font-size:17px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px}
+.card-tag{color:var(--accent);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.kpi-main{font-size:22px;font-weight:600}
 .kpi-row{display:flex;justify-content:space-between;margin-top:6px;font-size:14px;color:var(--muted);gap:12px}
-.value{color:var(--text);font-weight:bold}
+.kpi-row>span:last-child{text-align:right}
+.value{color:var(--text);font-weight:600}
 table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
-th,td{border-bottom:1px solid var(--border);padding:6px}
-th{color:var(--muted);text-transform:uppercase;font-size:11px}
-.text-right{text-align:right}
-.text-center{text-align:center}
-.badge{padding:3px 7px;border-radius:10px;font-size:11px;white-space:nowrap}
+th,td{border-bottom:1px solid var(--border);padding:7px 6px;text-align:left}
+th{color:var(--muted);text-transform:uppercase;font-size:11px;font-family:var(--f-texto);font-weight:600;letter-spacing:.03em}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:12px;font-family:var(--f-texto);font-weight:600;white-space:nowrap;color:var(--text)}
+.badge i{width:8px;height:8px;border-radius:50%}
 .chart-container{height:180px;position:relative;width:100%}
+.chart-alto{height:260px}
 .small{font-size:12px;color:var(--muted);margin-top:6px}
-.table-scroll{overflow-x:auto}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .table-asesores{min-width:680px}
 .table-asesores th,.table-asesores td{white-space:nowrap}
 .table-formas{min-width:560px}
@@ -53,88 +151,109 @@ th{color:var(--muted);text-transform:uppercase;font-size:11px}
 .table-pendientes th,.table-pendientes td{white-space:nowrap}
 .table-grupos{min-width:600px}
 .table-grupos th,.table-grupos td{white-space:nowrap}
+.table-hoy{min-width:480px}
+.table-hoy th,.table-hoy td{white-space:nowrap}
 .aviso{color:var(--alert);font-size:12px;margin-top:6px}
 
 .grupo-bloque{border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:6px}
-.barra-grupo{display:flex;height:24px;border-radius:12px;overflow:hidden;margin-top:10px;background:var(--border)}
-.barra-grupo div{height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;overflow:hidden;white-space:nowrap}
+.barra-grupo{display:flex;gap:2px;height:24px;border-radius:12px;overflow:hidden;margin-top:10px;background:var(--border)}
+.barra-grupo div{height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;overflow:hidden;white-space:nowrap}
 .seg-contado{background:var(--accent);color:var(--on-accent)}
 .seg-financiamiento{background:var(--warn);color:var(--on-warn)}
 .seg-sin{background:var(--bad);color:var(--on-bad)}
 .leyenda-grupo{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--muted)}
 .punto{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
 
-.estado-ok{color:var(--ok);font-weight:bold}
-.estado-mal{color:var(--bad);font-weight:bold}
-.estado-warn{color:var(--warn);font-weight:bold}
+.estado-ok{color:var(--ok);font-weight:700}
+.estado-mal{color:var(--bad);font-weight:700}
+.estado-warn{color:var(--warn);font-weight:700}
 
 .vc-top{display:flex;align-items:baseline;justify-content:space-between;margin-top:4px}
-.vc-num{font-size:28px;font-weight:800;color:var(--text)}
-.vc-num span{font-size:15px;color:var(--muted);font-weight:600}
-.vc-pct{font-size:20px;font-weight:800}
-.barra-vc{height:14px;border-radius:7px;background:var(--border);margin-top:10px;overflow:hidden;position:relative}
-.barra-vc div{height:100%}
-.vc-marca{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--muted)}
+.vc-num{font-size:28px;font-weight:600;color:var(--text)}
+.vc-num span{font-size:14px;color:var(--muted);font-weight:500;font-family:var(--f-texto)}
+.vc-pct{font-size:20px;font-weight:700;font-family:var(--f-num)}
+.barra-vc,.barra-meta,.barra-parte{height:14px;border-radius:7px;background:var(--border);margin-top:10px;overflow:visible;position:relative}
+.barra-vc>div,.barra-meta>div,.barra-parte>div{height:100%;border-radius:7px}
+.vc-marca,.barra-meta>span{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--text)}
 
 .rachas{display:flex;gap:10px;margin-bottom:12px}
-.racha-box{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
-.racha-num{font-size:24px;font-weight:800}
+.racha-box{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}
+.racha-num{font-size:24px;font-weight:600}
 .racha-lbl{font-size:11px;color:var(--muted);margin-top:2px}
 
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:460px}
 .cal .dow{font-size:10px;color:var(--muted);text-align:center;font-weight:700}
-.cal .day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.cal .day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--f-num)}
 .d-venta{background:var(--ok);color:#06220d}
-.d-sin{background:var(--bad);color:#2a0b08}
-.d-domingo{background:var(--border);color:var(--muted);opacity:.6}
+.d-sin{background:var(--bad);color:#fff}
+.d-domingo{background:var(--border);color:var(--muted);opacity:.7}
 .d-futuro{background:transparent;border:1px dashed var(--border);color:var(--muted)}
 .d-vacio{visibility:hidden}
 
 .leyenda{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
 
-.vendedores-grid{display:flex;gap:14px}
-.vendedor-col{flex:1}
-.vendedor-nombre{font-size:12px;font-weight:800;margin-bottom:6px;color:var(--text)}
-.kpi-grande{font-size:22px;font-weight:bold;margin-top:4px}
-
-/* Bienvenida + selector de usuario */
-#overlay-usuario{position:fixed;inset:0;background:rgba(2,6,23,.92);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
-.tarjeta-bienvenida{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:340px;width:100%;text-align:center}
-.tarjeta-bienvenida h2{margin:0 0 20px;color:var(--accent);font-size:19px}
-.btn-usuario{display:block;width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:15px;font-weight:600;cursor:pointer}
-.btn-usuario:hover{border-color:var(--accent);color:var(--accent)}
-
-.card-bienvenida{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.saludo{flex:1;min-width:160px}
-.saludo h2{margin:0;font-size:18px;color:var(--text)}
-.saludo .cambiar-usuario{color:var(--accent);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:4px;display:inline-block}
-.gauge-wrap{text-align:center;min-width:150px}
-.gauge-cara{font-size:38px;line-height:1}
-.gauge-etq{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
-.gauge-pct{font-size:26px;font-weight:bold;margin-top:2px}
-.gauge-msg{font-size:12px;color:var(--text);font-weight:600;max-width:170px;margin-top:6px}
+.vendedores-grid{display:flex;gap:14px;flex-wrap:wrap}
+.vendedor-col{flex:1;min-width:140px}
+.vendedor-nombre{font-size:12px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.kpi-grande{font-size:20px;font-weight:600;margin-top:4px}
 .linea-ritmo{color:var(--text)}
 .barra-hoy{height:10px;border-radius:5px;background:var(--border);margin-top:10px;overflow:hidden}
 .barra-hoy div{height:100%;transition:width .2s}
+
+.tres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tres .card{margin-bottom:12px}
+.mini-lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.mini-num{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:26px;font-weight:600;margin-top:4px;overflow-wrap:anywhere}
+.mini-num span{font-size:14px;color:var(--muted);font-weight:500}
+
+/* Vistas por perfil */
+body.vista-personal .solo-gerente{display:none!important}
+body:not(.vista-personal) .solo-asesor{display:none!important}
+
+/* Bienvenida + selector de usuario */
+#overlay-usuario{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.tarjeta-bienvenida{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;max-width:340px;width:100%;text-align:center}
+.tarjeta-bienvenida h2{margin:0 0 20px;font-family:var(--f-titulo);font-weight:600;font-size:22px}
+.btn-usuario{display:block;width:100%;padding:12px;margin-bottom:10px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.btn-usuario:hover{opacity:.9}
+
+/* =====================  CELULAR  ===================== */
+@media (max-width:760px){
+  .top-acciones{width:100%;flex-wrap:nowrap}
+  .top-acciones select.btn-secondary{flex:1;min-width:0;max-width:none}
+  #btn-actualizar-sheet{width:36px;padding:0;justify-content:center}
+  #btn-actualizar-sheet span{display:none}
+  .mosaicos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .mosaico-grande{grid-row:auto}
+  .cifras{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .tres{grid-template-columns:1fr;gap:0}
+  .encabezado h1{font-size:26px}
+  .vendido-hoy{flex:1}
+  .mosaico{min-height:124px;padding:12px}
+  .mos-dato{font-size:18px}
+  .grande-pct{font-size:40px}
+  .grande-cara{font-size:40px}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div>
-    <h1>DASHBOARD DE VENTAS · AGENCIA CHALCO</h1>
-    <div class="subtitle" id="subtitle-mes">Conectando…</div>
-  </div>
-  <div class="header-actions">
-    <select id="select-mes" class="btn btn-secondary" disabled>
+<div class="topbar">
+  <div class="marca">Vento Chalco <span>· Ventas</span></div>
+  <div class="top-acciones">
+    <select id="select-mes" class="btn btn-secondary" disabled aria-label="Mes">
       <option>Conectando con el Sheet…</option>
     </select>
     <button class="btn btn-primary" id="btn-actualizar-sheet" disabled title="Vuelve a pedir los datos de este mes al Sheet">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
       <span>Actualizar</span>
     </button>
+    <button class="btn btn-secondary btn-icono" id="btn-tema" title="Cambiar modo claro / oscuro" aria-label="Cambiar modo claro / oscuro">
+      <svg class="ico-luna" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="ico-sol" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
   </div>
-</header>
+</div>
 
 <div id="overlay-usuario" style="display:none">
   <div class="tarjeta-bienvenida">
@@ -148,147 +267,291 @@ th{color:var(--muted);text-transform:uppercase;font-size:11px}
 <div id="loader"><p>Conectando con tu Sheet…</p></div>
 <div id="dashboard" style="display:none">
 
-  <div class="card" data-seccion="bienvenida">
-    <div class="card-bienvenida">
-      <div class="saludo">
-        <h2 id="saludo-texto">Hola</h2>
-        <div class="small" id="saludo-sub"></div>
-        <span class="cambiar-usuario" id="btn-cambiar-usuario">¿No eres tú? Cambiar</span>
+  <!-- =====================  PORTADA  ===================== -->
+  <section id="vista-portada">
+    <div class="encabezado">
+      <div>
+        <div class="fecha" id="fecha-texto"></div>
+        <h1 id="saludo-texto">Hola</h1>
+        <button class="cambiar-usuario" id="btn-cambiar-usuario">¿No eres tú? Cambiar</button>
       </div>
-      <div class="gauge-wrap">
-        <div class="gauge-cara" id="gauge-cara">🙂</div>
-        <div class="gauge-etq">Cumplimiento de meta</div>
-        <div class="gauge-pct" id="gauge-pct">0%</div>
-        <div class="gauge-msg" id="gauge-msg"></div>
+      <div class="vendido-hoy">
+        <div class="lbl" id="hoy-lbl">Vendido hoy</div>
+        <div class="monto" id="hoy-monto">$0</div>
+        <div class="unid" id="hoy-unid">0 unidades</div>
       </div>
     </div>
-  </div>
 
-  <div class="card" data-seccion="mi-dia" style="display:none">
-    <div class="card-title" data-toggle><span>Mi día de hoy</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="mi-dia-body"></div>
-  </div>
-
-  <div class="card" data-seccion="meta">
-    <div class="card-title" data-toggle><span>Meta y avance de la agencia</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="meta-agencia-body">
-      <div class="card-tag" id="corte-label"></div>
-    </div>
-  </div>
-
-  <div class="card" data-seccion="mi-resultado" style="display:none">
-    <div class="card-title" data-toggle><span>Mi resultado</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="mi-resultado-body"></div>
-  </div>
-
-  <div class="card" data-seccion="mis-dias-venta" style="display:none">
-    <div class="card-title" data-toggle><span>Mis días con venta</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="mis-dias-venta-body"></div>
-  </div>
-
-  <div class="card" data-seccion="asesores">
-    <div class="card-title" data-toggle><span>Rendimiento de asesores</span><span class="chevron">▾</span></div>
-    <div class="card-body">
-      <div class="table-scroll">
-        <table class="table-asesores">
-          <thead><tr>
-            <th>Vendedor</th><th class="text-right">Meta</th><th class="text-right">Venta</th>
-            <th class="text-right">% Cumpl</th><th class="text-right">Por vender</th>
-            <th class="text-center">Unidades</th><th class="text-right">Ticket</th>
-            <th class="text-right">Proy</th><th class="text-right">% Proy</th>
-          </tr></thead>
-          <tbody id="tabla-asesores"></tbody>
-        </table>
-      </div>
-      <div class="small" id="nota-asesores"></div>
-    </div>
-  </div>
-
-  <div class="card" data-seccion="dias-venta-agencia">
-    <div class="card-title" data-toggle><span>Días con venta</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="dias-venta-agencia-body"></div>
-  </div>
-
-  <div class="card" data-seccion="dias-venta-asesores">
-    <div class="card-title" data-toggle><span>Días con venta — por asesor</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="dias-venta-asesores-body"></div>
-  </div>
-
-  <div class="card" data-seccion="participacion">
-    <div class="card-title" data-toggle><span>Participación de asesores</span><span class="chevron">▾</span></div>
-    <div class="card-body">
-      <div class="chart-container"><canvas id="chart-participacion"></canvas></div>
-      <div class="small" id="texto-participacion"></div>
-      <div id="ritmo-asesores"></div>
-    </div>
-  </div>
-
-  <div class="card" data-seccion="ventocredit">
-    <div class="card-title" data-toggle><span>VentoCredit</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="ventocredit-body"></div>
-  </div>
-
-  <div class="card" data-seccion="formas">
-    <div class="card-title" data-toggle><span>Formas de pago</span><span class="chevron">▾</span></div>
-    <div class="card-body">
-      <div class="grupo-bloque">
-        <div class="card-tag">Panorama · contado vs financiamiento</div>
-        <div id="panorama-grupos"></div>
-        <div class="barra-grupo" id="barra-grupos"></div>
-        <div class="leyenda-grupo" id="leyenda-grupos"></div>
-        <div class="table-scroll">
-          <table class="table-grupos" id="tabla-grupos-asesor"></table>
+    <div class="mosaicos">
+      <button class="mosaico mosaico-grande" data-ir="meta">
+        <div class="mos-top">
+          <span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
+          <span class="mos-tag" id="tag-meta" hidden></span>
         </div>
-        <div class="aviso" id="aviso-sin-clasificar" style="display:none"></div>
+        <div class="mos-nombre">Meta y avance · agencia</div>
+        <div class="grande-cuerpo">
+          <div class="grande-cara" id="mos-meta-cara">🙂</div>
+          <div>
+            <div class="grande-pct" id="mos-meta-pct">0%</div>
+            <div class="mos-sub num" id="mos-meta-venta"></div>
+          </div>
+        </div>
+        <div class="grande-barra"><div id="mos-meta-barra" style="width:0%"></div><span id="mos-meta-marca" style="left:0%"></span></div>
+        <div class="grande-msg" id="mos-meta-msg"></div>
+        <div class="grande-pie">
+          <span>Necesitas <b id="mos-meta-dia">$0</b> por día</span>
+          <span id="mos-meta-faltan">Faltan 0 días</span>
+        </div>
+        <div class="grande-msg solo-asesor" id="mos-meta-aporte"></div>
+      </button>
+
+      <button class="mosaico m-hoy" data-ir="hoy">
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span></div>
+        <div class="mos-nombre">Hoy</div>
+        <div class="mos-dato" id="mos-hoy-dato">—</div>
+        <div class="mos-sub" id="mos-hoy-sub"></div>
+      </button>
+
+      <button class="mosaico m-asesores" data-ir="asesores">
+        <div class="mos-top"><span class="mos-ico">
+          <svg class="solo-gerente" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <svg class="solo-asesor" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span></div>
+        <div class="mos-nombre" id="mos-asesores-nombre">Asesores</div>
+        <div class="mos-dato" id="mos-asesores-dato">—</div>
+        <div class="mos-sub" id="mos-asesores-sub"></div>
+      </button>
+
+      <button class="mosaico m-racha" data-ir="racha">
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span class="mos-tag" id="tag-racha" hidden></span></div>
+        <div class="mos-nombre">Racha</div>
+        <div class="mos-dato" id="mos-racha-dato">—</div>
+        <div class="mos-sub" id="mos-racha-sub"></div>
+      </button>
+
+      <button class="mosaico m-vc" data-ir="vc">
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span><span class="mos-tag" id="tag-vc" hidden></span></div>
+        <div class="mos-nombre">VentoCredit</div>
+        <div class="mos-dato" id="mos-vc-dato">—</div>
+        <div class="mos-sub" id="mos-vc-sub"></div>
+      </button>
+
+      <button class="mosaico m-entregas" data-ir="entregas">
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span></div>
+        <div class="mos-nombre">Entregadas</div>
+        <div class="mos-dato" id="mos-entregas-dato">—</div>
+        <div class="mos-sub" id="mos-entregas-sub"></div>
+      </button>
+
+      <button class="mosaico m-resenas" data-ir="resenas">
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span></div>
+        <div class="mos-nombre">Reseñas</div>
+        <div class="mos-dato" id="mos-resenas-dato">—</div>
+        <div class="mos-sub" id="mos-resenas-sub"></div>
+      </button>
+
+      <button class="mosaico m-expedientes" data-ir="expedientes">
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span></div>
+        <div class="mos-nombre">Expedientes</div>
+        <div class="mos-dato" id="mos-expedientes-dato">—</div>
+        <div class="mos-sub" id="mos-expedientes-sub"></div>
+      </button>
+
+      <button class="mosaico m-pilot" data-ir="pilot">
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="mos-tag" id="tag-pilot" hidden></span></div>
+        <div class="mos-nombre">Pilot</div>
+        <div class="mos-dato" id="mos-pilot-dato">—</div>
+        <div class="mos-sub" id="mos-pilot-sub"></div>
+      </button>
+    </div>
+
+    <div class="cifras">
+      <div class="cifra"><div class="lbl" id="cifra-venta-lbl">Venta sin IVA</div><div class="val" id="cifra-venta">$0</div></div>
+      <div class="cifra"><div class="lbl">Unidades</div><div class="val" id="cifra-unidades">0</div></div>
+      <div class="cifra"><div class="lbl">Ticket promedio</div><div class="val" id="cifra-ticket">$0</div></div>
+      <div class="cifra"><div class="lbl">Días restantes</div><div class="val" id="cifra-dias">0</div></div>
+    </div>
+    <div class="corte" id="subtitle-mes">Conectando…</div>
+  </section>
+
+  <!-- =====================  DETALLE  ===================== -->
+  <section id="vista-detalle" hidden>
+    <div class="detalle-top">
+      <button class="btn-inicio" id="btn-inicio">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Inicio
+      </button>
+      <h2 id="detalle-titulo"></h2>
+    </div>
+
+    <!-- Meta y avance -->
+    <div data-detalle="meta" hidden>
+      <div id="meta-resumen"></div>
+      <div class="card">
+        <div class="card-title">Venta acumulada vs. ritmo ideal</div>
+        <div class="chart-container chart-alto"><canvas id="chart-acumulado" aria-label="Venta acumulada día por día contra el ritmo ideal"></canvas></div>
+        <div class="small" id="texto-acumulado"></div>
       </div>
-      <div class="table-scroll">
-        <table class="table-formas">
-          <thead id="head-formas"></thead>
-          <tbody id="tabla-formas"></tbody>
-        </table>
+      <div class="card" data-seccion="meta">
+        <div class="card-title">Meta y avance de la agencia</div>
+        <div class="card-tag" id="corte-label"></div>
+        <div id="meta-agencia-body"></div>
       </div>
-      <div class="small">Unid. = motos vendidas con esa forma de pago · Monto = venta sin IVA.</div>
+      <div class="card solo-gerente">
+        <div class="card-title">Rendimiento de asesores</div>
+        <div class="table-scroll">
+          <table class="table-asesores">
+            <thead><tr>
+              <th>Vendedor</th><th class="text-right">Meta</th><th class="text-right">Venta</th>
+              <th class="text-right">% Cumpl</th><th class="text-right">Por vender</th>
+              <th class="text-center">Unidades</th><th class="text-right">Ticket</th>
+              <th class="text-right">Proy</th><th class="text-right">% Proy</th>
+            </tr></thead>
+            <tbody class="tbody-asesores"></tbody>
+          </table>
+        </div>
+        <div class="small nota-asesores"></div>
+      </div>
+      <div class="card solo-asesor">
+        <div class="card-title">Tu parte</div>
+        <div id="tu-parte-body"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="card" data-seccion="modelos">
-    <div class="card-title" data-toggle><span>Top 5 modelos (unidades)</span><span class="chevron">▾</span></div>
-    <div class="card-body">
-      <table><thead>
-        <tr><th>#</th><th>Modelo</th><th class="text-center">Unidades</th><th class="text-right">% Part</th></tr>
-      </thead><tbody id="tabla-modelos"></tbody></table>
-      <div class="small" id="resumen-modelos"></div>
+    <!-- Hoy -->
+    <div data-detalle="hoy" hidden>
+      <div class="card solo-asesor" data-seccion="mi-dia">
+        <div class="card-title">Mi día de hoy</div>
+        <div id="mi-dia-body"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="ventas-hoy-titulo">Ventas del día</div>
+        <div id="ventas-hoy-body"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="card" data-seccion="entregas">
-    <div class="card-title" data-toggle><span>Motocicletas entregadas</span><span class="chevron">▾</span></div>
-    <div class="card-body">
-      <div class="card-tag">Columna ENTREGADA del Sheet</div>
-      <div id="entregas-resumen"></div>
-      <div id="entregas-por-asesor"></div>
-      <div id="entregas-pendientes"></div>
+    <!-- Asesores / Mi mes -->
+    <div data-detalle="asesores" hidden>
+      <div class="card solo-asesor" data-seccion="mi-resultado">
+        <div class="card-title">Mi resultado</div>
+        <div id="mi-resultado-body"></div>
+      </div>
+      <div class="card solo-gerente" data-seccion="asesores">
+        <div class="card-title">Rendimiento de asesores</div>
+        <div class="table-scroll">
+          <table class="table-asesores">
+            <thead><tr>
+              <th>Vendedor</th><th class="text-right">Meta</th><th class="text-right">Venta</th>
+              <th class="text-right">% Cumpl</th><th class="text-right">Por vender</th>
+              <th class="text-center">Unidades</th><th class="text-right">Ticket</th>
+              <th class="text-right">Proy</th><th class="text-right">% Proy</th>
+            </tr></thead>
+            <tbody class="tbody-asesores"></tbody>
+          </table>
+        </div>
+        <div class="small nota-asesores"></div>
+      </div>
+      <div class="card solo-gerente" data-seccion="participacion">
+        <div class="card-title">Participación de asesores</div>
+        <div class="chart-container"><canvas id="chart-participacion"></canvas></div>
+        <div class="small" id="texto-participacion"></div>
+        <div id="ritmo-asesores"></div>
+      </div>
+      <div class="card" data-seccion="modelos">
+        <div class="card-title" id="modelos-titulo">Top 5 modelos (unidades)</div>
+        <table><thead>
+          <tr><th>#</th><th>Modelo</th><th class="text-center">Unidades</th><th class="text-right">% Part</th></tr>
+        </thead><tbody id="tabla-modelos"></tbody></table>
+        <div class="small" id="resumen-modelos"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="card" data-seccion="resenas">
-    <div class="card-title" data-toggle><span>Reseñas de Google</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="resenas-body"></div>
-  </div>
-
-  <div class="card" data-seccion="expediente">
-    <div class="card-title" data-toggle><span>Expediente</span><span class="chevron">▾</span></div>
-    <div class="card-body" id="expediente-body"></div>
-  </div>
-
-  <div class="card" data-seccion="pilot" style="display:none">
-    <div class="card-title" data-toggle><span>Cuadre con PILOT</span><span class="chevron">▾</span></div>
-    <div class="card-body">
-      <div class="card-tag" id="pilot-tag"></div>
-      <div id="pilot-resumen"></div>
-      <div id="pilot-detalle"></div>
+    <!-- Racha -->
+    <div data-detalle="racha" hidden>
+      <div class="card" data-seccion="dias-venta">
+        <div class="card-title" id="dias-venta-titulo">Días con venta</div>
+        <div id="dias-venta-body"></div>
+      </div>
+      <div class="card solo-gerente" data-seccion="dias-venta-asesores">
+        <div class="card-title">Días con venta — por asesor</div>
+        <div id="dias-venta-asesores-body"></div>
+      </div>
     </div>
-  </div>
+
+    <!-- VentoCredit -->
+    <div data-detalle="vc" hidden>
+      <div class="card" data-seccion="ventocredit">
+        <div class="card-title">VentoCredit</div>
+        <div id="ventocredit-body"></div>
+        <div class="small">Embudo solicitudes → autorizadas → colocadas: el Sheet todavía no trae columnas de solicitudes ni de autorizaciones, así que aquí solo se cuentan los colocados (ventas con FORMA DE PAGO VentoCredit).</div>
+      </div>
+      <div class="card" data-seccion="formas">
+        <div class="card-title" id="formas-titulo">Formas de pago</div>
+        <div class="grupo-bloque">
+          <div class="card-tag">Panorama · contado vs financiamiento</div>
+          <div id="panorama-grupos"></div>
+          <div class="barra-grupo" id="barra-grupos"></div>
+          <div class="leyenda-grupo" id="leyenda-grupos"></div>
+          <div class="table-scroll">
+            <table class="table-grupos" id="tabla-grupos-asesor"></table>
+          </div>
+          <div class="aviso" id="aviso-sin-clasificar" style="display:none"></div>
+        </div>
+        <div class="table-scroll">
+          <table class="table-formas">
+            <thead id="head-formas"></thead>
+            <tbody id="tabla-formas"></tbody>
+          </table>
+        </div>
+        <div class="small">Unid. = motos vendidas con esa forma de pago · Monto = venta sin IVA.</div>
+      </div>
+    </div>
+
+    <!-- Entregadas -->
+    <div data-detalle="entregas" hidden>
+      <div class="card" data-seccion="entregas">
+        <div class="card-title">Motocicletas entregadas</div>
+        <div class="card-tag">Columna ENTREGADA del Sheet</div>
+        <div id="entregas-resumen"></div>
+        <div id="entregas-por-asesor"></div>
+        <div id="entregas-pendientes"></div>
+      </div>
+    </div>
+
+    <!-- Reseñas -->
+    <div data-detalle="resenas" hidden>
+      <div class="card" data-seccion="resenas">
+        <div class="card-title">Reseñas de Google</div>
+        <div id="resenas-body"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Ventas sin reseña</div>
+        <div id="sin-resena-body"></div>
+      </div>
+    </div>
+
+    <!-- Expedientes -->
+    <div data-detalle="expedientes" hidden>
+      <div class="card" data-seccion="expediente">
+        <div class="card-title">Expediente</div>
+        <div id="expediente-body"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Expedientes incompletos</div>
+        <div id="expedientes-incompletos-body"></div>
+      </div>
+    </div>
+
+    <!-- Pilot -->
+    <div data-detalle="pilot" hidden>
+      <div class="card" data-seccion="pilot">
+        <div class="card-title">Cuadre con PILOT</div>
+        <div class="card-tag" id="pilot-tag"></div>
+        <div id="pilot-resumen"></div>
+        <div id="pilot-detalle"></div>
+      </div>
+    </div>
+  </section>
 
 </div>
 </main>
@@ -308,12 +571,40 @@ function cssVar(nombre){
 const SHEETS_API_URL="https://script.google.com/macros/s/AKfycbzHAJVvLmhXPyCMuWgregbk2E_-19eUmbaFl8Bi_HxykG3Vv-D3Puovjay1NSEMyndpjw/exec";
 const SHEETS_API_CLAVE="chalco16025";
 
+/* =====================  ASESORES ACTIVOS  =====================
+   La meta individual (y la cuota de VentoCredit) es la meta de la agencia
+   dividida entre ESTA lista, aunque alguno todavía no haya vendido en el
+   mes. Si entra o sale alguien, edita solo esta línea (en MAYÚSCULAS, igual
+   que en la columna VENDEDOR del Sheet). */
+const ASESORES_ACTIVOS=["KEVIN","OSVALDO"];
+
+/* =====================  ALMACENAMIENTO SEGURO  ===================== */
+function leerLocal(clave){try{return localStorage.getItem(clave);}catch(e){return null;}}
+function guardarLocal(clave,valor){try{localStorage.setItem(clave,valor);}catch(e){}}
+
+/* =====================  MODO CLARO / OSCURO  ===================== */
+const TEMA_KEY="temaVento";
+function pintarBotonTema(){
+  const oscuro=document.documentElement.dataset.theme==="dark";
+  document.querySelector("#btn-tema .ico-luna").style.display=oscuro?"none":"";
+  document.querySelector("#btn-tema .ico-sol").style.display=oscuro?"":"none";
+}
+document.getElementById("btn-tema").onclick=()=>{
+  const nuevo=document.documentElement.dataset.theme==="dark"?"light":"dark";
+  document.documentElement.dataset.theme=nuevo;
+  guardarLocal(TEMA_KEY,nuevo);
+  pintarBotonTema();
+  if(datosActuales.length)renderDashboard(datosActuales); // las gráficas toman los colores del modo
+};
+pintarBotonTema();
+
 /* =====================  USUARIO / VISTA PERSONAL  ===================== */
 const USUARIOS=["JESUS","OSVALDO","KEVIN"];
 const USUARIO_KEY="usuarioDashboardChalco";
 let usuarioActual=null;
 
 function nombreBonito(u){return u?u.charAt(0)+u.slice(1).toLowerCase():"";}
+function esVistaPersonal(){return !!usuarioActual&&usuarioActual!=="JESUS";}
 
 function mostrarSelectorUsuario(){
   const cont=document.getElementById("botones-usuario");
@@ -323,7 +614,7 @@ function mostrarSelectorUsuario(){
     b.className="btn-usuario";
     b.textContent=nombreBonito(u);
     b.onclick=()=>{
-      localStorage.setItem(USUARIO_KEY,u);
+      guardarLocal(USUARIO_KEY,u);
       usuarioActual=u;
       document.getElementById("overlay-usuario").style.display="none";
       if(datosActuales.length)renderDashboard(datosActuales);
@@ -336,7 +627,7 @@ function mostrarSelectorUsuario(){
 document.getElementById("btn-cambiar-usuario").onclick=mostrarSelectorUsuario;
 
 (function initUsuario(){
-  const guardado=(localStorage.getItem(USUARIO_KEY)||"").toUpperCase();
+  const guardado=(leerLocal(USUARIO_KEY)||"").toUpperCase();
   if(USUARIOS.includes(guardado)){
     usuarioActual=guardado;
   }else{
@@ -344,23 +635,68 @@ document.getElementById("btn-cambiar-usuario").onclick=mostrarSelectorUsuario;
   }
 })();
 
-/* =====================  ACORDEÓN  ===================== */
-document.querySelectorAll('[data-toggle]').forEach(titulo=>{
-  titulo.addEventListener("click",()=>{
-    titulo.closest(".card").classList.toggle("contraida");
+/* =====================  NAVEGACIÓN PORTADA ↔ DETALLE  =====================
+   Rutas con hash (#meta, #vc, …) para que el botón de regresar del celular
+   vuelva a la portada. */
+const DETALLES={
+  meta:{titulo:"Meta y avance",clase:""},
+  hoy:{titulo:"Hoy",clase:"m-hoy"},
+  asesores:{titulo:"Asesores",clase:"m-asesores"},
+  racha:{titulo:"Racha",clase:"m-racha"},
+  vc:{titulo:"VentoCredit",clase:"m-vc"},
+  entregas:{titulo:"Entregadas",clase:"m-entregas"},
+  resenas:{titulo:"Reseñas",clase:"m-resenas"},
+  expedientes:{titulo:"Expedientes",clase:"m-expedientes"},
+  pilot:{titulo:"Cuadre con Pilot",clase:"m-pilot"}
+};
+const vistaPortada=document.getElementById("vista-portada");
+const vistaDetalle=document.getElementById("vista-detalle");
+const btnInicio=document.getElementById("btn-inicio");
+let navDesdePortada=false;
+let scrollPortada=0;
+
+function mostrarRuta(){
+  const k=location.hash.slice(1);
+  const valido=Object.prototype.hasOwnProperty.call(DETALLES,k);
+  vistaPortada.hidden=valido;
+  vistaDetalle.hidden=!valido;
+  document.querySelectorAll("[data-detalle]").forEach(s=>{s.hidden=s.dataset.detalle!==k;});
+  if(valido){
+    const d=DETALLES[k];
+    document.getElementById("detalle-titulo").textContent=
+      k==="asesores"&&esVistaPersonal()?"Mi mes":d.titulo;
+    btnInicio.className="btn-inicio "+d.clase;
+    window.scrollTo(0,0);
+  }else{
+    navDesdePortada=false;
+    window.scrollTo(0,scrollPortada);
+  }
+}
+
+document.querySelectorAll("[data-ir]").forEach(m=>{
+  m.addEventListener("click",()=>{
+    scrollPortada=window.scrollY;
+    navDesdePortada=true;
+    location.hash=m.dataset.ir;
   });
 });
+btnInicio.onclick=()=>{
+  if(navDesdePortada){history.back();return;}
+  history.replaceState(null,"",location.pathname+location.search);
+  mostrarRuta();
+};
+window.addEventListener("hashchange",mostrarRuta);
 
 /* =====================  ESTADO  ===================== */
 let META_AGENCIA=1545000; // se sobreescribe con lo que diga CONFIGURACION
 let OBJETIVO_VC=13; // objetivo de financiamientos VentoCredit del mes (agencia); se sobreescribe con CONFIGURACION
 
-const btnCaptura=null; // ya no existe el botón de captura
 const selectMes=document.getElementById("select-mes");
 const btnActualizarSheet=document.getElementById("btn-actualizar-sheet");
 const dashboard=document.getElementById("dashboard");
 const loader=document.getElementById("loader");
 let chartParticipacion=null;
+let chartAcumulado=null;
 let datosActuales=[];   // último mes de ventas cargado desde el Sheet (agencia completa)
 let pilotIndex=null;    // mapa factura -> registro de Pilot; null mientras no se cargue
 
@@ -429,9 +765,10 @@ async function cargarDatosDesdeSheets(){
       alert(`La pestaña "${mes}" no tiene todavía filas con FECHA, VENDEDOR y PRECIO.`);
       return;
     }
-    renderDashboard(validos);
     loader.style.display="none";
     dashboard.style.display="block";
+    renderDashboard(validos);
+    mostrarRuta();
   }catch(err){
     console.error("No se pudo conectar con el Sheet:",err);
     alert("No pude conectar con el Sheet: "+err.message);
@@ -531,6 +868,14 @@ function obtenerFechaCorte(datos){
   return max;
 }
 
+function mismoDia(a,b){
+  return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+}
+
+function esc(s){
+  return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+
 const MESES=["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
 
 /* =====================  DÍAS CON VENTA / SIN VENTA  =====================
@@ -576,10 +921,14 @@ function calcularRachasVenta(estado,diasTranscurridos){
 function colorRacha(n){
   return n===0?cssVar("--ok"):(n<=2?cssVar("--warn"):cssVar("--bad"));
 }
+// Misma regla que colorRacha, en forma de etiqueta de semáforo.
+function semaforoRacha(n){
+  return n===0?["ok","En ritmo"]:(n<=2?["warn","Atención"]:["bad","Urgente"]);
+}
 
 function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelMes){
   const cont=document.getElementById(contId);
-  if(!cont)return;
+  if(!cont)return {rachaActual:0,rachaMax:0};
   const estado=estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes);
   const {rachaActual,rachaMax}=calcularRachasVenta(estado,diasTranscurridos);
   const anio=fechaBase.getFullYear(),mes=fechaBase.getMonth();
@@ -602,8 +951,9 @@ function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelM
     <div class="leyenda">
       <span><span class="punto" style="background:${cssVar("--ok")}"></span>Con venta</span>
       <span><span class="punto" style="background:${cssVar("--bad")}"></span>Sin venta</span>
-      <span><span class="punto" style="background:${cssVar("--border")};opacity:.6"></span>Domingo (no cuenta)</span>
+      <span><span class="punto" style="background:${cssVar("--border")};opacity:.7"></span>Domingo (no cuenta)</span>
     </div>`;
+  return {rachaActual,rachaMax};
 }
 
 function renderDiasVentaPorAsesor(nombres,datosCompletos,fechaBase,diasTranscurridos,diasDelMes){
@@ -632,22 +982,24 @@ function titulo(txt){
 
 function vendedorDe(d){return (d["VENDEDOR"]||"").trim().toUpperCase();}
 
+function setTexto(id,txt){document.getElementById(id).textContent=txt;}
+function setTag(id,sem){
+  const el=document.getElementById(id);
+  if(!sem){el.hidden=true;return;}
+  el.hidden=false;
+  el.dataset.estado=sem[0];
+  el.innerHTML=`<i></i>${sem[1]}`;
+}
+function plural(n,uno,varios){return `${n} ${n===1?uno:varios}`;}
+
 /* =====================  RENDER  ===================== */
 function renderDashboard(datosCrudos){
   const datosCompletos=datosCrudos.filter(filaValida);
   datosActuales=datosCompletos;
 
-  const esPersonal=usuarioActual&&usuarioActual!=="JESUS";
+  const esPersonal=esVistaPersonal();
   const datosVista=esPersonal?datosCompletos.filter(d=>vendedorDe(d)===usuarioActual):datosCompletos;
-
-  document.querySelector('[data-seccion="meta"]').style.display=esPersonal?"none":"";
-  document.querySelector('[data-seccion="mi-resultado"]').style.display=esPersonal?"":"none";
-  document.querySelector('[data-seccion="mi-dia"]').style.display=esPersonal?"":"none";
-  document.querySelector('[data-seccion="asesores"]').style.display=esPersonal?"none":"";
-  document.querySelector('[data-seccion="participacion"]').style.display=esPersonal?"none":"";
-  document.querySelector('[data-seccion="mis-dias-venta"]').style.display=esPersonal?"":"none";
-  document.querySelector('[data-seccion="dias-venta-agencia"]').style.display=esPersonal?"none":"";
-  document.querySelector('[data-seccion="dias-venta-asesores"]').style.display=esPersonal?"none":"";
+  document.body.classList.toggle("vista-personal",esPersonal);
 
   const mesTab=selectMes.value||"";
   const fechaCorte=obtenerFechaCorte(datosCompletos)||new Date();
@@ -668,48 +1020,174 @@ function renderDashboard(datosCrudos){
 
   const dd=String(fechaCorte.getDate()).padStart(2,"0");
   const mm=String(fechaCorte.getMonth()+1).padStart(2,"0");
-  document.getElementById("subtitle-mes").textContent=`Corte al ${dd}/${mm}`;
+  document.getElementById("subtitle-mes").textContent=`${mesTab} · corte al ${dd}/${mm}`;
   document.getElementById("corte-label").textContent=`${MESES[fechaCorte.getMonth()]} ${fechaCorte.getFullYear()}`;
 
+  // Asesores activos siempre aparecen (aunque no hayan vendido); si en el
+  // Sheet aparece alguien más, se muestra también, pero sin meta propia.
   const vendedoresTodos=groupVend(datosCompletos);
-  const nombresTodos=Object.keys(vendedoresTodos).sort();
-  const metaIndividual=nombresTodos.length?META_AGENCIA/nombresTodos.length:META_AGENCIA;
+  ASESORES_ACTIVOS.forEach(n=>{if(!vendedoresTodos[n])vendedoresTodos[n]={v:0,u:0};});
+  const extras=Object.keys(vendedoresTodos).filter(n=>!ASESORES_ACTIVOS.includes(n)).sort();
+  const nombresTodos=[...ASESORES_ACTIVOS,...extras];
+  const metaIndividual=META_AGENCIA/ASESORES_ACTIVOS.length;
 
-  renderTablaAsesores(nombresTodos,vendedoresTodos,metaIndividual,diasTranscurridos,diasDelMes);
-
-  // --- Agencia completa: siempre se calcula (para la tarjeta de meta y,
-  //     cuando la ve Jesús, para el medidor) ---
+  // --- Agencia completa: siempre se calcula (el mosaico Meta y avance
+  //     siempre es de la agencia, también en la vista de asesor) ---
   const ventaConIVAAgencia=datosCompletos.reduce((a,d)=>a+numMiles(d["PRECIO"]),0);
   const ventaSinIVAAgencia=ventaConIVAAgencia/1.16;
   const totalUnidadesAgencia=datosCompletos.length;
-  renderMetaAgencia({v:ventaSinIVAAgencia,u:totalUnidadesAgencia},META_AGENCIA,diasTranscurridos,diasDelMes);
+  const oAgencia={v:ventaSinIVAAgencia,u:totalUnidadesAgencia};
+  renderMetaAgencia(oAgencia,META_AGENCIA,diasTranscurridos,diasDelMes);
+  renderMetaResumen(oAgencia,META_AGENCIA,diasTranscurridos,diasDelMes,diasRestantes);
+  renderGraficaAcumulada(datosCompletos,META_AGENCIA,fechaBase,diasTranscurridos,diasDelMes);
 
-  // --- Bienvenida + medidor + tarjetas personales ---
-  let cumplimientoPct;
-  if(esPersonal){
-    const o=vendedoresTodos[usuarioActual]||{v:0,u:0};
-    cumplimientoPct=metaIndividual?o.v/metaIndividual*100:0;
-    renderMiResultado(o,metaIndividual,diasTranscurridos,diasDelMes);
-    renderMiDia(datosVista,o,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes,esMesActual);
-    renderCalendarioVenta("mis-dias-venta-body",datosVista,fechaBase,diasTranscurridos,diasDelMes);
-  }else{
-    renderCalendarioVenta("dias-venta-agencia-body",datosCompletos,fechaBase,diasTranscurridos,diasDelMes);
+  const cumplimientoPct=META_AGENCIA?ventaSinIVAAgencia/META_AGENCIA*100:0;
+  const est=estadoMeta(cumplimientoPct,diasTranscurridos,diasDelMes);
+
+  const oMio=esPersonal?(vendedoresTodos[usuarioActual]||{v:0,u:0}):oAgencia;
+
+  // --- Solo Jesús: comparativos entre asesores. En la vista de asesor se
+  //     vacían para que no quede información del otro asesor en la página ---
+  if(!esPersonal){
+    renderTablaAsesores(nombresTodos,vendedoresTodos,metaIndividual,diasTranscurridos,diasDelMes);
+    renderParticipacion(nombresTodos,vendedoresTodos,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes);
     renderDiasVentaPorAsesor(nombresTodos,datosCompletos,fechaBase,diasTranscurridos,diasDelMes);
-    cumplimientoPct=META_AGENCIA?ventaSinIVAAgencia/META_AGENCIA*100:0;
+    document.getElementById("tu-parte-body").innerHTML="";
+    document.getElementById("mi-resultado-body").innerHTML="";
+    document.getElementById("mi-dia-body").innerHTML="";
+  }else{
+    document.querySelectorAll(".tbody-asesores,.nota-asesores").forEach(el=>el.innerHTML="");
+    document.getElementById("texto-participacion").innerHTML="";
+    document.getElementById("ritmo-asesores").innerHTML="";
+    document.getElementById("dias-venta-asesores-body").innerHTML="";
+    if(chartParticipacion){chartParticipacion.destroy();chartParticipacion=null;}
+    renderMiResultado(oMio,metaIndividual,diasTranscurridos,diasDelMes);
+    renderMiDia(datosVista,oMio,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes,esMesActual);
+    renderTuParte(oMio,oAgencia,metaIndividual);
   }
-  renderBienvenida(cumplimientoPct,diasTranscurridos,diasDelMes);
 
-  // --- Secciones que sí se filtran a la vista personal ---
-  if(!esPersonal)renderParticipacion(nombresTodos,vendedoresTodos,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes);
-  const objetivoVCIndividual=nombresTodos.length?Math.ceil(OBJETIVO_VC/nombresTodos.length):OBJETIVO_VC;
-  renderVentoCredit(datosVista,esPersonal?objetivoVCIndividual:OBJETIVO_VC,diasTranscurridos,diasDelMes);
-  renderGrupos(datosVista,esPersonal?[usuarioActual]:nombresTodos);
-  renderFormas(datosVista,esPersonal?[usuarioActual]:nombresTodos);
+  // --- Secciones que se filtran a la vista personal ---
+  const nombresVista=esPersonal?[usuarioActual]:nombresTodos;
+  const racha=renderCalendarioVenta("dias-venta-body",datosVista,fechaBase,diasTranscurridos,diasDelMes);
+  const objetivoVCIndividual=Math.ceil(OBJETIVO_VC/ASESORES_ACTIVOS.length);
+  const vc=renderVentoCredit(datosVista,esPersonal?objetivoVCIndividual:OBJETIVO_VC,diasTranscurridos,diasDelMes);
+  renderGrupos(datosVista,nombresVista);
+  renderFormas(datosVista,nombresVista);
   renderTopModelos(datosVista,datosVista.length);
-  renderEntregas(datosVista,esPersonal?[usuarioActual]:nombresTodos,fechaCorte);
-  renderResenas(datosVista);
-  renderExpediente(datosVista);
-  renderPilot(datosVista);
+  const ent=renderEntregas(datosVista,nombresVista,fechaCorte);
+  const res=renderResenas(datosVista);
+  const exp=renderExpediente(datosVista);
+  const pil=renderPilot(datosVista);
+
+  // Ventas del día: hoy (fecha del teléfono) si es el mes en curso; si es
+  // un mes cerrado, el último día con venta.
+  const diaRef=esMesActual?hoyReal:fechaCorte;
+  const ventasDia=datosVista.filter(d=>mismoDia(parseFechaLatina(d["FECHA"]),diaRef));
+  const montoDia=ventasDia.reduce((a,d)=>a+numMiles(d["PRECIO"])/1.16,0);
+  renderVentasDia(ventasDia,montoDia,diaRef,esMesActual);
+
+  // --- Títulos según el perfil ---
+  setTexto("dias-venta-titulo",esPersonal?"Mis días con venta":"Días con venta");
+  setTexto("modelos-titulo",esPersonal?"Tus modelos más vendidos":"Top 5 modelos (unidades)");
+  setTexto("formas-titulo",esPersonal?"Tus formas de pago":"Formas de pago");
+
+  // =====================  PORTADA  =====================
+  // Encabezado
+  const nombreSaludo=usuarioActual==="JESUS"?"Jesús":nombreBonito(usuarioActual||"");
+  setTexto("saludo-texto",nombreSaludo?`Hola, ${nombreSaludo}`:"Hola");
+  const fechaTxt=esMesActual
+    ?hoyReal.toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"})
+    :`${titulo(mesTab.replace(/^HMYP\s*/i,""))} · mes cerrado`;
+  setTexto("fecha-texto",`${fechaTxt.charAt(0).toUpperCase()+fechaTxt.slice(1)} · día ${diasTranscurridos} de ${diasDelMes}`);
+  setTexto("hoy-lbl",(esPersonal?"Tu venta ":"Vendido ")+(esMesActual?"hoy":`el ${diaRef.getDate()}/${diaRef.getMonth()+1}`));
+  setTexto("hoy-monto",fmt(montoDia));
+  setTexto("hoy-unid",plural(ventasDia.length,"unidad","unidades"));
+
+  // Mosaico grande: Meta y avance (agencia)
+  const esperadoPct=pctEsperadoAHoy(diasTranscurridos,diasDelMes);
+  setTexto("mos-meta-cara",est.cara);
+  setTexto("mos-meta-pct",pct2(cumplimientoPct));
+  setTexto("mos-meta-venta",`${fmt(ventaSinIVAAgencia)} de ${fmt(META_AGENCIA)} sin IVA`);
+  document.getElementById("mos-meta-barra").style.width=Math.min(Math.max(cumplimientoPct,0),100)+"%";
+  document.getElementById("mos-meta-marca").style.left=Math.min(esperadoPct,100)+"%";
+  setTexto("mos-meta-msg",est.msg);
+  setTexto("mos-meta-dia",fmt(Math.max(META_AGENCIA-ventaSinIVAAgencia,0)/diasRestantes));
+  setTexto("mos-meta-faltan",`Faltan ${plural(diasRestantes,"día","días")}`);
+  setTag("tag-meta",[est.estado,est.etiqueta]);
+  setTexto("mos-meta-aporte",esPersonal
+    ?`Tu aportación: ${ventaSinIVAAgencia>0?(oMio.v/ventaSinIVAAgencia*100).toFixed(1):"0.0"}%`:"");
+
+  // Hoy
+  setTexto("mos-hoy-dato",plural(ventasDia.length,"unidad","unidades"));
+  setTexto("mos-hoy-sub",fmt(montoDia)+" sin IVA"+(esMesActual?"":` · ${diaRef.getDate()}/${diaRef.getMonth()+1}`));
+
+  // Asesores / Mi mes
+  setTexto("mos-asesores-nombre",esPersonal?"Mi mes":"Asesores");
+  if(esPersonal){
+    setTexto("mos-asesores-dato",`Tu venta: ${fmt(oMio.v)}`);
+    setTexto("mos-asesores-sub",`${pct(metaIndividual?oMio.v/metaIndividual*100:0)} de tu meta`);
+  }else{
+    const total=nombresTodos.reduce((a,n)=>a+vendedoresTodos[n].v,0);
+    setTexto("mos-asesores-dato",total>0
+      ?nombresTodos.filter(n=>vendedoresTodos[n].v>0||ASESORES_ACTIVOS.includes(n))
+        .map(n=>`${titulo(n)} ${(vendedoresTodos[n].v/total*100).toFixed(0)}%`).join(" · ")
+      :"Sin ventas aún");
+    setTexto("mos-asesores-sub","Participación en la venta");
+  }
+
+  // Racha
+  setTexto("mos-racha-dato",plural(racha.rachaActual,"día","días"));
+  setTexto("mos-racha-sub",`Racha actual sin venta · máx. ${racha.rachaMax}`);
+  setTag("tag-racha",semaforoRacha(racha.rachaActual));
+
+  // VentoCredit
+  setTexto("mos-vc-dato",`${vc.llevas} de ${vc.objetivo}`);
+  setTexto("mos-vc-sub",`colocados · deberías llevar ${vc.deberiaLlevar}`);
+  setTag("tag-vc",vc.semaforo);
+
+  // Entregadas
+  if(ent){
+    setTexto("mos-entregas-dato",`${ent.pendientes} pendiente${ent.pendientes===1?"":"s"}`);
+    setTexto("mos-entregas-sub",`de entrega · ${ent.entregadas} de ${ent.total} entregadas`);
+  }else{
+    setTexto("mos-entregas-dato","—");setTexto("mos-entregas-sub","Sin columna ENTREGADA");
+  }
+
+  // Reseñas
+  if(res){
+    setTexto("mos-resenas-dato",`${res.con} de ${res.total}`);
+    setTexto("mos-resenas-sub","con reseña de Google");
+  }else{
+    setTexto("mos-resenas-dato","—");setTexto("mos-resenas-sub","Sin columna RESEÑA");
+  }
+
+  // Expedientes
+  if(exp){
+    setTexto("mos-expedientes-dato",`${exp.completos} de ${exp.total}`);
+    setTexto("mos-expedientes-sub","expedientes completos");
+  }else{
+    setTexto("mos-expedientes-dato","—");setTexto("mos-expedientes-sub","Sin columna EXPEDIENTE");
+  }
+
+  // Pilot
+  if(pil){
+    setTexto("mos-pilot-dato",`${pil.noCapturadas} sin capturar`);
+    setTexto("mos-pilot-sub",pil.difNombre?`${plural(pil.difNombre,"diferencia","diferencias")} de nombre`:"en Pilot");
+    setTag("tag-pilot",pil.noCapturadas?["bad","Revisar"]:["ok","Al día"]);
+  }else{
+    setTexto("mos-pilot-dato","—");setTexto("mos-pilot-sub","Cargando reporte de Pilot…");
+    setTag("tag-pilot",null);
+  }
+
+  // Cifras (informativas)
+  setTexto("cifra-venta-lbl",esPersonal?"Tu venta sin IVA":"Venta sin IVA");
+  setTexto("cifra-venta",fmt(oMio.v));
+  setTexto("cifra-unidades",String(oMio.u));
+  setTexto("cifra-ticket",fmt(oMio.u?oMio.v/oMio.u:0));
+  setTexto("cifra-dias",String(diasRestantes));
+
+  // Si se está viendo un detalle, el título puede cambiar con el perfil
+  if(!vistaDetalle.hidden)mostrarRuta();
 }
 
 // % que ya debería llevar a la fecha, según cuánto ha pasado del mes —
@@ -718,27 +1196,16 @@ function pctEsperadoAHoy(diasTranscurridos,diasDelMes){
   return diasDelMes?diasTranscurridos/diasDelMes*100:0;
 }
 
-function renderBienvenida(cumplimientoPct,diasTranscurridos,diasDelMes){
-  const u=usuarioActual||"";
-  document.getElementById("saludo-texto").textContent=
-    usuarioActual==="JESUS"?"Hola, Jesús":`Hola, ${nombreBonito(u)}`;
-  document.getElementById("saludo-sub").textContent=
-    usuarioActual==="JESUS"?"Así va la agencia hoy":"Así vas tú este mes";
-
+// Carita y semáforo de la meta (antes en la tarjeta de bienvenida): compara
+// el % de avance contra el % que ya deberíamos llevar a hoy.
+function estadoMeta(cumplimientoPct,diasTranscurridos,diasDelMes){
   const p=isFinite(cumplimientoPct)?cumplimientoPct:0;
-  const esperado=pctEsperadoAHoy(diasTranscurridos,diasDelMes);
-  const diferencia=p-esperado;
-
-  document.getElementById("gauge-pct").textContent=pct2(p);
-  let cara,msg,color;
-  if(p>=100){cara="🎉";msg="¡Meta cumplida, felicidades!";color=cssVar("--ok");}
-  else if(diferencia>=0){cara="😄";msg="Vas al día con el ritmo del mes";color=cssVar("--ok");}
-  else if(diferencia>=-10){cara="😐";msg="Un poco abajo del ritmo, se puede parejar";color=cssVar("--warn");}
-  else if(diferencia>=-20){cara="😟";msg="Vas por debajo del ritmo del mes";color=cssVar("--alert");}
-  else{cara="😟";msg="Urge subir el ritmo de venta";color=cssVar("--bad");}
-  document.getElementById("gauge-cara").textContent=cara;
-  document.getElementById("gauge-pct").style.color=color;
-  document.getElementById("gauge-msg").textContent=msg;
+  const diferencia=p-pctEsperadoAHoy(diasTranscurridos,diasDelMes);
+  if(p>=100)return {cara:"🎉",msg:"¡Meta cumplida, felicidades!",color:cssVar("--ok"),estado:"ok",etiqueta:"Meta cumplida"};
+  if(diferencia>=0)return {cara:"😄",msg:"Vamos al día con el ritmo del mes",color:cssVar("--ok"),estado:"ok",etiqueta:"En ritmo"};
+  if(diferencia>=-10)return {cara:"😐",msg:"Un poco abajo del ritmo, se puede parejar",color:cssVar("--warn"),estado:"warn",etiqueta:"Atención"};
+  if(diferencia>=-20)return {cara:"😟",msg:"Vamos por debajo del ritmo del mes",color:cssVar("--alert"),estado:"bad",etiqueta:"Urgente"};
+  return {cara:"😟",msg:"Urge subir el ritmo de venta",color:cssVar("--bad"),estado:"bad",etiqueta:"Urgente"};
 }
 
 // Renglón "Vs. tu ritmo": positivo si vas sobrado, negativo si traes
@@ -766,7 +1233,8 @@ function renderMiResultado(o,meta,diasTranscurridos,diasDelMes){
     <div class="kpi-row"><span>Unidades vendidas</span><span class="value">${o.u}</span></div>
     <div class="small" style="margin-top:12px;color:var(--accent)">Si sigues a este ritmo, terminarías el mes con…</div>
     <div class="kpi-row"><span>Proyección al cierre</span><span class="value">${fmt(proy)}</span></div>
-    <div class="kpi-row"><span>% de tu meta</span><span class="value">${pct(meta?proy/meta*100:0)}</span></div>`;
+    <div class="kpi-row"><span>% de tu meta</span><span class="value">${pct(meta?proy/meta*100:0)}</span></div>
+    <div class="small">Tu meta es la meta de la agencia dividida entre ${ASESORES_ACTIVOS.length} asesores activos.</div>`;
   document.getElementById("mi-resultado-body").innerHTML=html;
 }
 
@@ -787,8 +1255,96 @@ function renderMetaAgencia(o,meta,diasTranscurridos,diasDelMes){
     <div class="small" style="margin-top:12px;color:var(--accent)">Si seguimos a este ritmo, terminaríamos el mes con…</div>
     <div class="kpi-row"><span>Proyección al cierre</span><span class="value">${fmt(proy)}</span></div>
     <div class="kpi-row"><span>% de la meta</span><span class="value">${pct(meta?proy/meta*100:0)}</span></div>`;
-  document.getElementById("meta-agencia-body").innerHTML=
-    document.getElementById("corte-label").outerHTML+html;
+  document.getElementById("meta-agencia-body").innerHTML=html;
+}
+
+// Tres tarjetas de arriba en el detalle de Meta y avance.
+function renderMetaResumen(o,meta,diasTranscurridos,diasDelMes,diasRestantes){
+  const avance=meta?o.v/meta*100:0;
+  const esperadoPct=pctEsperadoAHoy(diasTranscurridos,diasDelMes);
+  const deberiaLlevar=meta*esperadoPct/100;
+  const porDia=Math.max(meta-o.v,0)/diasRestantes;
+  const ritmoIdeal=diasDelMes?meta/diasDelMes:0;
+  const proy=diasTranscurridos>0?o.v/diasTranscurridos*diasDelMes:o.v;
+  const est=estadoMeta(avance,diasTranscurridos,diasDelMes);
+  document.getElementById("meta-resumen").innerHTML=`
+    <div class="tres">
+      <div class="card">
+        <div class="mini-lbl">Avance</div>
+        <div class="mini-num">${pct2(avance)} <span>de ${fmt(meta)}</span></div>
+        <div class="barra-meta"><div style="width:${Math.min(Math.max(avance,0),100)}%;background:${est.color}"></div><span style="left:${Math.min(esperadoPct,100)}%" title="Deberíamos llevar a hoy"></span></div>
+        <div class="small">La marca es lo que deberíamos llevar a hoy: <b class="num">${fmt(deberiaLlevar)}</b> (${pct2(esperadoPct)}).</div>
+      </div>
+      <div class="card">
+        <div class="mini-lbl">Para llegar al 100%</div>
+        <div class="mini-num">${fmt(porDia)} <span>por día</span></div>
+        <div class="small">Ritmo ideal desde el día 1: <b class="num">${fmt(ritmoIdeal)}</b> por día · faltan ${plural(diasRestantes,"día","días")}.</div>
+        ${lineaVsRitmo(o.v,deberiaLlevar)}
+      </div>
+      <div class="card">
+        <div class="mini-lbl">Proyección al cierre</div>
+        <div class="mini-num">${fmt(proy)}</div>
+        <div class="small">${pct(meta?proy/meta*100:0)} de la meta si seguimos a este ritmo.</div>
+      </div>
+    </div>`;
+}
+
+// Gráfica de venta acumulada día por día contra la línea de ritmo ideal.
+function renderGraficaAcumulada(datos,meta,fechaBase,diasTranscurridos,diasDelMes){
+  const porDia=new Array(diasDelMes+1).fill(0);
+  datos.forEach(d=>{
+    const f=parseFechaLatina(d["FECHA"]);
+    if(f&&f.getMonth()===fechaBase.getMonth()&&f.getDate()<=diasDelMes)porDia[f.getDate()]+=numMiles(d["PRECIO"])/1.16;
+  });
+  const etiquetas=[],acumulado=[],ideal=[];
+  let suma=0;
+  for(let d=1;d<=diasDelMes;d++){
+    suma+=porDia[d];
+    etiquetas.push(String(d));
+    acumulado.push(d<=diasTranscurridos?suma:null);
+    ideal.push(meta*d/diasDelMes);
+  }
+  const canvas=document.getElementById("chart-acumulado");
+  const texto=document.getElementById("texto-acumulado");
+  texto.textContent=`Línea azul: venta sin IVA acumulada hasta el día ${diasTranscurridos}. Línea punteada: ritmo parejo para llegar a ${fmt(meta)} el día ${diasDelMes}.`;
+  if(typeof Chart==="undefined"){canvas.style.display="none";return;}
+  canvas.style.display="";
+  try{
+    if(chartAcumulado)chartAcumulado.destroy();
+    const cTexto=cssVar("--muted"),cGrid=cssVar("--border"),cAcc=cssVar("--accent");
+    chartAcumulado=new Chart(canvas.getContext("2d"),{
+      type:"line",
+      data:{labels:etiquetas,datasets:[
+        {label:"Venta acumulada",data:acumulado,borderColor:cAcc,backgroundColor:cAcc,borderWidth:2,pointRadius:2.5,pointHoverRadius:5,tension:0,spanGaps:false},
+        {label:"Ritmo ideal",data:ideal,borderColor:cTexto,borderWidth:2,borderDash:[5,5],pointRadius:0,pointHoverRadius:0,tension:0}
+      ]},
+      options:{
+        responsive:true,maintainAspectRatio:false,animation:false,
+        interaction:{mode:"index",intersect:false},
+        plugins:{
+          legend:{position:"top",align:"start",labels:{color:cssVar("--text"),usePointStyle:true,pointStyle:"line",boxWidth:24,font:{family:"Inter",size:12}}},
+          tooltip:{callbacks:{title:it=>`Día ${it[0].label}`,label:c=>`${c.dataset.label}: ${fmt(c.raw)}`}}
+        },
+        scales:{
+          x:{ticks:{color:cTexto,font:{family:"IBM Plex Mono",size:10},maxRotation:0,autoSkip:true,maxTicksLimit:11},grid:{display:false},border:{color:cGrid}},
+          y:{beginAtZero:true,ticks:{color:cTexto,font:{family:"IBM Plex Mono",size:10},callback:v=>fmtCorto(v),maxTicksLimit:6},grid:{color:cGrid},border:{display:false}}
+        }
+      }
+    });
+  }catch(err){
+    console.error("No se pudo dibujar la gráfica acumulada:",err);
+  }
+}
+
+// Vista de asesor: su parte de la venta de la agencia.
+function renderTuParte(oMio,oAgencia,metaIndividual){
+  const parte=oAgencia.v>0?oMio.v/oAgencia.v*100:0;
+  document.getElementById("tu-parte-body").innerHTML=`
+    <div class="mini-num">${parte.toFixed(1)}% <span>de la venta de la agencia</span></div>
+    <div class="barra-parte"><div style="width:${Math.min(parte,100)}%;background:var(--accent)"></div></div>
+    <div class="kpi-row"><span>Tu venta</span><span class="value">${fmt(oMio.v)}</span></div>
+    <div class="kpi-row"><span>Venta de la agencia</span><span class="value">${fmt(oAgencia.v)}</span></div>
+    <div class="kpi-row"><span>Tu meta</span><span class="value">${fmt(metaIndividual)}</span></div>`;
 }
 
 // Tarjeta "Mi día de hoy" (solo vendedores): objetivo del día vs lo que
@@ -824,6 +1380,26 @@ function renderMiDia(datosVendedor,o,meta,diasTranscurridos,diasDelMes,diasResta
     <div class="small">${mensaje} · faltan ${diasRestantes} día${diasRestantes===1?"":"s"} del mes</div>`;
 }
 
+// Lista de ventas del día (asesor, modelo, forma de pago, importe sin IVA).
+function renderVentasDia(ventas,monto,diaRef,esMesActual){
+  const fecha=`${String(diaRef.getDate()).padStart(2,"0")}/${String(diaRef.getMonth()+1).padStart(2,"0")}`;
+  setTexto("ventas-hoy-titulo",esMesActual?"Ventas de hoy":`Ventas del último día con venta (${fecha})`);
+  const cont=document.getElementById("ventas-hoy-body");
+  if(!ventas.length){
+    cont.innerHTML=`<div class="small">Todavía no hay ventas registradas con fecha ${fecha}.</div>`;
+    return;
+  }
+  let html=`<div class="kpi-grande">${plural(ventas.length,"unidad","unidades")} · ${fmt(monto)}</div>`+
+    `<div class="table-scroll"><table class="table-hoy"><thead><tr>`+
+    `<th>Asesor</th><th>Modelo</th><th>Forma de pago</th><th class="text-right">Importe sin IVA</th></tr></thead><tbody>`;
+  ventas.forEach(d=>{
+    html+=`<tr><td>${esc(titulo(vendedorDe(d)))}</td><td>${esc((d["MODELO"]||"—").trim()||"—")}</td>`+
+      `<td>${esc(normalizarForma(d["FORMA DE PAGO"]))}</td><td class="text-right">${fmt(numMiles(d["PRECIO"])/1.16)}</td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  cont.innerHTML=html;
+}
+
 function groupVend(datos){
   const r={};
   datos.forEach(d=>{
@@ -836,50 +1412,44 @@ function groupVend(datos){
   return r;
 }
 
-const COLORES_BADGE=[
-  {bg:"#1f3d1f",fg:"#22c55e"},{bg:"#211e3d",fg:"#6366f1"},
-  {bg:"#3d2a1f",fg:"#f59e0b"},{bg:"#1f333d",fg:"#06b6d4"},
-  {bg:"#3d1f33",fg:"#ec4899"},{bg:"#2b3d1f",fg:"#84cc16"}
-];
+const COLORES_BADGE=["#2B6EF2","#14a08f","#e2a21a","#7b5cf0","#e04e93","#2fa04a"];
 
 function badge(nombre,i){
   const c=COLORES_BADGE[i%COLORES_BADGE.length];
-  return `<span class="badge" style="background:${c.bg};color:${c.fg}">${titulo(nombre)}</span>`;
+  return `<span class="badge" style="background:color-mix(in srgb,${c} 16%,transparent)"><i style="background:${c}"></i>${titulo(nombre)}</span>`;
 }
 
 function renderTablaAsesores(nombres,vendedores,metaIndividual,diasTranscurridos,diasDelMes){
-  const tb=document.getElementById("tabla-asesores");
-  tb.innerHTML="";
-
+  let html="";
   let totV=0,totU=0;
   nombres.forEach((n,i)=>{
     const o=vendedores[n];
     totV+=o.v;totU+=o.u;
-    tb.innerHTML+=filaAsesor(badge(n,i),o,metaIndividual,diasTranscurridos,diasDelMes);
+    html+=filaAsesor(badge(n,i),o,ASESORES_ACTIVOS.includes(n)?metaIndividual:null,diasTranscurridos,diasDelMes);
   });
-  tb.innerHTML+=filaAsesor("<strong>Totales</strong>",{v:totV,u:totU},META_AGENCIA,diasTranscurridos,diasDelMes);
+  html+=filaAsesor("<strong>Totales</strong>",{v:totV,u:totU},META_AGENCIA,diasTranscurridos,diasDelMes);
+  document.querySelectorAll(".tbody-asesores").forEach(tb=>tb.innerHTML=html);
 
-  const nota=document.getElementById("nota-asesores");
-  if(nombres.length===0){
-    nota.textContent="El Sheet no trae vendedores identificables.";
-  }else{
-    nota.textContent=`${nombres.length} asesor${nombres.length===1?"":"es"} detectado${nombres.length===1?"":"s"} (${nombres.map(titulo).join(", ")}). `+
-      `La meta individual es la meta de la agencia dividida entre ${nombres.length}.`;
-  }
+  const extras=nombres.filter(n=>!ASESORES_ACTIVOS.includes(n));
+  let nota=`Asesores activos: ${ASESORES_ACTIVOS.map(titulo).join(", ")}. `+
+    `La meta individual es la meta de la agencia dividida entre ${ASESORES_ACTIVOS.length}, aunque alguno todavía no haya vendido.`;
+  if(extras.length)nota+=` También aparecen ventas de ${extras.map(titulo).join(", ")} (sin meta propia; cuentan en los totales).`;
+  document.querySelectorAll(".nota-asesores").forEach(el=>el.textContent=nota);
 }
 
 function filaAsesor(etiqueta,o,meta,diasTranscurridos,diasDelMes){
   const proy=diasTranscurridos>0?o.v/diasTranscurridos*diasDelMes:o.v;
+  const conMeta=typeof meta==="number"&&meta>0;
   return `<tr>
     <td>${etiqueta}</td>
-    <td class="text-right">${fmt(meta)}</td>
+    <td class="text-right">${conMeta?fmt(meta):"—"}</td>
     <td class="text-right">${fmt(o.v)}</td>
-    <td class="text-right">${pct(o.v/meta*100)}</td>
-    <td class="text-right">${fmt(Math.max(meta-o.v,0))}</td>
+    <td class="text-right">${conMeta?pct(o.v/meta*100):"—"}</td>
+    <td class="text-right">${conMeta?fmt(Math.max(meta-o.v,0)):"—"}</td>
     <td class="text-center">${o.u}</td>
     <td class="text-right">${fmt(o.u?o.v/o.u:0)}</td>
     <td class="text-right">${fmt(proy)}</td>
-    <td class="text-right">${pct(proy/meta*100)}</td>
+    <td class="text-right">${conMeta?pct(proy/meta*100):"—"}</td>
   </tr>`;
 }
 
@@ -897,10 +1467,11 @@ function renderParticipacion(nombres,vendedores,metaIndividual,diasTranscurridos
 
   const proyecciones=ventas.map(v=>diasTranscurridos>0?v/diasTranscurridos*diasDelMes:v);
   const pcts=proyecciones.map(p=>metaIndividual?p/metaIndividual*100:0);
+  const colores=nombres.map((n,i)=>ASESORES_ACTIVOS.includes(n)?colorPorRendimiento(pcts[i]):cssVar("--muted"));
 
   let ritmoHTML=`<div class="card-tag" style="margin-top:10px">Ritmo necesario (quedan ${diasRestantes} día${diasRestantes===1?"":"s"} del mes)</div>`;
-  nombres.forEach((n,i)=>{
-    const brecha=Math.max(metaIndividual-ventas[i],0);
+  nombres.filter(n=>ASESORES_ACTIVOS.includes(n)).forEach(n=>{
+    const brecha=Math.max(metaIndividual-vendedores[n].v,0);
     const texto=brecha<=0?"Meta cumplida":`${fmt(brecha/diasRestantes)}/día`;
     ritmoHTML+=`<div class="kpi-row"><span>${titulo(n)}</span><span class="value">${texto}</span></div>`;
   });
@@ -934,7 +1505,7 @@ function renderParticipacion(nombres,vendedores,metaIndividual,diasTranscurridos
         labels:nombres.map(titulo),
         datasets:[{
           data:ventas,
-          backgroundColor:pcts.map(colorPorRendimiento),
+          backgroundColor:colores,
           borderRadius:6,
           barPercentage:0.6
         }]
@@ -947,7 +1518,7 @@ function renderParticipacion(nombres,vendedores,metaIndividual,diasTranscurridos
         plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},
         scales:{
           x:{display:false},
-          y:{ticks:{color:cssVar("--text"),font:{size:13}},grid:{display:false},border:{display:false}}
+          y:{ticks:{color:cssVar("--text"),font:{family:"Inter",size:13}},grid:{display:false},border:{display:false}}
         }
       }
     });
@@ -983,25 +1554,24 @@ const VAR_GRUPO={"CONTADO":"--accent","FINANCIAMIENTO":"--warn","SIN CLASIFICAR"
 
 // Tarjeta "VentoCredit": financiamientos VentoCredit del mes vs el objetivo
 // (agencia completa para Jesús, o el objetivo repartido parejo entre los
-// vendedores cuando es la vista personal — ver objetivoVCIndividual).
+// asesores activos cuando es la vista personal — ver objetivoVCIndividual).
 function renderVentoCredit(datos,objetivo,diasTranscurridos,diasDelMes){
   const cont=document.getElementById("ventocredit-body");
-  if(!cont)return;
 
   const llevas=datos.filter(d=>normalizarForma(d["FORMA DE PAGO"])==="VENTOCREDIT").length;
   const deberiaLlevar=Math.max(Math.ceil(objetivo*diasTranscurridos/diasDelMes),0);
   const pct=objetivo?llevas/objetivo*100:0;
   const diferencia=llevas-deberiaLlevar;
 
-  let color,mensaje;
+  let color,mensaje,semaforo;
   if(objetivo&&llevas>=objetivo){
-    color="--ok";mensaje="¡Meta de VentoCredit cumplida este mes!";
+    color="--ok";mensaje="¡Meta de VentoCredit cumplida este mes!";semaforo=["ok","Meta cumplida"];
   }else if(diferencia>=0){
-    color="--ok";mensaje="Vas en tiempo con tu ritmo de VentoCredit.";
+    color="--ok";mensaje="Vas en tiempo con tu ritmo de VentoCredit.";semaforo=["ok","En ritmo"];
   }else if(diferencia>=-1){
-    color="--warn";mensaje=`Vas ${Math.abs(diferencia)} financiamiento${Math.abs(diferencia)===1?"":"s"} abajo del ritmo.`;
+    color="--warn";mensaje=`Vas ${Math.abs(diferencia)} financiamiento${Math.abs(diferencia)===1?"":"s"} abajo del ritmo.`;semaforo=["warn","Atención"];
   }else{
-    color="--bad";mensaje=`Vas ${Math.abs(diferencia)} financiamientos abajo del ritmo.`;
+    color="--bad";mensaje=`Vas ${Math.abs(diferencia)} financiamientos abajo del ritmo.`;semaforo=["bad","Urgente"];
   }
 
   const anchoBarra=Math.min(pct,100);
@@ -1017,6 +1587,7 @@ function renderVentoCredit(datos,objetivo,diasTranscurridos,diasDelMes){
       <div class="vc-marca" style="left:${posMarca}%"></div>
     </div>
     <div class="small">Deberías llevar a hoy: ${deberiaLlevar} · ${mensaje}</div>`;
+  return {llevas,objetivo,deberiaLlevar,semaforo};
 }
 
 function renderGrupos(datos,nombres){
@@ -1151,7 +1722,7 @@ function renderTopModelos(datos,totalU){
     return;
   }
   lista.forEach((x,i)=>{
-    tb.innerHTML+=`<tr><td>${i+1}</td><td>${x[0]}</td><td class="text-center">${x[1]}</td><td class="text-right">${(x[1]/totalU*100).toFixed(1)}%</td></tr>`;
+    tb.innerHTML+=`<tr><td>${i+1}</td><td>${esc(x[0])}</td><td class="text-center">${x[1]}</td><td class="text-right">${(x[1]/totalU*100).toFixed(1)}%</td></tr>`;
   });
   const suma=lista.reduce((a,x)=>a+x[1],0);
   document.getElementById("resumen-modelos").textContent=
@@ -1179,9 +1750,9 @@ function renderEntregas(datos,nombres,fechaCorte){
   const tabla=document.getElementById("entregas-pendientes");
 
   if(!datos.length||!("ENTREGADA" in datos[0])){
-    resumen.innerHTML=`<div class="small">El Sheet no trae la columna ENTREGADA, así que no puedo calcular las entregas.</div>`;
+    resumen.innerHTML=`<div class="small">${datos.length?"El Sheet no trae la columna ENTREGADA, así que no puedo calcular las entregas.":"Sin ventas registradas este mes."}</div>`;
     porAsesor.innerHTML="";tabla.innerHTML="";
-    return;
+    return datos.length?null:{entregadas:0,pendientes:0,total:0};
   }
 
   const entregadas=datos.filter(d=>estaEntregada(d["ENTREGADA"]));
@@ -1189,6 +1760,7 @@ function renderEntregas(datos,nombres,fechaCorte){
   const montoPendiente=pendientes.reduce((a,d)=>a+numMiles(d["PRECIO"])/1.16,0);
   const porcentaje=datos.length?entregadas.length/datos.length*100:0;
   const clase=porcentaje>=95?"estado-ok":(porcentaje>=85?"estado-warn":"estado-mal");
+  const resultado={entregadas:entregadas.length,pendientes:pendientes.length,total:datos.length};
 
   resumen.innerHTML=
     `<div class="kpi-grande ${clase}">${entregadas.length} de ${datos.length} entregadas · ${pct(porcentaje)}</div>`+
@@ -1208,7 +1780,7 @@ function renderEntregas(datos,nombres,fechaCorte){
 
   if(!pendientes.length){
     tabla.innerHTML=`<div class="small estado-ok" style="margin-top:12px">Todas las unidades vendidas están entregadas.</div>`;
-    return;
+    return resultado;
   }
   const conDias=pendientes.map(d=>({d,dias:diasEntre(parseFechaLatina(d["FECHA"]),fechaCorte)}))
     .sort((a,b)=>(b.dias??0)-(a.dias??0));
@@ -1220,11 +1792,11 @@ function renderEntregas(datos,nombres,fechaCorte){
   conDias.forEach(({d,dias})=>{
     const claseDias=dias===null?"":(dias>=7?"estado-mal":(dias>=3?"estado-warn":""));
     html+=`<tr>`+
-      `<td>${(d["FACTURA"]||"—").trim()||"—"}</td>`+
-      `<td>${(d["CLIENTE"]||"—").trim()||"—"}</td>`+
-      `<td>${(d["MODELO"]||"—").trim()||"—"}</td>`+
-      `<td>${titulo((d["VENDEDOR"]||"").trim())}</td>`+
-      `<td>${(d["FECHA"]||"").trim()}</td>`+
+      `<td>${esc((d["FACTURA"]||"—").trim()||"—")}</td>`+
+      `<td>${esc((d["CLIENTE"]||"—").trim()||"—")}</td>`+
+      `<td>${esc((d["MODELO"]||"—").trim()||"—")}</td>`+
+      `<td>${esc(titulo((d["VENDEDOR"]||"").trim()))}</td>`+
+      `<td>${esc((d["FECHA"]||"").trim())}</td>`+
       `<td class="text-center ${claseDias}">${dias===null?"—":dias}</td>`+
       `<td class="text-right">${fmt(numMiles(d["PRECIO"])/1.16)}</td>`+
       `</tr>`;
@@ -1232,6 +1804,23 @@ function renderEntregas(datos,nombres,fechaCorte){
   html+=`</tbody></table></div><div class="small">Días contados desde la venta hasta la fecha de corte. `+
     `En amarillo 3 días o más, en rojo 7 o más.</div>`;
   tabla.innerHTML=html;
+  return resultado;
+}
+
+// Tabla sencilla de ventas (factura, cliente, modelo, vendedor, fecha) para
+// las listas de "sin reseña" y "expedientes incompletos".
+function tablaVentas(lista,vacio){
+  if(!lista.length)return `<div class="small estado-ok">${vacio}</div>`;
+  let html=`<div class="table-scroll"><table class="table-pendientes"><thead><tr>`+
+    `<th>Factura</th><th>Cliente</th><th>Modelo</th><th>Vendedor</th><th>Fecha</th></tr></thead><tbody>`;
+  lista.forEach(d=>{
+    html+=`<tr><td>${esc((d["FACTURA"]||"—").trim()||"—")}</td>`+
+      `<td>${esc((d["CLIENTE"]||"—").trim()||"—")}</td>`+
+      `<td>${esc((d["MODELO"]||"—").trim()||"—")}</td>`+
+      `<td>${esc(titulo((d["VENDEDOR"]||"").trim()))}</td>`+
+      `<td>${esc((d["FECHA"]||"").trim())}</td></tr>`;
+  });
+  return html+`</tbody></table></div>`;
 }
 
 /* =====================  RESEÑAS DE GOOGLE  ===================== */
@@ -1242,9 +1831,11 @@ function esReseñaSi(valor){
 
 function renderResenas(datos){
   const cont=document.getElementById("resenas-body");
+  const lista=document.getElementById("sin-resena-body");
   if(!datos.length||!("RESEÑA" in datos[0])){
-    cont.innerHTML=`<div class="small">El Sheet no trae la columna RESEÑA todavía.</div>`;
-    return;
+    cont.innerHTML=`<div class="small">${datos.length?"El Sheet no trae la columna RESEÑA todavía.":"Sin ventas registradas este mes."}</div>`;
+    lista.innerHTML="";
+    return datos.length?null:{con:0,total:0};
   }
   const conReseña=datos.filter(d=>esReseñaSi(d["RESEÑA"])).length;
   const total=datos.length;
@@ -1253,6 +1844,8 @@ function renderResenas(datos){
   cont.innerHTML=
     `<div class="kpi-grande ${clase}">${conReseña} de ${total} clientes dejaron reseña · ${pct(p)}</div>`+
     `<div class="small">Se captura a mano en la columna RESEÑA de cada venta.</div>`;
+  lista.innerHTML=tablaVentas(datos.filter(d=>!esReseñaSi(d["RESEÑA"])),"Todas las ventas tienen reseña.");
+  return {con:conReseña,total};
 }
 
 /* =====================  EXPEDIENTE  ===================== */
@@ -1263,9 +1856,11 @@ function esExpedienteCompleto(valor){
 
 function renderExpediente(datos){
   const cont=document.getElementById("expediente-body");
+  const lista=document.getElementById("expedientes-incompletos-body");
   if(!datos.length||!("EXPEDIENTE" in datos[0])){
-    cont.innerHTML=`<div class="small">El Sheet no trae la columna EXPEDIENTE todavía.</div>`;
-    return;
+    cont.innerHTML=`<div class="small">${datos.length?"El Sheet no trae la columna EXPEDIENTE todavía.":"Sin ventas registradas este mes."}</div>`;
+    lista.innerHTML="";
+    return datos.length?null:{completos:0,total:0};
   }
   const completos=datos.filter(d=>esExpedienteCompleto(d["EXPEDIENTE"])).length;
   const total=datos.length;
@@ -1274,6 +1869,8 @@ function renderExpediente(datos){
   cont.innerHTML=
     `<div class="kpi-grande ${clase}">${completos} de ${total} expedientes completos · ${pct(p)}</div>`+
     `<div class="small">Se captura a mano en la columna EXPEDIENTE de cada venta.</div>`;
+  lista.innerHTML=tablaVentas(datos.filter(d=>!esExpedienteCompleto(d["EXPEDIENTE"])),"Todos los expedientes están completos.");
+  return {completos,total};
 }
 
 /* =====================  CUADRE CON PILOT  ===================== */
@@ -1286,9 +1883,12 @@ function normalizarNombre(txt){
 }
 
 function renderPilot(datos){
-  const card=document.querySelector('[data-seccion="pilot"]');
-  if(!pilotIndex){card.style.display="none";return;}
-  card.style.display="";
+  if(!pilotIndex){
+    document.getElementById("pilot-tag").textContent="";
+    document.getElementById("pilot-resumen").innerHTML=`<div class="small">Todavía no se carga el reporte de Pilot desde el Sheet.</div>`;
+    document.getElementById("pilot-detalle").innerHTML="";
+    return null;
+  }
 
   const conFactura=datos.filter(d=>normalizarFactura(d["FACTURA"]));
   const sinFactura=datos.length-conFactura.length;
@@ -1320,11 +1920,11 @@ function renderPilot(datos){
       `<div class="table-scroll"><table class="table-pendientes"><thead><tr>`+
       `<th>Factura</th><th>Cliente</th><th>Modelo</th><th>Vendedor</th><th>Fecha</th></tr></thead><tbody>`;
     noCapturadas.forEach(d=>{
-      html+=`<tr><td class="estado-mal">${(d["FACTURA"]||"").trim()}</td>`+
-        `<td>${(d["CLIENTE"]||"—").trim()||"—"}</td>`+
-        `<td>${(d["MODELO"]||"—").trim()||"—"}</td>`+
-        `<td>${titulo((d["VENDEDOR"]||"").trim())}</td>`+
-        `<td>${(d["FECHA"]||"").trim()}</td></tr>`;
+      html+=`<tr><td class="estado-mal">${esc((d["FACTURA"]||"").trim())}</td>`+
+        `<td>${esc((d["CLIENTE"]||"—").trim()||"—")}</td>`+
+        `<td>${esc((d["MODELO"]||"—").trim()||"—")}</td>`+
+        `<td>${esc(titulo((d["VENDEDOR"]||"").trim()))}</td>`+
+        `<td>${esc((d["FECHA"]||"").trim())}</td></tr>`;
     });
     html+=`</tbody></table></div>`;
   }
@@ -1334,11 +1934,11 @@ function renderPilot(datos){
       `<div class="table-scroll"><table class="table-pendientes"><thead><tr>`+
       `<th>Factura</th><th>En tu control</th><th>En Pilot</th><th>Modelo</th><th>Vendedor</th></tr></thead><tbody>`;
     difNombre.forEach(({d,pilot})=>{
-      html+=`<tr><td>${(d["FACTURA"]||"").trim()}</td>`+
-        `<td>${(d["CLIENTE"]||"").trim()}</td>`+
-        `<td class="estado-warn">${(pilot["NOMBRE"]||"").trim()}</td>`+
-        `<td>${(d["MODELO"]||"—").trim()||"—"}</td>`+
-        `<td>${titulo((d["VENDEDOR"]||"").trim())}</td></tr>`;
+      html+=`<tr><td>${esc((d["FACTURA"]||"").trim())}</td>`+
+        `<td>${esc((d["CLIENTE"]||"").trim())}</td>`+
+        `<td class="estado-warn">${esc((pilot["NOMBRE"]||"").trim())}</td>`+
+        `<td>${esc((d["MODELO"]||"—").trim()||"—")}</td>`+
+        `<td>${esc(titulo((d["VENDEDOR"]||"").trim()))}</td></tr>`;
     });
     html+=`</tbody></table></div>`;
   }
@@ -1347,16 +1947,23 @@ function renderPilot(datos){
     html+=`<div class="small estado-ok" style="margin-top:12px">Todas las ventas están en Pilot y los nombres coinciden.</div>`;
   }
   if(formatoRaro.length){
-    html+=`<div class="aviso">Facturas con formato distinto a J más 6 o 7 dígitos: ${formatoRaro.join(", ")}. `+
+    html+=`<div class="aviso">Facturas con formato distinto a J más 6 o 7 dígitos: ${esc(formatoRaro.join(", "))}. `+
       `Revísalas, puede ser un error de captura.</div>`;
   }
   html+=`<div class="small">El cruce es sólo por número de factura. Modelo y precio no se comparan.</div>`;
   document.getElementById("pilot-detalle").innerHTML=html;
+  return {noCapturadas:noCapturadas.length,difNombre:difNombre.length};
 }
 
 function fmt(v){
   if(typeof v!=="number"||!isFinite(v))v=0;
   return v.toLocaleString("es-MX",{style:"currency",currency:"MXN",maximumFractionDigits:0});
+}
+// $1.2M · $350k — solo para los ejes de la gráfica
+function fmtCorto(v){
+  if(Math.abs(v)>=1e6)return "$"+(v/1e6).toFixed(1).replace(/\.0$/,"")+"M";
+  if(Math.abs(v)>=1e3)return "$"+Math.round(v/1e3)+"k";
+  return "$"+v;
 }
 function pct(v){
   if(typeof v!=="number"||!isFinite(v))return "—";
