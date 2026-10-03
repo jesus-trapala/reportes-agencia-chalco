@@ -46,6 +46,14 @@ Siempre **color + texto**, nunca color solo.
 
 En los mosaicos el estado va como una pastilla (punto de color + texto) en la esquina superior.
 
+**Regla única para mosaicos de control** (entregas, reseñas, expedientes, cuadres, cuotas):
+
+- Algo sin cuadrar → **"Pendiente · N"** en ámbar (N = cuántos faltan).
+- Error que hay que corregir en otro sistema (p. ej. ventas sin capturar en Pilot) → **"Revisar"** en rojo.
+- Completo → **"Al día"** en verde.
+
+Los pendientes de todos los módulos se juntan en una **campana con número** en el encabezado, que abre un panel lateral (se cierra con X, tocando fuera o con el botón de regresar).
+
 ## 4. Colores por módulo (mosaicos)
 
 Vivo en modo claro, profundo en modo oscuro. El texto sobre el mosaico es blanco, salvo Racha en modo claro (el ámbar es muy claro): ahí el texto es oscuro `#2a1d00`.

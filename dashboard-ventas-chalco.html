@@ -77,10 +77,29 @@ main{padding:12px 16px 40px;max-width:1040px;margin:auto}
 .fecha{color:var(--muted);font-size:13px;font-weight:500}
 .encabezado h1{font-family:var(--f-titulo);font-weight:600;font-size:30px;margin:2px 0 0;letter-spacing:.01em}
 .cambiar-usuario{background:none;border:none;padding:0;color:var(--accent);font-size:13px;cursor:pointer;text-decoration:underline;margin-top:4px}
-.vendido-hoy{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 16px;min-width:170px}
+.vendido-hoy{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 16px;min-width:250px}
 .vendido-hoy .lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.vendido-hoy .monto{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600}
-.vendido-hoy .unid{font-size:12px;color:var(--muted)}
+.hoy-cifras{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-top:2px}
+.hoy-cifras small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.hoy-cifras b{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:20px;font-weight:600}
+.hoy-barra{height:6px;border-radius:3px;background:var(--border);margin-top:8px;overflow:hidden}
+.hoy-barra div{height:100%;border-radius:3px;background:var(--accent)}
+.vendido-hoy .unid{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* Campana de pendientes */
+.btn-campana{position:relative}
+.campana-num{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--alerta);color:#fff;font-size:11px;font-weight:700;font-family:var(--f-num);display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+#panel-pendientes{position:fixed;inset:0;z-index:40;background:var(--overlay);display:flex;justify-content:flex-end}
+.panel-caja{background:var(--card);border-left:1px solid var(--border);width:100%;max-width:440px;height:100%;overflow-y:auto;padding:16px 18px 30px}
+.panel-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.panel-top h2{font-family:var(--f-titulo);font-weight:600;font-size:22px;margin:0;letter-spacing:.02em}
+.panel-grupo{margin-top:16px}
+.panel-grupo h3{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 6px;display:flex;justify-content:space-between}
+.panel-grupo h3 span{font-family:var(--f-num);color:var(--text)}
+.panel-item{border:1px solid var(--border);border-radius:12px;padding:8px 12px;margin-bottom:6px}
+.panel-item b{display:block;font-weight:600;font-size:14px}
+.panel-item div{font-size:12px;color:var(--muted)}
+.panel-vacio{text-align:center;color:var(--ok);font-weight:700;font-size:16px;margin-top:40px}
 
 .mosaicos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .mosaico{--m:var(--accent);--ink:#fff;position:relative;background:var(--m);color:var(--ink);border:none;border-radius:18px;padding:14px;text-align:left;cursor:pointer;box-shadow:var(--sombra-mos);display:flex;flex-direction:column;gap:4px;min-height:132px;min-width:0;transition:transform .12s,filter .12s}
@@ -96,13 +115,17 @@ main{padding:12px 16px 40px;max-width:1040px;margin:auto}
 .mos-dato{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-weight:600;font-size:20px;line-height:1.15;overflow-wrap:anywhere}
 .mos-sub{font-size:12px;opacity:.88;overflow-wrap:anywhere}
 
-.mosaico-grande{grid-column:span 2;grid-row:span 2;background:var(--m-meta);padding:18px;gap:8px}
-.grande-cuerpo{display:flex;align-items:center;gap:14px;margin-top:4px}
-.grande-cara{font-size:46px;line-height:1}
-.grande-pct{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-weight:600;font-size:46px;line-height:1}
-.grande-barra{height:10px;border-radius:5px;background:rgba(255,255,255,.22);overflow:hidden;position:relative;margin-top:4px}
-.grande-barra div{height:100%;background:#fff;border-radius:5px}
-.grande-barra span{position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.mosaico-grande{grid-column:span 2;grid-row:span 2;background:var(--m-meta);padding:16px 18px;gap:6px}
+.mosaico-grande .mos-top{margin-bottom:0;align-items:center}
+.mosaico-grande .mos-top .mos-nombre{margin:0 auto 0 10px}
+.grande-cuerpo{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:1;min-height:0}
+.velocimetro{flex:1 1 58%;max-width:300px;min-width:0}
+.velocimetro svg{display:block;width:100%;height:auto;overflow:visible}
+.vel-leyenda{display:flex;align-items:center;gap:6px;justify-content:center;font-size:11px;font-weight:600;opacity:.9;margin-top:2px}
+.vel-leyenda i{width:12px;height:4px;border-radius:2px;background:#ffd166}
+.grande-lado{flex:1 1 42%;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.grande-cara{font-size:40px;line-height:1}
+.grande-pct{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-weight:600;font-size:48px;line-height:1}
 .grande-msg{font-size:14px;font-weight:600}
 .grande-pie{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;font-weight:600;border-top:1px solid rgba(255,255,255,.22);padding-top:8px}
 .grande-pie b{font-family:var(--f-num);font-variant-numeric:tabular-nums}
@@ -231,8 +254,9 @@ body:not(.vista-personal) .solo-asesor{display:none!important}
   .vendido-hoy{flex:1}
   .mosaico{min-height:124px;padding:12px}
   .mos-dato{font-size:18px}
-  .grande-pct{font-size:40px}
-  .grande-cara{font-size:40px}
+  .grande-pct{font-size:36px}
+  .grande-cara{font-size:32px}
+  .grande-cuerpo{gap:8px}
 }
 </style>
 </head>
@@ -248,6 +272,10 @@ body:not(.vista-personal) .solo-asesor{display:none!important}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
       <span>Actualizar</span>
     </button>
+    <button class="btn btn-secondary btn-icono btn-campana" id="btn-campana" title="Pendientes" aria-label="Pendientes" disabled>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="campana-num" id="campana-num" hidden></span>
+    </button>
     <button class="btn btn-secondary btn-icono" id="btn-tema" title="Cambiar modo claro / oscuro" aria-label="Cambiar modo claro / oscuro">
       <svg class="ico-luna" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       <svg class="ico-sol" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -259,6 +287,19 @@ body:not(.vista-personal) .solo-asesor{display:none!important}
   <div class="tarjeta-bienvenida">
     <h2>Bienvenido al Dashboard de Vento Chalco</h2>
     <div id="botones-usuario"></div>
+  </div>
+</div>
+
+<div id="panel-pendientes" hidden>
+  <div class="panel-caja" role="dialog" aria-modal="true" aria-labelledby="panel-titulo">
+    <div class="panel-top">
+      <h2 id="panel-titulo">Pendientes</h2>
+      <button class="btn btn-secondary btn-icono" id="btn-cerrar-panel" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="small" id="panel-sub"></div>
+    <div id="panel-cuerpo"></div>
   </div>
 </div>
 
@@ -276,8 +317,12 @@ body:not(.vista-personal) .solo-asesor{display:none!important}
         <button class="cambiar-usuario" id="btn-cambiar-usuario">¿No eres tú? Cambiar</button>
       </div>
       <div class="vendido-hoy">
-        <div class="lbl" id="hoy-lbl">Vendido hoy</div>
-        <div class="monto" id="hoy-monto">$0</div>
+        <div class="lbl" id="hoy-lbl">Hoy</div>
+        <div class="hoy-cifras">
+          <div id="hoy-meta-bloque"><small id="hoy-meta-lbl">Meta de hoy</small><b id="hoy-meta">$0</b></div>
+          <div><small id="hoy-llevas-lbl">Llevas</small><b id="hoy-monto">$0</b></div>
+        </div>
+        <div class="hoy-barra" id="hoy-barra-wrap"><div id="hoy-barra" style="width:0%"></div></div>
         <div class="unid" id="hoy-unid">0 unidades</div>
       </div>
     </div>
@@ -286,17 +331,27 @@ body:not(.vista-personal) .solo-asesor{display:none!important}
       <button class="mosaico mosaico-grande" data-ir="meta">
         <div class="mos-top">
           <span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
+          <span class="mos-nombre">Meta y avance · agencia</span>
           <span class="mos-tag" id="tag-meta" hidden></span>
         </div>
-        <div class="mos-nombre">Meta y avance · agencia</div>
         <div class="grande-cuerpo">
-          <div class="grande-cara" id="mos-meta-cara">🙂</div>
-          <div>
+          <div class="velocimetro">
+            <svg viewBox="0 0 200 116" role="img" aria-labelledby="vel-titulo">
+              <title id="vel-titulo">Velocímetro de avance de la meta</title>
+              <path d="M 14 100 A 86 86 0 0 1 186 100" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="18"/>
+              <path id="vel-relleno" d="M 14 100 A 86 86 0 0 1 186 100" fill="none" stroke="#ffffff" stroke-width="18" pathLength="100" stroke-dasharray="0 100"/>
+              <line id="vel-marca" x1="14" y1="100" x2="14" y2="100" stroke="#ffd166" stroke-width="5" stroke-linecap="round"/>
+              <text x="14" y="114" fill="rgba(255,255,255,.8)" font-size="10" text-anchor="middle" font-family="IBM Plex Mono, monospace">0%</text>
+              <text x="186" y="114" fill="rgba(255,255,255,.8)" font-size="10" text-anchor="middle" font-family="IBM Plex Mono, monospace">100%</text>
+            </svg>
+            <div class="vel-leyenda"><i></i><span id="vel-leyenda-txt">Deberíamos ir en 0%</span></div>
+          </div>
+          <div class="grande-lado">
+            <div class="grande-cara" id="mos-meta-cara">🙂</div>
             <div class="grande-pct" id="mos-meta-pct">0%</div>
             <div class="mos-sub num" id="mos-meta-venta"></div>
           </div>
         </div>
-        <div class="grande-barra"><div id="mos-meta-barra" style="width:0%"></div><span id="mos-meta-marca" style="left:0%"></span></div>
         <div class="grande-msg" id="mos-meta-msg"></div>
         <div class="grande-pie">
           <span>Necesitas <b id="mos-meta-dia">$0</b> por día</span>
@@ -337,21 +392,21 @@ body:not(.vista-personal) .solo-asesor{display:none!important}
       </button>
 
       <button class="mosaico m-entregas" data-ir="entregas">
-        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span></div>
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span><span class="mos-tag" id="tag-entregas" hidden></span></div>
         <div class="mos-nombre">Entregadas</div>
         <div class="mos-dato" id="mos-entregas-dato">—</div>
         <div class="mos-sub" id="mos-entregas-sub"></div>
       </button>
 
       <button class="mosaico m-resenas" data-ir="resenas">
-        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span></div>
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span class="mos-tag" id="tag-resenas" hidden></span></div>
         <div class="mos-nombre">Reseñas</div>
         <div class="mos-dato" id="mos-resenas-dato">—</div>
         <div class="mos-sub" id="mos-resenas-sub"></div>
       </button>
 
       <button class="mosaico m-expedientes" data-ir="expedientes">
-        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span></div>
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><span class="mos-tag" id="tag-expedientes" hidden></span></div>
         <div class="mos-nombre">Expedientes</div>
         <div class="mos-dato" id="mos-expedientes-dato">—</div>
         <div class="mos-sub" id="mos-expedientes-sub"></div>
@@ -386,16 +441,18 @@ body:not(.vista-personal) .solo-asesor{display:none!important}
 
     <!-- Meta y avance -->
     <div data-detalle="meta" hidden>
+      <div class="small solo-asesor" id="meta-ref-agencia" style="margin:-6px 0 10px"></div>
       <div id="meta-resumen"></div>
       <div class="card">
-        <div class="card-title">Venta acumulada vs. ritmo ideal</div>
+        <div class="card-title" id="acumulado-titulo">Venta acumulada vs. ritmo ideal</div>
         <div class="chart-container chart-alto"><canvas id="chart-acumulado" aria-label="Venta acumulada día por día contra el ritmo ideal"></canvas></div>
         <div class="small" id="texto-acumulado"></div>
       </div>
       <div class="card" data-seccion="meta">
-        <div class="card-title">Meta y avance de la agencia</div>
+        <div class="card-title" id="meta-lista-titulo">Meta y avance de la agencia</div>
         <div class="card-tag" id="corte-label"></div>
         <div id="meta-agencia-body"></div>
+        <div id="meta-personal-body"></div>
       </div>
       <div class="card solo-gerente">
         <div class="card-title">Rendimiento de asesores</div>
@@ -687,6 +744,64 @@ btnInicio.onclick=()=>{
 };
 window.addEventListener("hashchange",mostrarRuta);
 
+/* =====================  CAMPANA DE PENDIENTES  =====================
+   Panel lateral con reseñas por pedir, expedientes incompletos, ventas sin
+   capturar en Pilot y unidades por entregar. Se cierra con la X, tocando
+   fuera o con el botón de regresar (se agrega una entrada al historial). */
+const panelPendientes=document.getElementById("panel-pendientes");
+const btnCampana=document.getElementById("btn-campana");
+let panelAbierto=false;
+
+function abrirPanel(){
+  if(panelAbierto)return;
+  panelPendientes.hidden=false;
+  panelAbierto=true;
+  history.pushState({panel:true},"");
+  document.getElementById("btn-cerrar-panel").focus();
+}
+function cerrarPanel(desdeHistorial){
+  if(!panelAbierto)return;
+  panelPendientes.hidden=true;
+  panelAbierto=false;
+  if(!desdeHistorial)history.back();
+  btnCampana.focus();
+}
+btnCampana.onclick=abrirPanel;
+document.getElementById("btn-cerrar-panel").onclick=()=>cerrarPanel(false);
+panelPendientes.addEventListener("click",e=>{if(e.target===panelPendientes)cerrarPanel(false);});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")cerrarPanel(false);});
+window.addEventListener("popstate",()=>{if(panelAbierto)cerrarPanel(true);});
+
+function renderPendientes({ent,res,exp,pil},esPersonal){
+  const factura=d=>(d["FACTURA"]||"").trim()||"Sin factura";
+  const grupos=[
+    {titulo:"Reseñas por pedir",lista:res?res.lista:[],detalle:d=>`${factura(d)} · ${(d["FECHA"]||"").trim()}`},
+    {titulo:"Expedientes incompletos",lista:exp?exp.lista:[],detalle:factura},
+    {titulo:"Sin capturar en Pilot",lista:pil?pil.lista:[],detalle:factura},
+    {titulo:"Unidades por entregar",lista:ent?ent.lista:[],detalle:d=>(d["MODELO"]||"").trim()||"Sin modelo"}
+  ];
+  const total=grupos.reduce((a,g)=>a+g.lista.length,0);
+
+  const num=document.getElementById("campana-num");
+  num.hidden=total===0;
+  num.textContent=total>99?"99+":String(total);
+  btnCampana.disabled=false;
+  btnCampana.title=total?`${plural(total,"pendiente","pendientes")}`:"Todo al día";
+
+  setTexto("panel-sub",`${esPersonal?"Solo tus ventas":"Toda la agencia"} · ${nombreMesVisible(selectMes.value)}`+
+    (pil?"":" · el reporte de Pilot todavía no carga"));
+  const cuerpo=document.getElementById("panel-cuerpo");
+  if(!total){
+    cuerpo.innerHTML=`<div class="panel-vacio">Todo al día</div>`;
+    return;
+  }
+  cuerpo.innerHTML=grupos.filter(g=>g.lista.length).map(g=>
+    `<div class="panel-grupo"><h3>${g.titulo}<span>${g.lista.length}</span></h3>`+
+    g.lista.map(d=>`<div class="panel-item"><b>${esc((d["CLIENTE"]||"").trim()||"Sin nombre")}</b>`+
+      `<div>${esc(g.detalle(d))}${esPersonal?"":` · ${esc(titulo(vendedorDe(d)))}`}</div></div>`).join("")+
+    `</div>`).join("");
+}
+
 /* =====================  ESTADO  ===================== */
 let META_AGENCIA=1545000; // se sobreescribe con lo que diga CONFIGURACION
 let OBJETIVO_VC=13; // objetivo de financiamientos VentoCredit del mes (agencia); se sobreescribe con CONFIGURACION
@@ -722,14 +837,14 @@ async function cargarMesesDesdeSheets(){
       return;
     }
     if(!data.meses||!data.meses.length){
-      selectMes.innerHTML="<option>Sin pestañas HMYP</option>";
-      loader.innerHTML="<p>No encontré pestañas que empiecen con HMYP en el Sheet.</p>";
+      selectMes.innerHTML="<option>Sin meses</option>";
+      loader.innerHTML="<p>No encontré pestañas de ventas por mes en el Sheet.</p>";
       return;
     }
     selectMes.innerHTML="";
     data.meses.forEach(m=>{
       const opt=document.createElement("option");
-      opt.value=m;opt.textContent=m;
+      opt.value=m;opt.textContent=nombreMesVisible(m);
       selectMes.appendChild(opt);
     });
     selectMes.value=elegirMesActual(data.meses);
@@ -762,7 +877,7 @@ async function cargarDatosDesdeSheets(){
     if(typeof data.objetivoVentoCredit==="number"&&data.objetivoVentoCredit>0)OBJETIVO_VC=data.objetivoVentoCredit;
     const validos=(data.filas||[]).filter(filaValida);
     if(!validos.length){
-      alert(`La pestaña "${mes}" no tiene todavía filas con FECHA, VENDEDOR y PRECIO.`);
+      alert(`${nombreMesVisible(mes)} no tiene todavía filas con FECHA, VENDEDOR y PRECIO.`);
       return;
     }
     loader.style.display="none";
@@ -814,6 +929,13 @@ function elegirMesActual(meses){
   if(!elegido)elegido=meses.find(m=>m.toUpperCase().includes(nombreMes));
   if(!elegido)elegido=meses[meses.length-1];
   return elegido;
+}
+
+// "HMYP OCTUBRE 2026" / "HMYP ABRIL2026" -> "Octubre 2026" / "Abril 2026".
+// El nombre de la pestaña se sigue usando por dentro (value del selector).
+function nombreMesVisible(tab){
+  const s=String(tab||"").replace(/^HMYP\s*/i,"").replace(/([A-Za-zÁÉÍÓÚáéíóú])(\d)/,"$1 $2").trim();
+  return titulo(s);
 }
 
 /* =====================  UTILIDADES DE DATOS  ===================== */
@@ -880,7 +1002,7 @@ const MESES=["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","
 
 /* =====================  DÍAS CON VENTA / SIN VENTA  =====================
    Calendario del mes (venta/sin venta/domingo/futuro) + racha actual y
-   racha más larga sin vender. Los domingos no cuentan para la racha
+   racha más larga CON venta. Los domingos no cuentan para la racha
    (el equipo baja el ritmo ese día porque el subgerente descansa). */
 function estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes){
   const diasConVenta=new Set();
@@ -900,37 +1022,51 @@ function estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes){
   return estado;
 }
 
-function calcularRachasVenta(estado,diasTranscurridos){
-  let rachaActual=0;
-  for(let d=diasTranscurridos;d>=1;d--){
+// Racha POSITIVA: días hábiles consecutivos CON venta, terminando hoy o en el
+// último día hábil. Los domingos se saltan (ni suman ni rompen). Si hoy es
+// el mes en curso y todavía no hay venta, hoy no rompe la racha: el día no
+// ha terminado. También regresa la racha más larga del mes, los días hábiles
+// sin venta y cuántos días hábiles seguidos van sin venta ("seca").
+function calcularRachaConVenta(estado,diasTranscurridos,hoyEnCurso){
+  let fin=diasTranscurridos;
+  if(hoyEnCurso&&estado[fin]==="sin")fin--;
+  let racha=0,seca=0;
+  for(let d=fin;d>=1;d--){
     const e=estado[d];
     if(e==="domingo")continue;
-    if(e==="venta")break;
-    rachaActual++;
+    if(e!=="venta")break;
+    racha++;
   }
-  let rachaMax=0,corrida=0;
-  for(let d=1;d<=diasTranscurridos;d++){
+  for(let d=fin;d>=1;d--){
     const e=estado[d];
     if(e==="domingo")continue;
-    if(e==="sin"){corrida++;rachaMax=Math.max(rachaMax,corrida);}
-    else corrida=0;
+    if(e!=="sin")break;
+    seca++;
   }
-  return {rachaActual,rachaMax};
+  let rachaMax=0,corrida=0,diasSin=0;
+  for(let d=1;d<=fin;d++){
+    const e=estado[d];
+    if(e==="domingo")continue;
+    if(e==="venta"){corrida++;rachaMax=Math.max(rachaMax,corrida);}
+    else{corrida=0;if(e==="sin")diasSin++;}
+  }
+  return {racha,rachaMax,diasSin,seca};
 }
 
 function colorRacha(n){
-  return n===0?cssVar("--ok"):(n<=2?cssVar("--warn"):cssVar("--bad"));
+  return n>0?cssVar("--ok"):cssVar("--warn");
 }
-// Misma regla que colorRacha, en forma de etiqueta de semáforo.
-function semaforoRacha(n){
-  return n===0?["ok","En ritmo"]:(n<=2?["warn","Atención"]:["bad","Urgente"]);
+// "Al día" mientras la racha siga viva (o hoy ya haya venta); "Atención" en
+// cuanto se corta (2 o más días hábiles seguidos sin venta, o el de ayer).
+function semaforoRacha(r){
+  return r.racha>0?["ok","Al día"]:["warn","Atención"];
 }
 
-function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelMes){
+function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelMes,hoyEnCurso){
   const cont=document.getElementById(contId);
-  if(!cont)return {rachaActual:0,rachaMax:0};
+  if(!cont)return {racha:0,rachaMax:0,diasSin:0,seca:0};
   const estado=estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes);
-  const {rachaActual,rachaMax}=calcularRachasVenta(estado,diasTranscurridos);
+  const r=calcularRachaConVenta(estado,diasTranscurridos,hoyEnCurso);
   const anio=fechaBase.getFullYear(),mes=fechaBase.getMonth();
   const primerDiaSemana=new Date(anio,mes,1).getDay();
   const CLASE_DIA={venta:"d-venta",sin:"d-sin",domingo:"d-domingo",futuro:"d-futuro"};
@@ -941,8 +1077,9 @@ function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelM
 
   cont.innerHTML=`
     <div class="rachas">
-      <div class="racha-box"><div class="racha-num" style="color:${colorRacha(rachaActual)}">${rachaActual}</div><div class="racha-lbl">Racha actual sin venta</div></div>
-      <div class="racha-box"><div class="racha-num" style="color:${cssVar("--warn")}">${rachaMax}</div><div class="racha-lbl">Racha más larga del mes</div></div>
+      <div class="racha-box"><div class="racha-num" style="color:${colorRacha(r.racha)}">${r.racha}</div><div class="racha-lbl">Racha actual con venta</div></div>
+      <div class="racha-box"><div class="racha-num">${r.rachaMax}</div><div class="racha-lbl">Racha más larga del mes</div></div>
+      <div class="racha-box"><div class="racha-num" style="color:${r.diasSin?cssVar("--warn"):cssVar("--text")}">${r.diasSin}</div><div class="racha-lbl">Días sin venta</div></div>
     </div>
     <div class="cal">
       <div class="dow">D</div><div class="dow">L</div><div class="dow">M</div><div class="dow">M</div><div class="dow">J</div><div class="dow">V</div><div class="dow">S</div>
@@ -952,27 +1089,29 @@ function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelM
       <span><span class="punto" style="background:${cssVar("--ok")}"></span>Con venta</span>
       <span><span class="punto" style="background:${cssVar("--bad")}"></span>Sin venta</span>
       <span><span class="punto" style="background:${cssVar("--border")};opacity:.7"></span>Domingo (no cuenta)</span>
-    </div>`;
-  return {rachaActual,rachaMax};
+    </div>
+    <div class="small">Racha = días hábiles seguidos con venta. Los domingos no cuentan ni la rompen${hoyEnCurso?"; hoy no la rompe mientras el día siga en curso":""}.</div>`;
+  return r;
 }
 
-function renderDiasVentaPorAsesor(nombres,datosCompletos,fechaBase,diasTranscurridos,diasDelMes){
+function renderDiasVentaPorAsesor(nombres,datosCompletos,fechaBase,diasTranscurridos,diasDelMes,hoyEnCurso){
   const cont=document.getElementById("dias-venta-asesores-body");
   if(!cont)return;
   let html=`<div class="vendedores-grid">`;
   nombres.forEach(n=>{
     const datosN=datosCompletos.filter(d=>vendedorDe(d)===n);
     const estado=estadoDiasVenta(datosN,fechaBase,diasTranscurridos,diasDelMes);
-    const {rachaActual,rachaMax}=calcularRachasVenta(estado,diasTranscurridos);
+    const r=calcularRachaConVenta(estado,diasTranscurridos,hoyEnCurso);
     html+=`<div class="vendedor-col">
       <div class="vendedor-nombre">${titulo(n)}</div>
       <div class="rachas" style="margin-bottom:0">
-        <div class="racha-box" style="padding:6px"><div class="racha-num" style="font-size:18px;color:${colorRacha(rachaActual)}">${rachaActual}</div><div class="racha-lbl">Actual</div></div>
-        <div class="racha-box" style="padding:6px"><div class="racha-num" style="font-size:18px;color:${cssVar("--warn")}">${rachaMax}</div><div class="racha-lbl">Máxima</div></div>
+        <div class="racha-box" style="padding:6px"><div class="racha-num" style="font-size:18px;color:${colorRacha(r.racha)}">${r.racha}</div><div class="racha-lbl">Actual</div></div>
+        <div class="racha-box" style="padding:6px"><div class="racha-num" style="font-size:18px">${r.rachaMax}</div><div class="racha-lbl">Máxima</div></div>
+        <div class="racha-box" style="padding:6px"><div class="racha-num" style="font-size:18px">${r.diasSin}</div><div class="racha-lbl">Sin venta</div></div>
       </div>
     </div>`;
   });
-  html+=`</div><div class="small">Racha = días hábiles consecutivos sin venta (los domingos no cuentan).</div>`;
+  html+=`</div><div class="small">Racha = días hábiles seguidos con venta (los domingos no cuentan ni la rompen).</div>`;
   cont.innerHTML=html;
 }
 
@@ -1020,7 +1159,7 @@ function renderDashboard(datosCrudos){
 
   const dd=String(fechaCorte.getDate()).padStart(2,"0");
   const mm=String(fechaCorte.getMonth()+1).padStart(2,"0");
-  document.getElementById("subtitle-mes").textContent=`${mesTab} · corte al ${dd}/${mm}`;
+  document.getElementById("subtitle-mes").textContent=`${nombreMesVisible(mesTab)} · corte al ${dd}/${mm}`;
   document.getElementById("corte-label").textContent=`${MESES[fechaCorte.getMonth()]} ${fechaCorte.getFullYear()}`;
 
   // Asesores activos siempre aparecen (aunque no hayan vendido); si en el
@@ -1031,27 +1170,39 @@ function renderDashboard(datosCrudos){
   const nombresTodos=[...ASESORES_ACTIVOS,...extras];
   const metaIndividual=META_AGENCIA/ASESORES_ACTIVOS.length;
 
-  // --- Agencia completa: siempre se calcula (el mosaico Meta y avance
-  //     siempre es de la agencia, también en la vista de asesor) ---
+  // --- Agencia completa: siempre se calcula (el mosaico Meta y avance de
+  //     la portada siempre es de la agencia, también en la vista de asesor) ---
   const ventaConIVAAgencia=datosCompletos.reduce((a,d)=>a+numMiles(d["PRECIO"]),0);
   const ventaSinIVAAgencia=ventaConIVAAgencia/1.16;
   const totalUnidadesAgencia=datosCompletos.length;
   const oAgencia={v:ventaSinIVAAgencia,u:totalUnidadesAgencia};
-  renderMetaAgencia(oAgencia,META_AGENCIA,diasTranscurridos,diasDelMes);
-  renderMetaResumen(oAgencia,META_AGENCIA,diasTranscurridos,diasDelMes,diasRestantes);
-  renderGraficaAcumulada(datosCompletos,META_AGENCIA,fechaBase,diasTranscurridos,diasDelMes);
 
   const cumplimientoPct=META_AGENCIA?ventaSinIVAAgencia/META_AGENCIA*100:0;
   const est=estadoMeta(cumplimientoPct,diasTranscurridos,diasDelMes);
 
   const oMio=esPersonal?(vendedoresTodos[usuarioActual]||{v:0,u:0}):oAgencia;
+  const metaMia=esPersonal?metaIndividual:META_AGENCIA;
+
+  // --- Detalle de Meta y avance: agencia para Jesús; meta individual y
+  //     ventas propias para el asesor (la agencia queda como referencia) ---
+  renderMetaResumen(oMio,metaMia,diasTranscurridos,diasDelMes,diasRestantes,esPersonal);
+  renderGraficaAcumulada(datosVista,metaMia,fechaBase,diasTranscurridos,diasDelMes,esPersonal);
+  setTexto("acumulado-titulo",esPersonal?"Tu venta acumulada vs. tu ritmo ideal":"Venta acumulada vs. ritmo ideal");
+  setTexto("meta-lista-titulo",esPersonal?"Tu meta del mes":"Meta y avance de la agencia");
+  setTexto("meta-ref-agencia",esPersonal
+    ?`La agencia va en ${pct2(cumplimientoPct)} (${fmt(ventaSinIVAAgencia)} de ${fmt(META_AGENCIA)}).`:"");
+  if(esPersonal)document.getElementById("meta-agencia-body").innerHTML="";
+  else{
+    renderMetaAgencia(oAgencia,META_AGENCIA,diasTranscurridos,diasDelMes);
+    document.getElementById("meta-personal-body").innerHTML="";
+  }
 
   // --- Solo Jesús: comparativos entre asesores. En la vista de asesor se
   //     vacían para que no quede información del otro asesor en la página ---
   if(!esPersonal){
     renderTablaAsesores(nombresTodos,vendedoresTodos,metaIndividual,diasTranscurridos,diasDelMes);
     renderParticipacion(nombresTodos,vendedoresTodos,metaIndividual,diasTranscurridos,diasDelMes,diasRestantes);
-    renderDiasVentaPorAsesor(nombresTodos,datosCompletos,fechaBase,diasTranscurridos,diasDelMes);
+    renderDiasVentaPorAsesor(nombresTodos,datosCompletos,fechaBase,diasTranscurridos,diasDelMes,esMesActual);
     document.getElementById("tu-parte-body").innerHTML="";
     document.getElementById("mi-resultado-body").innerHTML="";
     document.getElementById("mi-dia-body").innerHTML="";
@@ -1068,7 +1219,7 @@ function renderDashboard(datosCrudos){
 
   // --- Secciones que se filtran a la vista personal ---
   const nombresVista=esPersonal?[usuarioActual]:nombresTodos;
-  const racha=renderCalendarioVenta("dias-venta-body",datosVista,fechaBase,diasTranscurridos,diasDelMes);
+  const racha=renderCalendarioVenta("dias-venta-body",datosVista,fechaBase,diasTranscurridos,diasDelMes,esMesActual);
   const objetivoVCIndividual=Math.ceil(OBJETIVO_VC/ASESORES_ACTIVOS.length);
   const vc=renderVentoCredit(datosVista,esPersonal?objetivoVCIndividual:OBJETIVO_VC,diasTranscurridos,diasDelMes);
   renderGrupos(datosVista,nombresVista);
@@ -1078,6 +1229,7 @@ function renderDashboard(datosCrudos){
   const res=renderResenas(datosVista);
   const exp=renderExpediente(datosVista);
   const pil=renderPilot(datosVista);
+  renderPendientes({ent,res,exp,pil},esPersonal);
 
   // Ventas del día: hoy (fecha del teléfono) si es el mes en curso; si es
   // un mes cerrado, el último día con venta.
@@ -1097,19 +1249,36 @@ function renderDashboard(datosCrudos){
   setTexto("saludo-texto",nombreSaludo?`Hola, ${nombreSaludo}`:"Hola");
   const fechaTxt=esMesActual
     ?hoyReal.toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"})
-    :`${titulo(mesTab.replace(/^HMYP\s*/i,""))} · mes cerrado`;
+    :`${nombreMesVisible(mesTab)} · mes cerrado`;
   setTexto("fecha-texto",`${fechaTxt.charAt(0).toUpperCase()+fechaTxt.slice(1)} · día ${diasTranscurridos} de ${diasDelMes}`);
-  setTexto("hoy-lbl",(esPersonal?"Tu venta ":"Vendido ")+(esMesActual?"hoy":`el ${diaRef.getDate()}/${diaRef.getMonth()+1}`));
-  setTexto("hoy-monto",fmt(montoDia));
-  setTexto("hoy-unid",plural(ventasDia.length,"unidad","unidades"));
 
-  // Mosaico grande: Meta y avance (agencia)
+  // Recuadro de hoy: meta de hoy (mismo cálculo que "Necesitas $X por día":
+  // lo que falta del mes entre los días que quedan) contra lo que se lleva.
+  const metaHoy=Math.max(metaMia-oMio.v,0)/diasRestantes;
+  document.getElementById("hoy-meta-bloque").hidden=!esMesActual;
+  document.getElementById("hoy-barra-wrap").hidden=!esMesActual;
+  if(esMesActual){
+    setTexto("hoy-lbl",esPersonal?"Tu día de hoy":"Hoy · agencia");
+    setTexto("hoy-meta-lbl","Meta de hoy");
+    setTexto("hoy-meta",metaHoy>0?fmt(metaHoy):"Cumplida");
+    const avanceHoy=metaHoy>0?montoDia/metaHoy*100:100;
+    const barra=document.getElementById("hoy-barra");
+    barra.style.width=Math.min(avanceHoy,100)+"%";
+    barra.style.background=avanceHoy>=100?"var(--ok)":"var(--accent)";
+    setTexto("hoy-unid",`${plural(ventasDia.length,"unidad","unidades")} · ${metaHoy>0?pct2(avanceHoy)+" de la meta de hoy":"meta del mes cumplida"}`);
+  }else{
+    setTexto("hoy-lbl",`${esPersonal?"Tu venta":"Vendido"} el ${diaRef.getDate()}/${diaRef.getMonth()+1}`);
+    setTexto("hoy-unid",plural(ventasDia.length,"unidad","unidades"));
+  }
+  setTexto("hoy-llevas-lbl",esMesActual?"Llevas":"Venta del día");
+  setTexto("hoy-monto",fmt(montoDia));
+
+  // Mosaico grande: Meta y avance (agencia) con velocímetro
   const esperadoPct=pctEsperadoAHoy(diasTranscurridos,diasDelMes);
   setTexto("mos-meta-cara",est.cara);
   setTexto("mos-meta-pct",pct2(cumplimientoPct));
   setTexto("mos-meta-venta",`${fmt(ventaSinIVAAgencia)} de ${fmt(META_AGENCIA)} sin IVA`);
-  document.getElementById("mos-meta-barra").style.width=Math.min(Math.max(cumplimientoPct,0),100)+"%";
-  document.getElementById("mos-meta-marca").style.left=Math.min(esperadoPct,100)+"%";
+  pintarVelocimetro(cumplimientoPct,esperadoPct);
   setTexto("mos-meta-msg",est.msg);
   setTexto("mos-meta-dia",fmt(Math.max(META_AGENCIA-ventaSinIVAAgencia,0)/diasRestantes));
   setTexto("mos-meta-faltan",`Faltan ${plural(diasRestantes,"día","días")}`);
@@ -1135,45 +1304,56 @@ function renderDashboard(datosCrudos){
     setTexto("mos-asesores-sub","Participación en la venta");
   }
 
-  // Racha
-  setTexto("mos-racha-dato",plural(racha.rachaActual,"día","días"));
-  setTexto("mos-racha-sub",`Racha actual sin venta · máx. ${racha.rachaMax}`);
-  setTag("tag-racha",semaforoRacha(racha.rachaActual));
+  // Racha (positiva: días hábiles seguidos con venta)
+  setTexto("mos-racha-dato",`${plural(racha.racha,"día","días")} con venta`);
+  setTexto("mos-racha-sub",`Más larga del mes: ${racha.rachaMax} · Días sin venta: ${racha.diasSin}`);
+  setTag("tag-racha",semaforoRacha(racha));
+
+  // Etiquetas de control, una sola regla: "Pendiente · N" (ámbar) si algo no
+  // está cuadrado, "Revisar" (rojo) si hay ventas sin capturar en Pilot y
+  // "Al día" (verde) si está completo.
+  const tagControl=n=>n>0?["warn",`Pendiente · ${n}`]:["ok","Al día"];
 
   // VentoCredit
   setTexto("mos-vc-dato",`${vc.llevas} de ${vc.objetivo}`);
   setTexto("mos-vc-sub",`colocados · deberías llevar ${vc.deberiaLlevar}`);
-  setTag("tag-vc",vc.semaforo);
+  setTag("tag-vc",tagControl(Math.max(vc.deberiaLlevar-vc.llevas,0)));
 
   // Entregadas
   if(ent){
     setTexto("mos-entregas-dato",`${ent.pendientes} pendiente${ent.pendientes===1?"":"s"}`);
     setTexto("mos-entregas-sub",`de entrega · ${ent.entregadas} de ${ent.total} entregadas`);
+    setTag("tag-entregas",tagControl(ent.pendientes));
   }else{
     setTexto("mos-entregas-dato","—");setTexto("mos-entregas-sub","Sin columna ENTREGADA");
+    setTag("tag-entregas",null);
   }
 
   // Reseñas
   if(res){
     setTexto("mos-resenas-dato",`${res.con} de ${res.total}`);
     setTexto("mos-resenas-sub","con reseña de Google");
+    setTag("tag-resenas",tagControl(res.total-res.con));
   }else{
     setTexto("mos-resenas-dato","—");setTexto("mos-resenas-sub","Sin columna RESEÑA");
+    setTag("tag-resenas",null);
   }
 
   // Expedientes
   if(exp){
     setTexto("mos-expedientes-dato",`${exp.completos} de ${exp.total}`);
     setTexto("mos-expedientes-sub","expedientes completos");
+    setTag("tag-expedientes",tagControl(exp.total-exp.completos));
   }else{
     setTexto("mos-expedientes-dato","—");setTexto("mos-expedientes-sub","Sin columna EXPEDIENTE");
+    setTag("tag-expedientes",null);
   }
 
   // Pilot
   if(pil){
     setTexto("mos-pilot-dato",`${pil.noCapturadas} sin capturar`);
     setTexto("mos-pilot-sub",pil.difNombre?`${plural(pil.difNombre,"diferencia","diferencias")} de nombre`:"en Pilot");
-    setTag("tag-pilot",pil.noCapturadas?["bad","Revisar"]:["ok","Al día"]);
+    setTag("tag-pilot",pil.noCapturadas?["bad","Revisar"]:tagControl(pil.difNombre));
   }else{
     setTexto("mos-pilot-dato","—");setTexto("mos-pilot-sub","Cargando reporte de Pilot…");
     setTag("tag-pilot",null);
@@ -1236,6 +1416,21 @@ function renderMiResultado(o,meta,diasTranscurridos,diasDelMes){
     <div class="kpi-row"><span>% de tu meta</span><span class="value">${pct(meta?proy/meta*100:0)}</span></div>
     <div class="small">Tu meta es la meta de la agencia dividida entre ${ASESORES_ACTIVOS.length} asesores activos.</div>`;
   document.getElementById("mi-resultado-body").innerHTML=html;
+  document.getElementById("meta-personal-body").innerHTML=html; // detalle de Meta y avance
+}
+
+// Velocímetro semicircular del mosaico grande: se llena con el % de avance
+// y una marca amarilla indica dónde deberíamos ir a hoy.
+function pintarVelocimetro(avancePct,esperadoPct){
+  const p=Math.min(Math.max(isFinite(avancePct)?avancePct:0,0),100);
+  document.getElementById("vel-relleno").setAttribute("stroke-dasharray",`${p} 100`);
+  const t=Math.min(Math.max(esperadoPct,0),100)/100*Math.PI;
+  const punto=r=>[100-r*Math.cos(t),100-r*Math.sin(t)];
+  const [x1,y1]=punto(72),[x2,y2]=punto(100);
+  const marca=document.getElementById("vel-marca");
+  marca.setAttribute("x1",x1.toFixed(1));marca.setAttribute("y1",y1.toFixed(1));
+  marca.setAttribute("x2",x2.toFixed(1));marca.setAttribute("y2",y2.toFixed(1));
+  setTexto("vel-leyenda-txt",`Deberíamos ir en ${pct2(esperadoPct)}`);
 }
 
 function renderMetaAgencia(o,meta,diasTranscurridos,diasDelMes){
@@ -1258,8 +1453,9 @@ function renderMetaAgencia(o,meta,diasTranscurridos,diasDelMes){
   document.getElementById("meta-agencia-body").innerHTML=html;
 }
 
-// Tres tarjetas de arriba en el detalle de Meta y avance.
-function renderMetaResumen(o,meta,diasTranscurridos,diasDelMes,diasRestantes){
+// Tres tarjetas de arriba en el detalle de Meta y avance (de la agencia, o
+// del asesor con su meta individual cuando personal=true).
+function renderMetaResumen(o,meta,diasTranscurridos,diasDelMes,diasRestantes,personal){
   const avance=meta?o.v/meta*100:0;
   const esperadoPct=pctEsperadoAHoy(diasTranscurridos,diasDelMes);
   const deberiaLlevar=meta*esperadoPct/100;
@@ -1273,7 +1469,7 @@ function renderMetaResumen(o,meta,diasTranscurridos,diasDelMes,diasRestantes){
         <div class="mini-lbl">Avance</div>
         <div class="mini-num">${pct2(avance)} <span>de ${fmt(meta)}</span></div>
         <div class="barra-meta"><div style="width:${Math.min(Math.max(avance,0),100)}%;background:${est.color}"></div><span style="left:${Math.min(esperadoPct,100)}%" title="Deberíamos llevar a hoy"></span></div>
-        <div class="small">La marca es lo que deberíamos llevar a hoy: <b class="num">${fmt(deberiaLlevar)}</b> (${pct2(esperadoPct)}).</div>
+        <div class="small">La marca es lo que ${personal?"deberías":"deberíamos"} llevar a hoy: <b class="num">${fmt(deberiaLlevar)}</b> (${pct2(esperadoPct)}).</div>
       </div>
       <div class="card">
         <div class="mini-lbl">Para llegar al 100%</div>
@@ -1284,13 +1480,13 @@ function renderMetaResumen(o,meta,diasTranscurridos,diasDelMes,diasRestantes){
       <div class="card">
         <div class="mini-lbl">Proyección al cierre</div>
         <div class="mini-num">${fmt(proy)}</div>
-        <div class="small">${pct(meta?proy/meta*100:0)} de la meta si seguimos a este ritmo.</div>
+        <div class="small">${pct(meta?proy/meta*100:0)} de ${personal?"tu meta si sigues":"la meta si seguimos"} a este ritmo.</div>
       </div>
     </div>`;
 }
 
 // Gráfica de venta acumulada día por día contra la línea de ritmo ideal.
-function renderGraficaAcumulada(datos,meta,fechaBase,diasTranscurridos,diasDelMes){
+function renderGraficaAcumulada(datos,meta,fechaBase,diasTranscurridos,diasDelMes,personal){
   const porDia=new Array(diasDelMes+1).fill(0);
   datos.forEach(d=>{
     const f=parseFechaLatina(d["FECHA"]);
@@ -1306,7 +1502,7 @@ function renderGraficaAcumulada(datos,meta,fechaBase,diasTranscurridos,diasDelMe
   }
   const canvas=document.getElementById("chart-acumulado");
   const texto=document.getElementById("texto-acumulado");
-  texto.textContent=`Línea azul: venta sin IVA acumulada hasta el día ${diasTranscurridos}. Línea punteada: ritmo parejo para llegar a ${fmt(meta)} el día ${diasDelMes}.`;
+  texto.textContent=`Línea azul: ${personal?"tu ":""}venta sin IVA acumulada hasta el día ${diasTranscurridos}. Línea punteada: ritmo parejo para llegar a ${personal?"tu meta de ":""}${fmt(meta)} el día ${diasDelMes}.`;
   if(typeof Chart==="undefined"){canvas.style.display="none";return;}
   canvas.style.display="";
   try{
@@ -1315,8 +1511,8 @@ function renderGraficaAcumulada(datos,meta,fechaBase,diasTranscurridos,diasDelMe
     chartAcumulado=new Chart(canvas.getContext("2d"),{
       type:"line",
       data:{labels:etiquetas,datasets:[
-        {label:"Venta acumulada",data:acumulado,borderColor:cAcc,backgroundColor:cAcc,borderWidth:2,pointRadius:2.5,pointHoverRadius:5,tension:0,spanGaps:false},
-        {label:"Ritmo ideal",data:ideal,borderColor:cTexto,borderWidth:2,borderDash:[5,5],pointRadius:0,pointHoverRadius:0,tension:0}
+        {label:personal?"Tu venta acumulada":"Venta acumulada",data:acumulado,borderColor:cAcc,backgroundColor:cAcc,borderWidth:2,pointRadius:2.5,pointHoverRadius:5,tension:0,spanGaps:false},
+        {label:personal?"Tu ritmo ideal":"Ritmo ideal",data:ideal,borderColor:cTexto,borderWidth:2,borderDash:[5,5],pointRadius:0,pointHoverRadius:0,tension:0}
       ]},
       options:{
         responsive:true,maintainAspectRatio:false,animation:false,
@@ -1563,15 +1759,15 @@ function renderVentoCredit(datos,objetivo,diasTranscurridos,diasDelMes){
   const pct=objetivo?llevas/objetivo*100:0;
   const diferencia=llevas-deberiaLlevar;
 
-  let color,mensaje,semaforo;
+  let color,mensaje;
   if(objetivo&&llevas>=objetivo){
-    color="--ok";mensaje="¡Meta de VentoCredit cumplida este mes!";semaforo=["ok","Meta cumplida"];
+    color="--ok";mensaje="¡Meta de VentoCredit cumplida este mes!";
   }else if(diferencia>=0){
-    color="--ok";mensaje="Vas en tiempo con tu ritmo de VentoCredit.";semaforo=["ok","En ritmo"];
+    color="--ok";mensaje="Vas en tiempo con tu ritmo de VentoCredit.";
   }else if(diferencia>=-1){
-    color="--warn";mensaje=`Vas ${Math.abs(diferencia)} financiamiento${Math.abs(diferencia)===1?"":"s"} abajo del ritmo.`;semaforo=["warn","Atención"];
+    color="--warn";mensaje=`Vas ${Math.abs(diferencia)} financiamiento${Math.abs(diferencia)===1?"":"s"} abajo del ritmo.`;
   }else{
-    color="--bad";mensaje=`Vas ${Math.abs(diferencia)} financiamientos abajo del ritmo.`;semaforo=["bad","Urgente"];
+    color="--bad";mensaje=`Vas ${Math.abs(diferencia)} financiamientos abajo del ritmo.`;
   }
 
   const anchoBarra=Math.min(pct,100);
@@ -1587,7 +1783,7 @@ function renderVentoCredit(datos,objetivo,diasTranscurridos,diasDelMes){
       <div class="vc-marca" style="left:${posMarca}%"></div>
     </div>
     <div class="small">Deberías llevar a hoy: ${deberiaLlevar} · ${mensaje}</div>`;
-  return {llevas,objetivo,deberiaLlevar,semaforo};
+  return {llevas,objetivo,deberiaLlevar};
 }
 
 function renderGrupos(datos,nombres){
@@ -1752,7 +1948,7 @@ function renderEntregas(datos,nombres,fechaCorte){
   if(!datos.length||!("ENTREGADA" in datos[0])){
     resumen.innerHTML=`<div class="small">${datos.length?"El Sheet no trae la columna ENTREGADA, así que no puedo calcular las entregas.":"Sin ventas registradas este mes."}</div>`;
     porAsesor.innerHTML="";tabla.innerHTML="";
-    return datos.length?null:{entregadas:0,pendientes:0,total:0};
+    return datos.length?null:{entregadas:0,pendientes:0,total:0,lista:[]};
   }
 
   const entregadas=datos.filter(d=>estaEntregada(d["ENTREGADA"]));
@@ -1760,7 +1956,7 @@ function renderEntregas(datos,nombres,fechaCorte){
   const montoPendiente=pendientes.reduce((a,d)=>a+numMiles(d["PRECIO"])/1.16,0);
   const porcentaje=datos.length?entregadas.length/datos.length*100:0;
   const clase=porcentaje>=95?"estado-ok":(porcentaje>=85?"estado-warn":"estado-mal");
-  const resultado={entregadas:entregadas.length,pendientes:pendientes.length,total:datos.length};
+  const resultado={entregadas:entregadas.length,pendientes:pendientes.length,total:datos.length,lista:pendientes};
 
   resumen.innerHTML=
     `<div class="kpi-grande ${clase}">${entregadas.length} de ${datos.length} entregadas · ${pct(porcentaje)}</div>`+
@@ -1835,17 +2031,18 @@ function renderResenas(datos){
   if(!datos.length||!("RESEÑA" in datos[0])){
     cont.innerHTML=`<div class="small">${datos.length?"El Sheet no trae la columna RESEÑA todavía.":"Sin ventas registradas este mes."}</div>`;
     lista.innerHTML="";
-    return datos.length?null:{con:0,total:0};
+    return datos.length?null:{con:0,total:0,lista:[]};
   }
-  const conReseña=datos.filter(d=>esReseñaSi(d["RESEÑA"])).length;
+  const sinReseña=datos.filter(d=>!esReseñaSi(d["RESEÑA"]));
+  const conReseña=datos.length-sinReseña.length;
   const total=datos.length;
   const p=total?conReseña/total*100:0;
   const clase=p>=70?"estado-ok":(p>=40?"estado-warn":"estado-mal");
   cont.innerHTML=
     `<div class="kpi-grande ${clase}">${conReseña} de ${total} clientes dejaron reseña · ${pct(p)}</div>`+
     `<div class="small">Se captura a mano en la columna RESEÑA de cada venta.</div>`;
-  lista.innerHTML=tablaVentas(datos.filter(d=>!esReseñaSi(d["RESEÑA"])),"Todas las ventas tienen reseña.");
-  return {con:conReseña,total};
+  lista.innerHTML=tablaVentas(sinReseña,"Todas las ventas tienen reseña.");
+  return {con:conReseña,total,lista:sinReseña};
 }
 
 /* =====================  EXPEDIENTE  ===================== */
@@ -1860,17 +2057,18 @@ function renderExpediente(datos){
   if(!datos.length||!("EXPEDIENTE" in datos[0])){
     cont.innerHTML=`<div class="small">${datos.length?"El Sheet no trae la columna EXPEDIENTE todavía.":"Sin ventas registradas este mes."}</div>`;
     lista.innerHTML="";
-    return datos.length?null:{completos:0,total:0};
+    return datos.length?null:{completos:0,total:0,lista:[]};
   }
-  const completos=datos.filter(d=>esExpedienteCompleto(d["EXPEDIENTE"])).length;
+  const incompletos=datos.filter(d=>!esExpedienteCompleto(d["EXPEDIENTE"]));
+  const completos=datos.length-incompletos.length;
   const total=datos.length;
   const p=total?completos/total*100:0;
   const clase=p>=70?"estado-ok":(p>=40?"estado-warn":"estado-mal");
   cont.innerHTML=
     `<div class="kpi-grande ${clase}">${completos} de ${total} expedientes completos · ${pct(p)}</div>`+
     `<div class="small">Se captura a mano en la columna EXPEDIENTE de cada venta.</div>`;
-  lista.innerHTML=tablaVentas(datos.filter(d=>!esExpedienteCompleto(d["EXPEDIENTE"])),"Todos los expedientes están completos.");
-  return {completos,total};
+  lista.innerHTML=tablaVentas(incompletos,"Todos los expedientes están completos.");
+  return {completos,total,lista:incompletos};
 }
 
 /* =====================  CUADRE CON PILOT  ===================== */
@@ -1952,7 +2150,7 @@ function renderPilot(datos){
   }
   html+=`<div class="small">El cruce es sólo por número de factura. Modelo y precio no se comparan.</div>`;
   document.getElementById("pilot-detalle").innerHTML=html;
-  return {noCapturadas:noCapturadas.length,difNombre:difNombre.length};
+  return {noCapturadas:noCapturadas.length,difNombre:difNombre.length,lista:noCapturadas};
 }
 
 function fmt(v){
