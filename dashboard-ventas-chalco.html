@@ -232,6 +232,8 @@ th{color:var(--muted);text-transform:uppercase;font-size:11px;font-family:var(--
 /* Vistas por perfil */
 body.vista-personal .solo-gerente{display:none!important}
 body:not(.vista-personal) .solo-asesor{display:none!important}
+body.desde-app #btn-cambiar-usuario{display:none!important}
+.top-acciones a.btn{text-decoration:none}
 
 /* Bienvenida + selector de usuario */
 #overlay-usuario{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
@@ -683,7 +685,24 @@ function mostrarSelectorUsuario(){
 
 document.getElementById("btn-cambiar-usuario").onclick=mostrarSelectorUsuario;
 
+/* Desde la app Vento Chalco (cotizador): llega ?usuario=KEVIN&desde=app.
+   El usuario ya entró con su PIN en la app, así que se toma ese y se quita
+   el botón para cambiarlo; aparece "← App" para regresar.              */
+const PARAMS=new URLSearchParams(location.search);
+const DESDE_APP=PARAMS.get("desde")==="app";
+const URL_APP="https://jesus-trapala.github.io/cotizador-vento-chalco/#inicio";
+if(DESDE_APP){
+  document.body.classList.add("desde-app");
+  const volver=document.createElement("a");
+  volver.className="btn btn-secondary";
+  volver.href=URL_APP;
+  volver.textContent="← App";
+  document.querySelector(".top-acciones").prepend(volver);
+}
+
 (function initUsuario(){
+  const deApp=(PARAMS.get("usuario")||"").toUpperCase();
+  if(USUARIOS.includes(deApp)) guardarLocal(USUARIO_KEY,deApp);
   const guardado=(leerLocal(USUARIO_KEY)||"").toUpperCase();
   if(USUARIOS.includes(guardado)){
     usuarioActual=guardado;
