@@ -4,11 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard Ventas Agencia Chalco</title>
+<meta name="theme-color" content="#f7f3ec">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="iconos/favicon-64.png">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Chalco">
 <script>
-// Modo claro/oscuro antes de pintar (ver diseño-vento.md)
+/* Modo claro/oscuro antes de pintar (diseño-vento.md). Clave compartida con el
+   Portal Vento ("vento-tema"); se lee también la anterior ("temaVento"). */
 (function(){
-  let t=null;
-  try{t=localStorage.getItem("temaVento");}catch(e){}
+  var t=null;
+  try{t=localStorage.getItem("vento-tema")||localStorage.getItem("temaVento");}catch(e){}
   if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
   document.documentElement.dataset.theme=t;
 })();
@@ -16,6 +25,59 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&family=Oswald:wght@600&display=swap" rel="stylesheet">
+<style id="vento-base">
+/* =====================  TOKENS (diseño-vento.md)  ===================== */
+:root{
+  --bg:#f7f3ec; --card:#ffffff; --text:#16181d; --muted:#6b6f78; --border:#e6e0d6;
+  --accent:#2B6EF2; --on-accent:#ffffff; --alerta:#e63329;
+  --ok:#1e9e57; --warn:#d18a00; --alert:#d9661f; --bad:#e63329;
+  --m-hoy:#2f7cf6; --m-asesores:#14a08f; --m-racha:#e2a21a; --m-vc:#7b5cf0;
+  --m-entregas:#e07a2e; --m-resenas:#2fa04a; --m-expedientes:#e04e93; --m-pilot:#3d5f93;
+  --m-meta:linear-gradient(135deg,#2B6EF2,#1846b8);
+  --ink-racha:#2a1d00;
+  --logo:#e63329;
+  --suave:#f3eee5;
+  --sombra-mos:0 8px 18px -10px rgba(22,24,29,.45);
+  --f-titulo:"Oswald",Impact,"Arial Narrow",sans-serif;
+  --f-texto:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+[data-theme="dark"]{
+  --bg:#0d0f14; --card:#141821; --text:#f2f4f8; --muted:#8d95a6; --border:#232733;
+  --ok:#3ecf7a; --warn:#f0b429; --alert:#f08a4b; --bad:#ff5a4f;
+  --m-hoy:#1f55d6; --m-asesores:#0e7468; --m-racha:#9a5d0a; --m-vc:#5137b8;
+  --m-entregas:#a4521a; --m-resenas:#2a6f2e; --m-expedientes:#8f2b63; --m-pilot:#2e4a72;
+  --m-meta:linear-gradient(135deg,#2B6EF2,#163c9e);
+  --ink-racha:#ffffff;
+  --suave:#1a1f2a;
+  --sombra-mos:0 8px 18px -10px rgba(0,0,0,.8);
+}
+@media screen{
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--f-texto)}
+}
+/* =====================  ENCABEZADO VENTO  ===================== */
+.vh{background:var(--bg);border-bottom:1px solid var(--border);font-family:var(--f-texto);color:var(--text)}
+.vh-in{max-width:var(--vh-max,1040px);margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.vh-logo{width:44px;height:44px;border-radius:12px;background:var(--logo);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--sombra-mos);text-decoration:none}
+.vh-logo svg{display:block}
+.vh-txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.vh-ag{font-family:var(--f-titulo);font-weight:600;font-size:11px;letter-spacing:.16em;color:var(--muted);line-height:1.2}
+.vh-app{font-family:var(--f-titulo);font-weight:600;font-size:20px;letter-spacing:.03em;text-transform:uppercase;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vh-acc{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.vh-portal{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;box-shadow:var(--sombra-mos)}
+.vh-portal:hover{filter:brightness(1.08)}
+.vh-tema{width:44px;height:44px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.vh-tema:hover{border-color:var(--muted)}
+.vh-portal:focus-visible,.vh-tema:focus-visible,.vh-logo:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[data-theme="dark"] .vh-tema .ico-luna,:root:not([data-theme="dark"]) .vh-tema .ico-sol{display:none}
+@media (max-width:420px){
+  .vh-in{gap:10px;padding:10px 12px}
+  .vh-app{font-size:17px}
+  .vh-portal{padding:0 12px}
+}
+@media print{.vh{display:none!important}}
+</style>
 <style>
 /* =====================  TOKENS (diseño-vento.md)  ===================== */
 :root{
@@ -55,11 +117,9 @@ body{margin:0;font-family:var(--f-texto);background:var(--bg);color:var(--text);
 button{font-family:inherit}
 
 /* =====================  BARRA SUPERIOR  ===================== */
-.topbar{max-width:1040px;margin:0 auto;padding:14px 16px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.marca{font-family:var(--f-titulo);font-weight:600;font-size:17px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
-.marca span{color:var(--muted)}
+.topbar{max-width:1040px;margin:0 auto;padding:12px 16px 0;display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap}
 .top-acciones{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:7px;border:none;padding:8px 14px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s,transform .1s;min-height:36px}
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;padding:8px 14px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s,transform .1s;min-height:44px}
 .btn svg{flex-shrink:0}
 .btn:hover:not(:disabled){opacity:.88}
 .btn:active:not(:disabled){transform:scale(.97)}
@@ -67,7 +127,7 @@ button{font-family:inherit}
 .btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 select.btn-secondary{-webkit-appearance:none;appearance:none;max-width:190px}
-.btn-icono{width:36px;padding:0;justify-content:center}
+.btn-icono{width:44px;padding:0;justify-content:center}
 
 main{padding:12px 16px 40px;max-width:1040px;margin:auto}
 #loader p{color:var(--muted)}
@@ -76,7 +136,7 @@ main{padding:12px 16px 40px;max-width:1040px;margin:auto}
 .encabezado{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:6px 0 16px}
 .fecha{color:var(--muted);font-size:13px;font-weight:500}
 .encabezado h1{font-family:var(--f-titulo);font-weight:600;font-size:30px;margin:2px 0 0;letter-spacing:.01em}
-.cambiar-usuario{background:none;border:none;padding:0;color:var(--accent);font-size:13px;cursor:pointer;text-decoration:underline;margin-top:4px}
+.cambiar-usuario{background:none;border:none;padding:0;color:var(--accent);font-size:13px;cursor:pointer;text-decoration:underline;margin-top:0;min-height:44px}
 .vendido-hoy{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 16px;min-width:250px}
 .vendido-hoy .lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .hoy-cifras{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-top:2px}
@@ -144,7 +204,7 @@ main{padding:12px 16px 40px;max-width:1040px;margin:auto}
 
 /* =====================  DETALLE  ===================== */
 .detalle-top{display:flex;align-items:center;gap:12px;margin:6px 0 14px;flex-wrap:wrap}
-.btn-inicio{--m:var(--accent);background:var(--m);color:#fff;border:none;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--sombra-mos);min-height:40px}
+.btn-inicio{--m:var(--accent);background:var(--m);color:#fff;border:none;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--sombra-mos);min-height:44px}
 .btn-inicio.m-racha{color:var(--ink-racha)}
 #detalle-titulo{font-family:var(--f-titulo);font-weight:600;font-size:26px;margin:0;letter-spacing:.02em}
 
@@ -246,7 +306,7 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
 @media (max-width:760px){
   .top-acciones{width:100%;flex-wrap:nowrap}
   .top-acciones select.btn-secondary{flex:1;min-width:0;max-width:none}
-  #btn-actualizar-sheet{width:36px;padding:0;justify-content:center}
+  #btn-actualizar-sheet{width:44px;padding:0;justify-content:center}
   #btn-actualizar-sheet span{display:none}
   .mosaicos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .mosaico-grande{grid-row:auto}
@@ -264,8 +324,23 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
 </head>
 <body>
 
+<div class="vh" role="banner">
+  <div class="vh-in">
+    <a class="vh-logo" href="./" aria-label="Herramientas · Agencia Chalco">
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 4h4.5L12 15.1 16.9 4h4.5L14.2 20.5H9.8z" fill="#fff"/></svg>
+    </a>
+    <div class="vh-txt"><span class="vh-ag">AGENCIA 16025</span><span class="vh-app">Ventas</span></div>
+    <div class="vh-acc">
+      <a class="vh-portal" href="https://jesus-trapala.github.io/portal-vento/">← Portal</a>
+      <button type="button" class="vh-tema" id="btn-tema" title="Cambiar modo claro / oscuro" aria-label="Cambiar modo claro / oscuro">
+        <svg class="ico-luna" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ico-sol" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="topbar">
-  <div class="marca">Vento Chalco <span>· Ventas</span></div>
   <div class="top-acciones">
     <select id="select-mes" class="btn btn-secondary" disabled aria-label="Mes">
       <option>Conectando con el Sheet…</option>
@@ -277,10 +352,6 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
     <button class="btn btn-secondary btn-icono btn-campana" id="btn-campana" title="Pendientes" aria-label="Pendientes" disabled>
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <span class="campana-num" id="campana-num" hidden></span>
-    </button>
-    <button class="btn btn-secondary btn-icono" id="btn-tema" title="Cambiar modo claro / oscuro" aria-label="Cambiar modo claro / oscuro">
-      <svg class="ico-luna" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      <svg class="ico-sol" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     </button>
   </div>
 </div>
@@ -642,20 +713,11 @@ function leerLocal(clave){try{return localStorage.getItem(clave);}catch(e){retur
 function guardarLocal(clave,valor){try{localStorage.setItem(clave,valor);}catch(e){}}
 
 /* =====================  MODO CLARO / OSCURO  ===================== */
-const TEMA_KEY="temaVento";
-function pintarBotonTema(){
-  const oscuro=document.documentElement.dataset.theme==="dark";
-  document.querySelector("#btn-tema .ico-luna").style.display=oscuro?"none":"";
-  document.querySelector("#btn-tema .ico-sol").style.display=oscuro?"":"none";
-}
-document.getElementById("btn-tema").onclick=()=>{
-  const nuevo=document.documentElement.dataset.theme==="dark"?"light":"dark";
-  document.documentElement.dataset.theme=nuevo;
-  guardarLocal(TEMA_KEY,nuevo);
-  pintarBotonTema();
-  if(datosActuales.length)renderDashboard(datosActuales); // las gráficas toman los colores del modo
-};
-pintarBotonTema();
+/* El botón luna/sol vive en el encabezado Vento (guarda "vento-tema").
+   Al cambiar de modo, las gráficas se vuelven a dibujar con los colores del modo. */
+window.addEventListener("vento-tema",()=>{
+  if(datosActuales.length)renderDashboard(datosActuales);
+});
 
 /* =====================  USUARIO / VISTA PERSONAL  ===================== */
 const USUARIOS=["JESUS","OSVALDO","KEVIN"];
@@ -2192,5 +2254,24 @@ function pct2(v){
 }
 </script>
 
+<script>
+/* Modo claro/oscuro (botón luna/sol) e instalación como app. Solo diseño. */
+(function(){
+  var raiz=document.documentElement, meta=document.querySelector('meta[name="theme-color"]');
+  function pintar(){ if(meta) meta.content = raiz.dataset.theme==="dark" ? "#0d0f14" : "#f7f3ec"; }
+  pintar();
+  var b=document.getElementById("btn-tema");
+  if(b) b.addEventListener("click",function(){
+    var nuevo = raiz.dataset.theme==="dark" ? "light" : "dark";
+    raiz.dataset.theme = nuevo;
+    try{ localStorage.setItem("vento-tema",nuevo); localStorage.setItem("temaVento",nuevo); }catch(e){}
+    pintar();
+    window.dispatchEvent(new CustomEvent("vento-tema",{detail:nuevo}));
+  });
+  if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
+    window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+  }
+})();
+</script>
 </body>
 </html>

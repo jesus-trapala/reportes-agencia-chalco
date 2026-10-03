@@ -6,7 +6,7 @@ Referencia de estilo para todas las herramientas del repo (dashboard, concentrad
 
 Todas las herramientas tienen **dos modos fijos** y un botón (sol / luna) para cambiar entre ellos.
 
-- La elección se guarda en `localStorage` con la clave `temaVento` (`"light"` o `"dark"`), siempre dentro de `try/catch` (en modo privado puede fallar y la página debe seguir funcionando).
+- La elección se guarda en `localStorage` con la clave `vento-tema` (`"light"` o `"dark"`), la misma del Portal Vento, para que el modo se mantenga al pasar de una app a otra. Al guardar se escribe también la clave anterior `temaVento` y al leer se usa como respaldo. Siempre dentro de `try/catch` (en modo privado puede fallar y la página debe seguir funcionando).
 - Si no hay nada guardado se usa la preferencia del sistema (`prefers-color-scheme`).
 - El modo se aplica con `data-theme` en `<html>`, con un script pequeño en el `<head>` para que no parpadee al cargar.
 
@@ -14,7 +14,7 @@ Todas las herramientas tienen **dos modos fijos** y un botón (sol / luna) para 
 <script>
 (function(){
   let t=null;
-  try{t=localStorage.getItem("temaVento");}catch(e){}
+  try{t=localStorage.getItem("vento-tema")||localStorage.getItem("temaVento");}catch(e){}
   if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
   document.documentElement.dataset.theme=t;
 })();
@@ -33,6 +33,7 @@ Todas las herramientas tienen **dos modos fijos** y un botón (sol / luna) para 
 
 - **Azul Vento `#2B6EF2`** (`--accent`): marca, botones principales, enlaces, la serie principal en gráficas.
 - **Rojo `#e63329`** (`--alerta`): **solo** para alertas. Nunca decorativo.
+- Única excepción: el **logo** del encabezado (cuadro rojo con la "V" blanca) y los íconos de la app.
 
 ## 3. Semáforo
 
@@ -96,17 +97,23 @@ Vivo en modo claro, profundo en modo oscuro. El texto sobre el mosaico es blanco
 
 ## 8. Responsive
 
-- Debe funcionar a **~400 px** de ancho sin scroll horizontal; márgenes laterales de 16 px.
+- Debe funcionar a **~390 px** de ancho sin scroll horizontal; márgenes laterales de 16 px. Áreas táctiles de **44 px** mínimo.
 - Mosaicos: 4 columnas en escritorio; **2 columnas en celular**, y el mosaico grande ocupa todo el ancho.
 - Tablas anchas: dentro de un contenedor con `overflow-x:auto` para que se desplacen dentro de su tarjeta, nunca la página.
 
-## 9. Gráficas
+## 9. Encabezado e instalación
+
+- Todas las herramientas abren con el mismo encabezado: logo rojo con la "V" (lleva a la portada), "AGENCIA 16025" en pequeño, el nombre corto de la app, el botón **"← Portal"** (https://jesus-trapala.github.io/portal-vento/) y el botón luna / sol. Todo mide mínimo 44 px de alto.
+- El sitio es instalable: `manifest.webmanifest`, `sw.js` (red primero; la copia guardada solo se usa sin señal; nunca guarda nada de Google) e íconos en `iconos/` (192, 512, maskable 512, apple-touch 180). Rutas relativas para GitHub Pages.
+- Lo que se imprime o se guarda como PDF (checklist de entrega, carta factura, reporte del comparador) **no** usa este sistema: conserva su formato original. Los estilos de pantalla van dentro de `@media screen`.
+
+## 10. Gráficas
 
 - Una sola escala vertical por gráfica. Serie principal en azul Vento, línea de 2 px; referencias (ritmo ideal, meta) en gris `--muted` punteado.
 - Siempre leyenda si hay 2 o más series, y tooltip al pasar el dedo / mouse.
 - Rejilla y ejes discretos (`--border` / `--muted`). Al cambiar de modo se vuelven a dibujar con los colores del modo.
 
-## 10. Plantilla de variables CSS
+## 11. Plantilla de variables CSS
 
 ```css
 :root{

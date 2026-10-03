@@ -4,81 +4,190 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Herramientas · Agencia Chalco</title>
+<meta name="theme-color" content="#f7f3ec">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="iconos/favicon-64.png">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Chalco">
+<script>
+/* Modo claro/oscuro antes de pintar (diseño-vento.md). Clave compartida con el
+   Portal Vento ("vento-tema"); se lee también la anterior ("temaVento"). */
+(function(){
+  var t=null;
+  try{t=localStorage.getItem("vento-tema")||localStorage.getItem("temaVento");}catch(e){}
+  if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+  document.documentElement.dataset.theme=t;
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&family=Oswald:wght@600&display=swap" rel="stylesheet">
+<style id="vento-base">
+/* =====================  TOKENS (diseño-vento.md)  ===================== */
+:root{
+  --bg:#f7f3ec; --card:#ffffff; --text:#16181d; --muted:#6b6f78; --border:#e6e0d6;
+  --accent:#2B6EF2; --on-accent:#ffffff; --alerta:#e63329;
+  --ok:#1e9e57; --warn:#d18a00; --alert:#d9661f; --bad:#e63329;
+  --m-hoy:#2f7cf6; --m-asesores:#14a08f; --m-racha:#e2a21a; --m-vc:#7b5cf0;
+  --m-entregas:#e07a2e; --m-resenas:#2fa04a; --m-expedientes:#e04e93; --m-pilot:#3d5f93;
+  --m-meta:linear-gradient(135deg,#2B6EF2,#1846b8);
+  --ink-racha:#2a1d00;
+  --logo:#e63329;
+  --suave:#f3eee5;
+  --sombra-mos:0 8px 18px -10px rgba(22,24,29,.45);
+  --f-titulo:"Oswald",Impact,"Arial Narrow",sans-serif;
+  --f-texto:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+[data-theme="dark"]{
+  --bg:#0d0f14; --card:#141821; --text:#f2f4f8; --muted:#8d95a6; --border:#232733;
+  --ok:#3ecf7a; --warn:#f0b429; --alert:#f08a4b; --bad:#ff5a4f;
+  --m-hoy:#1f55d6; --m-asesores:#0e7468; --m-racha:#9a5d0a; --m-vc:#5137b8;
+  --m-entregas:#a4521a; --m-resenas:#2a6f2e; --m-expedientes:#8f2b63; --m-pilot:#2e4a72;
+  --m-meta:linear-gradient(135deg,#2B6EF2,#163c9e);
+  --ink-racha:#ffffff;
+  --suave:#1a1f2a;
+  --sombra-mos:0 8px 18px -10px rgba(0,0,0,.8);
+}
+@media screen{
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--f-texto)}
+}
+/* =====================  ENCABEZADO VENTO  ===================== */
+.vh{background:var(--bg);border-bottom:1px solid var(--border);font-family:var(--f-texto);color:var(--text)}
+.vh-in{max-width:var(--vh-max,1040px);margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.vh-logo{width:44px;height:44px;border-radius:12px;background:var(--logo);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--sombra-mos);text-decoration:none}
+.vh-logo svg{display:block}
+.vh-txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.vh-ag{font-family:var(--f-titulo);font-weight:600;font-size:11px;letter-spacing:.16em;color:var(--muted);line-height:1.2}
+.vh-app{font-family:var(--f-titulo);font-weight:600;font-size:20px;letter-spacing:.03em;text-transform:uppercase;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vh-acc{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.vh-portal{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;box-shadow:var(--sombra-mos)}
+.vh-portal:hover{filter:brightness(1.08)}
+.vh-tema{width:44px;height:44px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.vh-tema:hover{border-color:var(--muted)}
+.vh-portal:focus-visible,.vh-tema:focus-visible,.vh-logo:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[data-theme="dark"] .vh-tema .ico-luna,:root:not([data-theme="dark"]) .vh-tema .ico-sol{display:none}
+@media (max-width:420px){
+  .vh-in{gap:10px;padding:10px 12px}
+  .vh-app{font-size:17px}
+  .vh-portal{padding:0 12px}
+}
+@media print{.vh{display:none!important}}
+</style>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#eef1f6;color:#1c2430;font:15px/1.5 -apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-header{background:#1F3864;color:#fff;padding:26px 22px}
-header h1{margin:0;font-size:21px;font-weight:600}
-header p{margin:5px 0 0;font-size:13px;opacity:.8}
-main{max-width:900px;margin:0 auto;padding:26px 22px 60px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
-a.card{display:block;background:#fff;border:1px solid #d6dce6;border-radius:10px;padding:18px;
-       text-decoration:none;color:inherit;transition:.15s}
-a.card:hover{border-color:#2E5090;box-shadow:0 3px 12px rgba(31,56,100,.13);transform:translateY(-2px)}
-a.card h2{margin:0 0 6px;font-size:15.5px;color:#1F3864}
-a.card p{margin:0;font-size:13px;color:#6b7684}
-.tag{display:inline-block;margin-top:10px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
-     color:#2E5090;background:#eef2fb;border-radius:20px;padding:3px 10px}
-.tag.ext{color:#8a5a00;background:#fdf3e2}
-h3.sec{margin:30px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#1F3864;
-       border-bottom:1px solid #d6dce6;padding-bottom:8px}
-h3.sec:first-of-type{margin-top:0}
-p.nota{margin:0 0 14px;font-size:12.5px;color:#6b7684}
-a.chico{display:block;background:#fff;border:1px solid #d6dce6;border-radius:8px;padding:11px 14px;
-        text-decoration:none;color:inherit;transition:.15s}
-a.chico:hover{border-color:#2E5090;background:#f7f9fd}
-a.chico b{display:block;font-size:13.5px;color:#1F3864}
-a.chico span{font-size:12px;color:#6b7684}
-.avisillo{margin-top:22px;background:#fdf3e2;border-left:3px solid #d9a441;border-radius:6px;
-          padding:11px 14px;font-size:12.5px;color:#6b5320}
-footer{margin-top:26px;font-size:12px;color:#6b7684}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 var(--f-texto)}
+main{max-width:1040px;margin:0 auto;padding:16px 16px 48px}
+h1{font-family:var(--f-titulo);font-weight:600;font-size:30px;letter-spacing:.02em;text-transform:uppercase;margin:4px 0 2px;line-height:1.1}
+.intro{margin:0 0 18px;font-size:14px;color:var(--muted)}
+h2.sec{font-family:var(--f-titulo);font-weight:600;margin:30px 0 2px;font-size:17px;letter-spacing:.05em;text-transform:uppercase}
+p.nota{margin:0 0 12px;font-size:13px;color:var(--muted)}
+
+/* Mosaicos: se tocan -> color vivo */
+.mosaicos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.mosaico{--m:var(--accent);--ink:#fff;position:relative;background:var(--m);color:var(--ink);border-radius:18px;padding:14px;
+  text-decoration:none;box-shadow:var(--sombra-mos);display:flex;flex-direction:column;gap:4px;min-height:150px;min-width:0;transition:filter .15s,transform .1s}
+.mosaico:hover{filter:brightness(1.07)}
+.mosaico:active{transform:scale(.98)}
+.mosaico:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.mos-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:auto}
+.mos-ico{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mos-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.94);color:#16181d;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+[data-theme="dark"] .mos-tag{background:rgba(0,0,0,.35);color:#fff}
+.mos-nombre{font-family:var(--f-titulo);font-weight:600;font-size:19px;letter-spacing:.04em;text-transform:uppercase;line-height:1.15;margin-top:12px}
+.mos-sub{font-size:13px;line-height:1.4;opacity:.92;overflow-wrap:anywhere}
+.m-grande{grid-column:span 2;background:var(--m-meta)}
+.m-grande .mos-nombre{font-size:26px}
+.m-grande .mos-sub{font-size:14px;max-width:420px}
+.m-ancho{grid-column:span 2}
+.m-hoy{--m:var(--m-hoy)} .m-asesores{--m:var(--m-asesores)} .m-vc{--m:var(--m-vc)}
+.m-pilot{--m:var(--m-pilot)} .m-entregas{--m:var(--m-entregas)} .m-resenas{--m:var(--m-resenas)}
+
+/* Accesos secundarios: también se tocan -> color sólido, más discretos */
+.chicos{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+a.chico{display:block;background:#3a3f4b;color:#fff;border-radius:16px;padding:12px 14px;min-height:44px;text-decoration:none;
+  box-shadow:var(--sombra-mos);transition:filter .15s}
+[data-theme="dark"] a.chico{background:#262c3a}
+a.chico:hover{filter:brightness(1.15)}
+a.chico:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+a.chico b{display:block;font-size:14px}
+a.chico span{display:block;font-size:12.5px;opacity:.82;margin-top:1px}
+a.chico code,.aviso code{font-family:var(--f-num);font-size:.92em}
+
+/* Recuadro informativo */
+.aviso{margin-top:22px;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--warn);border-radius:16px;padding:12px 16px;font-size:13.5px}
+footer{margin-top:22px;font-size:12px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .mosaicos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .mosaico{min-height:140px;padding:12px}
+  .mos-nombre{font-size:16px}
+  .mos-sub{font-size:12px}
+  .m-grande .mos-nombre{font-size:22px}
+  h1{font-size:26px}
+}
 </style>
 </head>
 <body>
-<header>
-  <h1>Herramientas · Agencia Chalco</h1>
-  <p>Utilidades web que corren en el navegador. Sin servidor: los archivos que cargas nunca salen de tu equipo.</p>
-</header>
+<div class="vh" role="banner">
+  <div class="vh-in">
+    <a class="vh-logo" href="./" aria-label="Herramientas · Agencia Chalco">
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 4h4.5L12 15.1 16.9 4h4.5L14.2 20.5H9.8z" fill="#fff"/></svg>
+    </a>
+    <div class="vh-txt"><span class="vh-ag">AGENCIA 16025</span><span class="vh-app">Herramientas</span></div>
+    <div class="vh-acc">
+      <a class="vh-portal" href="https://jesus-trapala.github.io/portal-vento/">← Portal</a>
+      <button type="button" class="vh-tema" id="btn-tema" title="Cambiar modo claro / oscuro" aria-label="Cambiar modo claro / oscuro">
+        <svg class="ico-luna" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ico-sol" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
 <main>
+  <h1>Herramientas · Chalco</h1>
+  <p class="intro">Utilidades que corren en el navegador. Los archivos que cargas nunca salen de tu equipo.</p>
 
-  <h3 class="sec">Herramientas</h3>
-  <p class="nota">Un solo archivo cada una. Se pueden compartir por separado.</p>
-  <div class="grid">
-    <a class="card" href="dashboard-ventas-chalco.html">
-      <h2>Dashboard de ventas</h2>
-      <p>Meta del mes, desempeño por asesor, participación, formas de pago y modelos.</p>
-      <span class="tag">Ventas</span>
+  <div class="mosaicos">
+    <a class="mosaico m-grande" href="dashboard-ventas-chalco.html">
+      <span class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="mos-tag">Ventas</span></span>
+      <span class="mos-nombre">Dashboard de ventas</span>
+      <span class="mos-sub">Meta del mes, desempeño por asesor, participación, formas de pago y modelos.</span>
     </a>
-    <a class="card" href="https://jesus-trapala.github.io/ChalcoCheck/" target="_blank" rel="noopener">
-      <h2>Checklist diario</h2>
-      <p>Lo llena cada asesor durante su turno. De aquí salen los CSV que lee el Concentrador.</p>
-      <span class="tag ext">Operación · otro sitio</span>
+    <a class="mosaico m-asesores" href="https://jesus-trapala.github.io/ChalcoCheck/" target="_blank" rel="noopener">
+      <span class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="mos-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Otro sitio</span></span>
+      <span class="mos-nombre">Checklist diario</span>
+      <span class="mos-sub">Lo llena cada asesor en su turno. De aquí salen los CSV del Concentrador.</span>
     </a>
-    <a class="card" href="concentrador.html">
-      <h2>Concentrador de reportes</h2>
-      <p>Junta los CSV del Checklist diario: cumplimiento por asesor y seguimiento de prospectos.</p>
-      <span class="tag">Operación</span>
+    <a class="mosaico m-vc" href="concentrador.html">
+      <span class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span class="mos-tag">Operación</span></span>
+      <span class="mos-nombre">Concentrador</span>
+      <span class="mos-sub">Junta los CSV del Checklist diario: cumplimiento por asesor y prospectos.</span>
     </a>
-    <a class="card" href="comparador-semaforos.html">
-      <h2>Comparador de semáforos</h2>
-      <p>Compara dos cortes de inventario PEPS: cambios de color, traspasos y violaciones de antigüedad.</p>
-      <span class="tag">Inventario</span>
+    <a class="mosaico m-pilot" href="comparador-semaforos.html">
+      <span class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="3"/><circle cx="12" cy="7" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="17" r="1.5"/></svg></span><span class="mos-tag">Inventario</span></span>
+      <span class="mos-nombre">Semáforos</span>
+      <span class="mos-sub">Compara dos cortes de inventario PEPS: cambios de color, traspasos y antigüedad.</span>
     </a>
-    <a class="card" href="checklist-entrega.html">
-      <h2>Checklist de entrega</h2>
-      <p>Lee la factura en PDF, llena solos los datos de la unidad y genera el checklist de entrega listo para firmar.</p>
-      <span class="tag">Entregas</span>
+    <a class="mosaico m-entregas" href="checklist-entrega.html">
+      <span class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/></svg></span><span class="mos-tag">Entregas</span></span>
+      <span class="mos-nombre">Entrega de unidad</span>
+      <span class="mos-sub">Lee la factura en PDF y genera el checklist de entrega y la carta factura.</span>
     </a>
-    <a class="card" href="https://jesus-trapala.github.io/cotizador-vento-chalco/" target="_blank" rel="noopener">
-      <h2>Cotizador de motos</h2>
-      <p>Precios en vivo desde el Sheet, envío por WhatsApp y registro automático de cada cotización.</p>
-      <span class="tag ext">Ventas · otro sitio</span>
+    <a class="mosaico m-resenas m-ancho" href="https://jesus-trapala.github.io/cotizador-vento-chalco/" target="_blank" rel="noopener">
+      <span class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span class="mos-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Otro sitio</span></span>
+      <span class="mos-nombre">Cotizador de motos</span>
+      <span class="mos-sub">Precios en vivo desde el Sheet, envío por WhatsApp y registro de cada cotización.</span>
     </a>
   </div>
 
-  <h3 class="sec">Registro y seguimiento</h3>
+  <h2 class="sec">Registro y seguimiento</h2>
   <p class="nota">Piden cuenta de Google. Solo entra quien tenga acceso.</p>
-  <div class="grid">
+  <div class="chicos">
     <a class="chico" href="https://docs.google.com/spreadsheets/d/18JbnNzCXjH9Dn8jiaYz6qojHj0kIYSlNMyiwFdVnFuU/edit" target="_blank" rel="noopener">
       <b>Hoja de seguimiento</b>
       <span>Las cotizaciones registradas. Aquí se mueve el ESTATUS.</span>
@@ -97,9 +206,9 @@ footer{margin-top:26px;font-size:12px;color:#6b7684}
     </a>
   </div>
 
-  <h3 class="sec">Mantenimiento</h3>
+  <h2 class="sec">Mantenimiento</h2>
   <p class="nota">Solo cuando haya que cambiarle algo a una herramienta.</p>
-  <div class="grid">
+  <div class="chicos">
     <a class="chico" href="https://github.com/jesus-trapala/reportes-agencia-chalco/upload/main" target="_blank" rel="noopener">
       <b>Subir archivo · este sitio</b>
       <span>Arrastrar y commit. Nunca pegar código: se corta.</span>
@@ -114,11 +223,30 @@ footer{margin-top:26px;font-size:12px;color:#6b7684}
     </a>
   </div>
 
-  <div class="avisillo">
+  <div class="aviso">
     <b>Si los vendedores ven precios viejos:</b> que presionen <code>Ctrl+F5</code>. Es la caché del navegador, no el cotizador.
   </div>
 
   <footer>Los datos se procesan localmente en tu navegador.</footer>
 </main>
+<script>
+/* Modo claro/oscuro (botón luna/sol) e instalación como app. Solo diseño. */
+(function(){
+  var raiz=document.documentElement, meta=document.querySelector('meta[name="theme-color"]');
+  function pintar(){ if(meta) meta.content = raiz.dataset.theme==="dark" ? "#0d0f14" : "#f7f3ec"; }
+  pintar();
+  var b=document.getElementById("btn-tema");
+  if(b) b.addEventListener("click",function(){
+    var nuevo = raiz.dataset.theme==="dark" ? "light" : "dark";
+    raiz.dataset.theme = nuevo;
+    try{ localStorage.setItem("vento-tema",nuevo); localStorage.setItem("temaVento",nuevo); }catch(e){}
+    pintar();
+    window.dispatchEvent(new CustomEvent("vento-tema",{detail:nuevo}));
+  });
+  if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
+    window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+  }
+})();
+</script>
 </body>
 </html>

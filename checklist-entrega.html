@@ -3,6 +3,80 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f3ec">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="iconos/favicon-64.png">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Chalco">
+<script>
+/* Modo claro/oscuro antes de pintar (diseño-vento.md). Clave compartida con el
+   Portal Vento ("vento-tema"); se lee también la anterior ("temaVento"). */
+(function(){
+  var t=null;
+  try{t=localStorage.getItem("vento-tema")||localStorage.getItem("temaVento");}catch(e){}
+  if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+  document.documentElement.dataset.theme=t;
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&family=Oswald:wght@600&display=swap" rel="stylesheet">
+<style id="vento-base">
+/* =====================  TOKENS (diseño-vento.md)  ===================== */
+:root{
+  --bg:#f7f3ec; --card:#ffffff; --text:#16181d; --muted:#6b6f78; --border:#e6e0d6;
+  --accent:#2B6EF2; --on-accent:#ffffff; --alerta:#e63329;
+  --ok:#1e9e57; --warn:#d18a00; --alert:#d9661f; --bad:#e63329;
+  --m-hoy:#2f7cf6; --m-asesores:#14a08f; --m-racha:#e2a21a; --m-vc:#7b5cf0;
+  --m-entregas:#e07a2e; --m-resenas:#2fa04a; --m-expedientes:#e04e93; --m-pilot:#3d5f93;
+  --m-meta:linear-gradient(135deg,#2B6EF2,#1846b8);
+  --ink-racha:#2a1d00;
+  --logo:#e63329;
+  --suave:#f3eee5;
+  --sombra-mos:0 8px 18px -10px rgba(22,24,29,.45);
+  --f-titulo:"Oswald",Impact,"Arial Narrow",sans-serif;
+  --f-texto:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+[data-theme="dark"]{
+  --bg:#0d0f14; --card:#141821; --text:#f2f4f8; --muted:#8d95a6; --border:#232733;
+  --ok:#3ecf7a; --warn:#f0b429; --alert:#f08a4b; --bad:#ff5a4f;
+  --m-hoy:#1f55d6; --m-asesores:#0e7468; --m-racha:#9a5d0a; --m-vc:#5137b8;
+  --m-entregas:#a4521a; --m-resenas:#2a6f2e; --m-expedientes:#8f2b63; --m-pilot:#2e4a72;
+  --m-meta:linear-gradient(135deg,#2B6EF2,#163c9e);
+  --ink-racha:#ffffff;
+  --suave:#1a1f2a;
+  --sombra-mos:0 8px 18px -10px rgba(0,0,0,.8);
+}
+@media screen{
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--f-texto)}
+}
+/* =====================  ENCABEZADO VENTO  ===================== */
+.vh{background:var(--bg);border-bottom:1px solid var(--border);font-family:var(--f-texto);color:var(--text)}
+.vh-in{max-width:var(--vh-max,1040px);margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.vh-logo{width:44px;height:44px;border-radius:12px;background:var(--logo);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--sombra-mos);text-decoration:none}
+.vh-logo svg{display:block}
+.vh-txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.vh-ag{font-family:var(--f-titulo);font-weight:600;font-size:11px;letter-spacing:.16em;color:var(--muted);line-height:1.2}
+.vh-app{font-family:var(--f-titulo);font-weight:600;font-size:20px;letter-spacing:.03em;text-transform:uppercase;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vh-acc{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.vh-portal{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 16px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;box-shadow:var(--sombra-mos)}
+.vh-portal:hover{filter:brightness(1.08)}
+.vh-tema{width:44px;height:44px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.vh-tema:hover{border-color:var(--muted)}
+.vh-portal:focus-visible,.vh-tema:focus-visible,.vh-logo:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[data-theme="dark"] .vh-tema .ico-luna,:root:not([data-theme="dark"]) .vh-tema .ico-sol{display:none}
+@media (max-width:420px){
+  .vh-in{gap:10px;padding:10px 12px}
+  .vh-app{font-size:17px}
+  .vh-portal{padding:0 12px}
+}
+@media print{.vh{display:none!important}}
+</style>
 <meta name="robots" content="noindex">
 <title>Entrega de unidad — Vento Motorcycles U.S.A.</title>
 <style>
@@ -139,8 +213,76 @@
 }
 
 </style>
+<style>
+/* =====================  PANTALLA (diseño-vento.md)  =====================
+   Solo @media screen. Las hojas (checklist y carta factura) conservan su formato:
+   se ven como papel blanco en los dos modos y se imprimen igual que antes. */
+.vh{--vh-max:1220px}
+@media screen{
+  body{background:var(--bg);color:var(--text);font-family:var(--f-texto)}
+  .wrap{padding:16px;gap:16px;max-width:1220px;margin:0 auto}
+  .panel{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:16px;box-shadow:none;top:16px}
+  .panel-logo{border-radius:12px}
+  .panel h2{font-family:var(--f-titulo);font-weight:600;font-size:22px;letter-spacing:.03em;text-transform:uppercase}
+  .panel p.sub{color:var(--muted);font-size:13px}
+  /* Zona del PDF: se toca -> mosaico de color sólido */
+  .drop{border:none;border-radius:18px;background:var(--m-entregas);color:#fff;font-size:15px;font-weight:600;line-height:1.45;
+        padding:26px 12px;box-shadow:var(--sombra-mos);outline:2px dashed rgba(255,255,255,.6);outline-offset:-10px;transition:filter .15s}
+  .drop:hover,.drop.over{background:var(--m-entregas);filter:brightness(1.1)}
+  .drop:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .btn{min-height:44px;border-radius:999px;font-family:inherit;font-weight:700;font-size:14px;background:var(--accent);color:#fff}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.blue{background:var(--accent);box-shadow:var(--sombra-mos)}
+  .btn.sec{background:var(--card);color:var(--text);border:1px solid var(--border)}
+  .btn.mini{min-height:44px;padding:8px 14px;font-size:13px}
+  .btn:focus-visible,.tab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .save-state{color:var(--muted);font-size:11px}
+  .status{color:var(--text);font-size:13px}
+  .status.err{color:var(--bad)}
+  .grupo{border-top-color:var(--border)}
+  .etq{color:var(--muted);font-size:12px;font-weight:600}
+  .panel select{min-height:44px;border-radius:12px;padding:8px 10px;font-size:14px;background:var(--card);color:var(--text);border:1px solid var(--border);color-scheme:light}
+  [data-theme="dark"] .panel select{color-scheme:dark}
+  .hint{color:var(--muted);border-top-color:var(--border);font-size:12px}
+  .hint b{color:var(--text)}
+  .tabs{gap:6px}
+  .tab{min-height:44px;background:var(--suave);color:var(--muted);border-color:var(--border);font-family:inherit;font-weight:600;font-size:14px;border-radius:12px 12px 0 0;padding:10px 16px}
+  .tab.activa{background:#fff;color:#111;border-color:#fff}
+  /* Lo que está pegado a la hoja conserva el papel blanco */
+  .docs{color:#222;font-family:"Segoe UI",Arial,Helvetica,sans-serif}
+  .sheet .btn.sec,.carta-opc .btn.sec{background:#fff;color:#1d1d1d;border-color:#bdbdbd;box-shadow:none}
+  .carta-opc{background:#fff;color:#444;font-family:"Segoe UI",Arial,Helvetica,sans-serif}
+  .carta-opc input{min-height:44px;border-radius:10px;padding:6px 10px;color:#222;background:#fff;color-scheme:light}
+  /* área táctil de 44 px sin cambiar la altura de los renglones de la hoja */
+  .rm{position:relative}
+  .rm::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%)}
+  .docs{min-width:0}
+}
+@media screen and (max-width:1180px){
+  .wrap{padding:12px 16px 24px}
+  .panel{max-width:none}
+  /* La hoja mide 816 px (tamaño carta): en pantallas chicas se desliza dentro de su marco */
+  .docs{width:100%;max-width:816px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .docs .sheet{flex:none}
+}
+</style>
 </head>
 <body class="ver-checklist">
+<div class="vh" role="banner">
+  <div class="vh-in">
+    <a class="vh-logo" href="./" aria-label="Herramientas · Agencia Chalco">
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 4h4.5L12 15.1 16.9 4h4.5L14.2 20.5H9.8z" fill="#fff"/></svg>
+    </a>
+    <div class="vh-txt"><span class="vh-ag">AGENCIA 16025</span><span class="vh-app">Entregas</span></div>
+    <div class="vh-acc">
+      <a class="vh-portal" href="https://jesus-trapala.github.io/portal-vento/">← Portal</a>
+      <button type="button" class="vh-tema" id="btn-tema" title="Cambiar modo claro / oscuro" aria-label="Cambiar modo claro / oscuro">
+        <svg class="ico-luna" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ico-sol" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
 
 <div class="wrap">
 
@@ -1272,6 +1414,25 @@ sv.textContent = n ? n + " borrador(es) guardado(s) en esta computadora" : "Sin 
 
 })();
 
+</script>
+<script>
+/* Modo claro/oscuro (botón luna/sol) e instalación como app. Solo diseño. */
+(function(){
+  var raiz=document.documentElement, meta=document.querySelector('meta[name="theme-color"]');
+  function pintar(){ if(meta) meta.content = raiz.dataset.theme==="dark" ? "#0d0f14" : "#f7f3ec"; }
+  pintar();
+  var b=document.getElementById("btn-tema");
+  if(b) b.addEventListener("click",function(){
+    var nuevo = raiz.dataset.theme==="dark" ? "light" : "dark";
+    raiz.dataset.theme = nuevo;
+    try{ localStorage.setItem("vento-tema",nuevo); localStorage.setItem("temaVento",nuevo); }catch(e){}
+    pintar();
+    window.dispatchEvent(new CustomEvent("vento-tema",{detail:nuevo}));
+  });
+  if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
+    window.addEventListener("load",function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+  }
+})();
 </script>
 </body>
 </html>
