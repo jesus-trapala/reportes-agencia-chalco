@@ -4,7 +4,7 @@
    · Nunca se toca nada de Google (Apps Script, Sheets) ni de otros sitios:
      esos datos siempre llegan frescos.
    Al publicar cambios grandes, sube el número de CACHE para limpiar lo viejo. */
-const CACHE = "chalco-1";
+const CACHE = "chalco-2";
 const BASE = [
   "./", "./index.html", "./dashboard-ventas-chalco.html", "./concentrador.html",
   "./comparador-semaforos.html", "./checklist-entrega.html", "./manifest.webmanifest",
