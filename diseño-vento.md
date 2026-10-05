@@ -105,7 +105,7 @@ Vivo en modo claro, profundo en modo oscuro. El texto sobre el mosaico es blanco
 
 - Todas las herramientas abren con el mismo encabezado, en una sola línea: el texto **VENTO CHALCO · NOMBRE DE LA APP** (Oswald 600, mayúsculas, 17 px; "VENTO CHALCO" en azul `--accent` y "· nombre" en `--muted`; el texto lleva a la portada de la app), el botón de regreso y el botón luna / sol. Todo mide mínimo 44 px de alto. Es el estilo del dashboard de ventas.
 - Clase `.vh-marca`: `<a class="vh-marca" href="./">Vento Chalco<span>· Ventas</span></a>`. **Sin logo rojo con "V"** y sin "AGENCIA 16025".
-- Botón de regreso: **"← Portal"** (https://jesus-trapala.github.io/portal-vento/). Si la página se abrió desde la app Vento Chalco (`?desde=app`), dice **"← App"** y regresa a la app.
+- Botón de regreso: **"← App"**, que lleva a la app Vento Chalco (https://jesus-trapala.github.io/cotizador-vento-chalco/), donde están todas las herramientas. El Portal Vento ya no se usa (oct 2026).
 - Íconos de las apps instaladas: el logo **VENTO** blanco sobre fondo oscuro `#111214` con una rayita azul abajo (los mismos de la app Vento Chalco).
 - El sitio es instalable: `manifest.webmanifest`, `sw.js` (red primero; la copia guardada solo se usa sin señal; nunca guarda nada de Google) e íconos en `iconos/` (192, 512, maskable 512, apple-touch 180). Rutas relativas para GitHub Pages.
 - Lo que se imprime o se guarda como PDF (checklist de entrega, carta factura, reporte del comparador) **no** usa este sistema: conserva su formato original. Los estilos de pantalla van dentro de `@media screen`.
