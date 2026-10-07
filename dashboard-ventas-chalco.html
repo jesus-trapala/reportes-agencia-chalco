@@ -35,6 +35,7 @@
   --m-entregas:#e07a2e; --m-resenas:#2fa04a; --m-expedientes:#e04e93; --m-pilot:#3d5f93;
   --m-meta:linear-gradient(135deg,#2B6EF2,#1846b8);
   --ink-racha:#2a1d00;
+  --warn-txt:#a86f00;
   --logo:#e63329;
   --suave:#f3eee5;
   --sombra-mos:0 8px 18px -10px rgba(22,24,29,.45);
@@ -49,6 +50,7 @@
   --m-entregas:#a4521a; --m-resenas:#2a6f2e; --m-expedientes:#8f2b63; --m-pilot:#2e4a72;
   --m-meta:linear-gradient(135deg,#2B6EF2,#163c9e);
   --ink-racha:#ffffff;
+  --warn-txt:#f0b429;
   --suave:#1a1f2a;
   --sombra-mos:0 8px 18px -10px rgba(0,0,0,.8);
 }
@@ -93,6 +95,7 @@
   --m-entregas:#e07a2e; --m-resenas:#2fa04a; --m-expedientes:#e04e93; --m-pilot:#3d5f93;
   --m-meta:linear-gradient(135deg,#2B6EF2,#1846b8);
   --ink-racha:#2a1d00;
+  --warn-txt:#a86f00;
   --tag-bg:rgba(255,255,255,.94); --tag-ink:#16181d;
   --sombra-mos:0 8px 18px -10px rgba(22,24,29,.45);
   --overlay:rgba(22,24,29,.55);
@@ -108,6 +111,7 @@
   --m-entregas:#a4521a; --m-resenas:#2a6f2e; --m-expedientes:#8f2b63; --m-pilot:#2e4a72;
   --m-meta:linear-gradient(135deg,#2B6EF2,#163c9e);
   --ink-racha:#ffffff;
+  --warn-txt:#f0b429;
   --tag-bg:rgba(0,0,0,.35); --tag-ink:#ffffff;
   --sombra-mos:0 8px 18px -10px rgba(0,0,0,.8);
   --overlay:rgba(5,6,9,.8);
@@ -153,6 +157,9 @@ main{padding:12px 16px 40px;max-width:1040px;margin:auto}
 .hoy-cifras{display:flex;gap:28px;align-items:baseline;flex-wrap:wrap}
 .hoy-cifras small{display:block;font-size:11px;color:var(--muted);font-weight:500}
 .hoy-cifras b{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600}
+/* Cuánto falta (ámbar) o cuánto nos pasamos (verde) para la meta de hoy */
+#hoy-dif-bloque.falta b{color:var(--warn-txt)}
+#hoy-dif-bloque.arriba b{color:var(--ok)}
 .hoy-barra{height:8px;border-radius:4px;background:var(--border);margin-top:4px;overflow:hidden}
 .hoy-barra div{height:100%;border-radius:3px;background:var(--accent)}
 .vendido-hoy .unid{font-size:13px;color:var(--muted);text-align:right;grid-column:3;grid-row:1}
@@ -405,6 +412,7 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
         <div class="hoy-cifras">
           <div id="hoy-meta-bloque"><small id="hoy-meta-lbl">Meta de hoy</small><b id="hoy-meta">$0</b></div>
           <div><small id="hoy-llevas-lbl">Llevas</small><b id="hoy-monto">$0</b></div>
+          <div id="hoy-dif-bloque" hidden><small id="hoy-dif-lbl">Falta</small><b id="hoy-dif">$0</b></div>
         </div>
         <div class="hoy-barra" id="hoy-barra-wrap"><div id="hoy-barra" style="width:0%"></div></div>
         <div class="unid" id="hoy-unid">0 unidades</div>
@@ -1359,9 +1367,16 @@ function renderDashboard(datosCrudos){
     barra.style.width=Math.min(avanceHoy,100)+"%";
     barra.style.background=avanceHoy>=100?"var(--ok)":"var(--accent)";
     setTexto("hoy-unid",`${plural(ventasDia.length,"unidad","unidades")} · ${metaHoy>0?pct2(avanceHoy)+" de la meta de hoy":"meta del mes cumplida"}`);
+    // Cuánto falta para la meta de hoy, o por cuánto nos pasamos
+    const difHoy=metaHoy-montoDia, difBloque=document.getElementById("hoy-dif-bloque");
+    difBloque.hidden=!(metaHoy>0);
+    difBloque.className=difHoy>0?"falta":"arriba";
+    setTexto("hoy-dif-lbl",difHoy>0?"Falta":"Arriba de la meta");
+    setTexto("hoy-dif",difHoy>0?fmt(difHoy):"+"+fmt(-difHoy));
   }else{
     setTexto("hoy-lbl",`${esPersonal?"Tu venta":"Vendido"} el ${diaRef.getDate()}/${diaRef.getMonth()+1}`);
     setTexto("hoy-unid",plural(ventasDia.length,"unidad","unidades"));
+    document.getElementById("hoy-dif-bloque").hidden=true;
   }
   setTexto("hoy-llevas-lbl",esMesActual?"Llevas":"Venta del día");
   setTexto("hoy-monto",fmt(montoDia));
