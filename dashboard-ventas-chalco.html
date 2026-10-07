@@ -121,8 +121,14 @@ body{margin:0;font-family:var(--f-texto);background:var(--bg);color:var(--text);
 button{font-family:inherit}
 
 /* =====================  BARRA SUPERIOR  ===================== */
-.topbar{max-width:1040px;margin:0 auto;padding:12px 16px 0;display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap}
-.top-acciones{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* Renglón del saludo: saludo a la izquierda y controles a la derecha, a la misma altura */
+.topbar{max-width:1040px;margin:0 auto;padding:18px 16px 0;display:flex;justify-content:space-between;align-items:flex-end;gap:12px 16px;flex-wrap:wrap}
+.top-acciones{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.saludo{min-width:0}
+.saludo h1{font-family:var(--f-titulo);font-weight:600;font-size:32px;margin:2px 0 0;letter-spacing:.01em;line-height:1.1}
+.saludo .cambiar-usuario{min-height:44px;margin:-6px 0 -10px}
+/* En el detalle de un mosaico el saludo se oculta; quedan solo los controles */
+body:has(#vista-portada[hidden]) .saludo{display:none}
 .btn{display:inline-flex;align-items:center;gap:7px;border:none;padding:8px 14px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer;transition:opacity .15s,transform .1s;min-height:44px}
 .btn svg{flex-shrink:0}
 .btn:hover:not(:disabled){opacity:.88}
@@ -137,18 +143,19 @@ main{padding:12px 16px 40px;max-width:1040px;margin:auto}
 #loader p{color:var(--muted)}
 
 /* =====================  PORTADA  ===================== */
-.encabezado{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:6px 0 16px}
+.encabezado{margin:4px 0 14px}
 .fecha{color:var(--muted);font-size:13px;font-weight:500}
-.encabezado h1{font-family:var(--f-titulo);font-weight:600;font-size:30px;margin:2px 0 0;letter-spacing:.01em}
 .cambiar-usuario{background:none;border:none;padding:0;color:var(--accent);font-size:13px;cursor:pointer;text-decoration:underline;margin-top:0;min-height:44px}
-.vendido-hoy{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 16px;min-width:250px}
+/* "Hoy · Agencia": franja a todo lo ancho (recuadro informativo) */
+.vendido-hoy{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px 18px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px 24px}
+.vendido-hoy .hoy-barra{grid-column:1/-1;grid-row:2}
 .vendido-hoy .lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.hoy-cifras{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-top:2px}
+.hoy-cifras{display:flex;gap:28px;align-items:baseline;flex-wrap:wrap}
 .hoy-cifras small{display:block;font-size:11px;color:var(--muted);font-weight:500}
-.hoy-cifras b{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:20px;font-weight:600}
-.hoy-barra{height:6px;border-radius:3px;background:var(--border);margin-top:8px;overflow:hidden}
+.hoy-cifras b{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600}
+.hoy-barra{height:8px;border-radius:4px;background:var(--border);margin-top:4px;overflow:hidden}
 .hoy-barra div{height:100%;border-radius:3px;background:var(--accent)}
-.vendido-hoy .unid{font-size:12px;color:var(--muted);margin-top:4px}
+.vendido-hoy .unid{font-size:13px;color:var(--muted);text-align:right;grid-column:3;grid-row:1}
 
 /* Campana de pendientes */
 .btn-campana{position:relative}
@@ -316,8 +323,11 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
   .mosaico-grande{grid-row:auto}
   .cifras{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .tres{grid-template-columns:1fr;gap:0}
-  .encabezado h1{font-size:26px}
-  .vendido-hoy{flex:1}
+  .saludo{width:100%}
+  .saludo h1{font-size:28px}
+  .vendido-hoy{grid-template-columns:1fr;gap:6px;padding:12px 14px}
+  .vendido-hoy .hoy-barra,.vendido-hoy .unid{grid-column:auto;grid-row:auto}
+  .vendido-hoy .unid{text-align:left}
   .mosaico{min-height:124px;padding:12px}
   .mos-dato{font-size:18px}
   .grande-pct{font-size:36px}
@@ -342,6 +352,11 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
 </div>
 
 <div class="topbar">
+  <div class="saludo">
+    <div class="fecha" id="fecha-texto"></div>
+    <h1 id="saludo-texto">Hola</h1>
+    <button class="cambiar-usuario" id="btn-cambiar-usuario">¿No eres tú? Cambiar</button>
+  </div>
   <div class="top-acciones">
     <select id="select-mes" class="btn btn-secondary" disabled aria-label="Mes">
       <option>Conectando con el Sheet…</option>
@@ -385,11 +400,6 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
   <!-- =====================  PORTADA  ===================== -->
   <section id="vista-portada">
     <div class="encabezado">
-      <div>
-        <div class="fecha" id="fecha-texto"></div>
-        <h1 id="saludo-texto">Hola</h1>
-        <button class="cambiar-usuario" id="btn-cambiar-usuario">¿No eres tú? Cambiar</button>
-      </div>
       <div class="vendido-hoy">
         <div class="lbl" id="hoy-lbl">Hoy</div>
         <div class="hoy-cifras">
@@ -1082,9 +1092,10 @@ const MESES=["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","
 
 /* =====================  DÍAS CON VENTA / SIN VENTA  =====================
    Calendario del mes (venta/sin venta/domingo/futuro) + racha actual y
-   racha más larga CON venta. Los domingos no cuentan para la racha
-   (el equipo baja el ritmo ese día porque el subgerente descansa). */
-function estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes){
+   racha más larga CON venta. En la vista de la AGENCIA el domingo cuenta
+   como cualquier día (la agencia abre). En la de cada vendedor el domingo
+   no cuenta ni rompe la racha. */
+function estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes,contarDomingo){
   const diasConVenta=new Set();
   datos.forEach(d=>{
     const f=parseFechaLatina(d["FECHA"]);
@@ -1095,7 +1106,7 @@ function estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes){
   for(let d=1;d<=diasDelMes;d++){
     const dow=new Date(anio,mes,d).getDay();
     if(d>diasTranscurridos)estado[d]="futuro";
-    else if(dow===0)estado[d]="domingo";
+    else if(dow===0&&!contarDomingo)estado[d]="domingo";
     else if(diasConVenta.has(d))estado[d]="venta";
     else estado[d]="sin";
   }
@@ -1142,10 +1153,10 @@ function semaforoRacha(r){
   return r.racha>0?["ok","Al día"]:["warn","Atención"];
 }
 
-function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelMes,hoyEnCurso){
+function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelMes,hoyEnCurso,contarDomingo){
   const cont=document.getElementById(contId);
   if(!cont)return {racha:0,rachaMax:0,diasSin:0,seca:0};
-  const estado=estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes);
+  const estado=estadoDiasVenta(datos,fechaBase,diasTranscurridos,diasDelMes,contarDomingo);
   const r=calcularRachaConVenta(estado,diasTranscurridos,hoyEnCurso);
   const anio=fechaBase.getFullYear(),mes=fechaBase.getMonth();
   const primerDiaSemana=new Date(anio,mes,1).getDay();
@@ -1168,9 +1179,11 @@ function renderCalendarioVenta(contId,datos,fechaBase,diasTranscurridos,diasDelM
     <div class="leyenda">
       <span><span class="punto" style="background:${cssVar("--ok")}"></span>Con venta</span>
       <span><span class="punto" style="background:${cssVar("--bad")}"></span>Sin venta</span>
-      <span><span class="punto" style="background:${cssVar("--border")};opacity:.7"></span>Domingo (no cuenta)</span>
+      ${contarDomingo?"":`<span><span class="punto" style="background:${cssVar("--border")};opacity:.7"></span>Domingo (no cuenta)</span>`}
     </div>
-    <div class="small">Racha = días hábiles seguidos con venta. Los domingos no cuentan ni la rompen${hoyEnCurso?"; hoy no la rompe mientras el día siga en curso":""}.</div>`;
+    <div class="small">${contarDomingo
+      ?"Racha = días seguidos con venta, domingos incluidos"
+      :"Racha = días hábiles seguidos con venta. Los domingos no cuentan ni la rompen"}${hoyEnCurso?"; hoy no la rompe mientras el día siga en curso":""}.</div>`;
   return r;
 }
 
@@ -1299,7 +1312,7 @@ function renderDashboard(datosCrudos){
 
   // --- Secciones que se filtran a la vista personal ---
   const nombresVista=esPersonal?[usuarioActual]:nombresTodos;
-  const racha=renderCalendarioVenta("dias-venta-body",datosVista,fechaBase,diasTranscurridos,diasDelMes,esMesActual);
+  const racha=renderCalendarioVenta("dias-venta-body",datosVista,fechaBase,diasTranscurridos,diasDelMes,esMesActual,!esPersonal);
   const objetivoVCIndividual=Math.ceil(OBJETIVO_VC/ASESORES_ACTIVOS.length);
   const vc=renderVentoCredit(datosVista,esPersonal?objetivoVCIndividual:OBJETIVO_VC,diasTranscurridos,diasDelMes);
   renderGrupos(datosVista,nombresVista);
