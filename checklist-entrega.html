@@ -300,6 +300,7 @@
     <div class="grupo">
       <button class="btn blue" id="imprimirChecklist">Imprimir checklist</button>
       <button class="btn blue" id="imprimirCarta">Imprimir carta factura</button>
+      <button class="btn blue" id="imprimirKit">Imprimir kit de formatos</button>
     </div>
 
     <div class="grupo">
@@ -1395,6 +1396,26 @@ function imprimir(cual){
 }
 $("imprimirChecklist").onclick = () => imprimir("checklist");
 $("imprimirCarta").onclick = () => imprimir("carta");
+
+/* ---------------- kit de formatos (PDF fijo en formatos/) ----------------
+   Aviso de privacidad, mantenimiento, asentamiento, consideración de
+   adquisición y formato de auditoría. En computadora se manda directo a
+   imprimir; en celular se abre el PDF para imprimirlo o compartirlo desde ahí. */
+const KIT_FORMATOS = "formatos/kit-formatos-vento.pdf";
+$("imprimirKit").onclick = () => {
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) { window.open(KIT_FORMATOS, "_blank"); return; }
+  let marco = $("marcoKit");
+  if (marco) marco.remove();
+  marco = document.createElement("iframe");
+  marco.id = "marcoKit";
+  marco.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden";
+  marco.onload = () => {
+    try { marco.contentWindow.focus(); marco.contentWindow.print(); }
+    catch (e) { window.open(KIT_FORMATOS, "_blank"); }
+  };
+  marco.src = KIT_FORMATOS;
+  document.body.appendChild(marco);
+};
 
 /* ---------------- textos fijos de la carta ---------------- */
 const E = CONFIG.empresa;

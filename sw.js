@@ -4,11 +4,12 @@
    · Nunca se toca nada de Google (Apps Script, Sheets) ni de otros sitios:
      esos datos siempre llegan frescos.
    Al publicar cambios grandes, sube el número de CACHE para limpiar lo viejo. */
-const CACHE = "chalco-3";
+const CACHE = "chalco-4";
 const BASE = [
   "./", "./index.html", "./dashboard-ventas-chalco.html", "./concentrador.html",
   "./comparador-semaforos.html", "./checklist-entrega.html", "./manifest.webmanifest",
-  "./iconos/icono-192.png", "./iconos/icono-512.png", "./iconos/apple-touch-icon.png"
+  "./iconos/icono-192.png", "./iconos/icono-512.png", "./iconos/apple-touch-icon.png",
+  "./formatos/kit-formatos-vento.pdf"
 ];
 
 self.addEventListener("install", e => {
