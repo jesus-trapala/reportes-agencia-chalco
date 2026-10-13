@@ -36,7 +36,6 @@
   --m-meta:linear-gradient(135deg,#2B6EF2,#1846b8);
   --ink-racha:#2a1d00;
   --warn-txt:#a86f00;
-  --logo:#e63329;
   --suave:#f3eee5;
   --sombra-mos:0 8px 18px -10px rgba(22,24,29,.45);
   --f-titulo:"Oswald",Impact,"Arial Narrow",sans-serif;
@@ -65,8 +64,6 @@
 .vh-marca span{color:var(--muted);margin-left:.35em}
 .vh-marca:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
 @media(max-width:420px){.vh-marca{font-size:15px;letter-spacing:.02em}}
-.vh-logo{width:44px;height:44px;border-radius:12px;background:var(--logo);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--sombra-mos);text-decoration:none}
-.vh-logo svg{display:block}
 .vh-txt{display:flex;flex-direction:column;min-width:0;flex:1}
 .vh-ag{font-family:var(--f-titulo);font-weight:600;font-size:11px;letter-spacing:.16em;color:var(--muted);line-height:1.2}
 .vh-app{font-family:var(--f-titulo);font-weight:600;font-size:20px;letter-spacing:.03em;text-transform:uppercase;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -75,7 +72,7 @@
 .vh-portal:hover{filter:brightness(1.08)}
 .vh-tema{width:44px;height:44px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
 .vh-tema:hover{border-color:var(--muted)}
-.vh-portal:focus-visible,.vh-tema:focus-visible,.vh-logo:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.vh-portal:focus-visible,.vh-tema:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 [data-theme="dark"] .vh-tema .ico-luna,:root:not([data-theme="dark"]) .vh-tema .ico-sol{display:none}
 @media (max-width:420px){
   .vh-in{gap:10px;padding:10px 12px}
@@ -311,6 +308,10 @@ th{color:var(--muted);text-transform:uppercase;font-size:11px;font-family:var(--
 body.vista-personal .solo-gerente{display:none!important}
 body:not(.vista-personal) .solo-asesor{display:none!important}
 body.desde-app #btn-cambiar-usuario{display:none!important}
+/* El gerente viendo como un asesor (llega desde "Cambiar vista" de la app) */
+.franja-vista{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+  background:var(--warn);color:#1a1300;padding:6px 12px;font-size:14px;font-weight:600;text-align:center}
+.franja-vista a{background:#1a1300;color:#fff;border-radius:999px;min-height:36px;padding:8px 14px;font-weight:700;font-size:13px;text-decoration:none}
 .top-acciones a.btn{text-decoration:none}
 
 /* Bienvenida + selector de usuario */
@@ -344,6 +345,7 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
 </style>
 </head>
 <body>
+<div class="franja-vista" id="franja-vista" hidden><span id="fv-texto"></span><a id="fv-salir" href="#">Volver a mi vista</a></div>
 
 <div class="vh" role="banner">
   <div class="vh-in">
@@ -777,6 +779,15 @@ if(DESDE_APP){
   /* El botón de regreso del encabezado lleva a la app en lugar del Portal */
   const volver=document.querySelector(".vh-portal");
   if(volver){ volver.href=URL_APP; volver.textContent="← App"; }
+  /* Gerente en "Cambiar vista": ?vista=JESUS. Se muestra la franja y
+     "Volver a mi vista" regresa a la app quitando la vista. */
+  const quienVe=PARAMS.get("vista"), comoQuien=PARAMS.get("usuario");
+  if(quienVe && comoQuien){
+    const t=s=>{ const n=String(s).charAt(0).toUpperCase()+String(s).slice(1).toLowerCase(); return n==="Jesus"?"Jesús":n; };
+    document.getElementById("fv-texto").textContent=`${t(quienVe)} viendo como ${t(comoQuien)}`;
+    document.getElementById("fv-salir").href="https://jesus-trapala.github.io/cotizador-vento-chalco/?vista=salir#inicio";
+    document.getElementById("franja-vista").hidden=false;
+  }
 }
 
 (function initUsuario(){
