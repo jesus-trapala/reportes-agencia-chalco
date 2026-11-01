@@ -1061,13 +1061,13 @@ function renderEstacional(o){
   const motos=v=>T?Math.ceil(v-1e-6>0?v/T:0):0;
   const metaHoy=objetivo*P.pesos[dia], motosHoy=motos(acM[dia])-motos(acM[dia-1]||0);
   const vendidoHoy=o.esMesActual?real[dia]:0, difHoy=vendidoHoy-metaHoy;
-  if(o.esMesActual) EST_ACTUAL={metaHoy};
+  if(o.esMesActual) EST_ACTUAL={metaHoy, motosHoy, motosDeberias:motos(acM[dia]), motosLlevas:acU[dia]};
   const avance=acM[dia]?acR[dia]/acM[dia]*100:0, sem=semEst(avance);
   const ini=fechaDMY(conf.inicio),fin=fechaDMY(conf.fin), enEvento=d=>ini&&fin&&d>=ini.getDate()&&d<=fin.getDate();
   // Mosaico de la portada
   setTexto("mos-estacional-nombre",conf.evento?`Meta ${tituloBonito(conf.evento)}`:"Meta estacional");
-  setTexto("mos-estacional-dato",`${Math.round(avance)}% de lo que deberías`);
-  setTexto("mos-estacional-sub",`Deberías ir en ${fmtCorto(acM[dia])} · vas en ${fmtCorto(acR[dia])}`);
+  setTexto("mos-estacional-dato",`Llevas ${acU[dia]} de ${motos(acM[dia])} motos`);
+  setTexto("mos-estacional-sub",`${Math.round(avance)}% · deberías ir en ${fmtCorto(acM[dia])} · vas en ${fmtCorto(acR[dia])}`);
   const tag=document.getElementById("tag-estacional"); tag.hidden=false; tag.textContent=sem.t;
   // Detalle
   setTexto("est-intro",`${o.esPersonal?"Tu meta":"Meta de la agencia"}: ${fmt(objetivo)} (concurso)${o.esPersonal?" · la mitad de la agencia":""}. Repartida según cómo se vendió ${nombreMesVisible(o.mesTab).replace(/\d{4}/,"").trim().toLowerCase()} ${ma.y-1}${conf.evento?`; ${tituloBonito(conf.evento)} del ${ini.getDate()} al ${fin.getDate()}`:""}. Ticket de referencia ${fmt(T)}.`);
@@ -1544,7 +1544,9 @@ function renderDashboard(datosCrudos){
     const barra=document.getElementById("hoy-barra");
     barra.style.width=Math.min(avanceHoy,100)+"%";
     barra.style.background=avanceHoy>=100?"var(--ok)":"var(--accent)";
-    setTexto("hoy-unid",`${plural(ventasDia.length,"unidad","unidades")} · ${metaHoy>0?pct2(avanceHoy)+" de la meta de hoy":"meta del mes cumplida"}`);
+    setTexto("hoy-unid",EST_ACTUAL
+      ?`Hoy ${ventasDia.length} de ${EST_ACTUAL.motosHoy} moto${EST_ACTUAL.motosHoy===1?"":"s"} · en el mes llevas ${EST_ACTUAL.motosLlevas} de ${EST_ACTUAL.motosDeberias} que deberías llevar`
+      :`${plural(ventasDia.length,"unidad","unidades")} · ${metaHoy>0?pct2(avanceHoy)+" de la meta de hoy":"meta del mes cumplida"}`);
     // Cuánto falta para la meta de hoy, o por cuánto nos pasamos
     const difHoy=metaHoy-montoDia, difBloque=document.getElementById("hoy-dif-bloque");
     difBloque.hidden=!(metaHoy>0);
