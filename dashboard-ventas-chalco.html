@@ -1010,7 +1010,7 @@ async function cargarMesesDesdeSheets(){
    evento) está en CONFIGURACION › META ESTACIONAL y se lee del Apps Script
    del cotizador (accion=metaEstacional). */
 const URL_ESTACIONAL="https://script.google.com/macros/s/AKfycbwpwfk__fzINCd7YkKh6g-nsjXjowrxNcc8QhfYxRfAVUVERDg-GBP4o3wBAbX3TV4C/exec";
-let ESTACIONAL=null, chartEstacional=null;
+let ESTACIONAL=null, chartEstacional=null, EST_ACTUAL=null;   // EST_ACTUAL: meta estacional del día para la franja «Hoy»
 async function cargarEstacional(){
   try{
     const r=await fetch(`${URL_ESTACIONAL}?accion=metaEstacional&clave=${encodeURIComponent(SHEETS_API_CLAVE)}&_=${Date.now()}`);
@@ -1048,6 +1048,7 @@ function renderEstacional(o){
   const ma=mesAnio(o.mesTab);
   const conf=ESTACIONAL&&ma?(ESTACIONAL.meses||[]).find(c=>{const x=mesAnio(c.mes);return x&&x.m===ma.m&&x.y===ma.y;}):null;
   const P=conf?pesosEstacionales(conf,ESTACIONAL.historico||[],ma.y,ma.m):null;
+  EST_ACTUAL=null;
   if(!conf||!P||!conf.objetivo){ mos.hidden=true; return; }
   mos.hidden=false;
   const partes=o.esPersonal?ASESORES_ACTIVOS.length:1;
@@ -1060,6 +1061,7 @@ function renderEstacional(o){
   const motos=v=>T?Math.ceil(v-1e-6>0?v/T:0):0;
   const metaHoy=objetivo*P.pesos[dia], motosHoy=motos(acM[dia])-motos(acM[dia-1]||0);
   const vendidoHoy=o.esMesActual?real[dia]:0, difHoy=vendidoHoy-metaHoy;
+  if(o.esMesActual) EST_ACTUAL={metaHoy};
   const avance=acM[dia]?acR[dia]/acM[dia]*100:0, sem=semEst(avance);
   const ini=fechaDMY(conf.inicio),fin=fechaDMY(conf.fin), enEvento=d=>ini&&fin&&d>=ini.getDate()&&d<=fin.getDate();
   // Mosaico de la portada
@@ -1135,7 +1137,9 @@ async function cargarDatosDesdeSheets(){
     if(typeof data.objetivo==="number"&&data.objetivo>0)META_AGENCIA=data.objetivo;
     if(typeof data.objetivoVentoCredit==="number"&&data.objetivoVentoCredit>0)OBJETIVO_VC=data.objetivoVentoCredit;
     const validos=(data.filas||[]).filter(filaValida);
-    if(!validos.length){
+    // El mes en curso se abre aunque todavía no tenga ventas (en ceros, con su meta del día).
+    const hoyX=new Date(), esDeHoy=mes.toUpperCase().includes(MESES[hoyX.getMonth()])&&mes.includes(String(hoyX.getFullYear()));
+    if(!validos.length&&!esDeHoy){
       alert(`${nombreMesVisible(mes)} no tiene todavía filas con FECHA, VENDEDOR y PRECIO.`);
       return;
     }
@@ -1186,10 +1190,18 @@ function elegirMesActual(meses){
   const nombreMes=MESES[hoy.getMonth()];
   const anio=String(hoy.getFullYear());
   let elegido=meses.find(m=>m.toUpperCase().includes(nombreMes)&&m.includes(anio));
-  if(!elegido)elegido=meses.find(m=>m.toUpperCase().includes(nombreMes));
+  // Si aún no existe la pestaña del mes en curso, NO se toma la del mismo mes de
+  // otro año (las pestañas sin año son de 2025): se abre la más reciente.
+  if(!elegido){
+    const clave=m=>{const t=m.toUpperCase(),mi=MESES.findIndex(x=>t.includes(x)),y=+((t.match(/\d{4}/)||[])[0]||2025);return mi<0?-1:y*12+mi;};
+    const tope=hoy.getFullYear()*12+hoy.getMonth();
+    elegido=meses.filter(m=>clave(m)>=0&&clave(m)<=tope).sort((a,b)=>clave(b)-clave(a))[0];
+    if(elegido) MES_FALTANTE=`${nombreMes.charAt(0)+nombreMes.slice(1).toLowerCase()} ${anio}`;
+  }
   if(!elegido)elegido=meses[meses.length-1];
   return elegido;
 }
+let MES_FALTANTE="";   // mes en curso sin pestaña todavía (se avisa en el encabezado)
 
 // "HMYP OCTUBRE 2026" / "HMYP ABRIL2026" -> "Octubre 2026" / "Abril 2026".
 // El nombre de la pestaña se sigue usando por dentro (value del selector).
@@ -1413,7 +1425,8 @@ function renderDashboard(datosCrudos){
   const nombreMesHoy=MESES[hoyReal.getMonth()];
   const anioHoy=String(hoyReal.getFullYear());
   const tieneAnio=/\d{4}/.test(mesTab);
-  const esMesActual=mesTab.toUpperCase().includes(nombreMesHoy)&&(!tieneAnio||mesTab.includes(anioHoy));
+  // Las pestañas sin año son de 2025: nunca cuentan como el mes en curso de otro año.
+  const esMesActual=mesTab.toUpperCase().includes(nombreMesHoy)&&(tieneAnio?mesTab.includes(anioHoy):anioHoy==="2025");
 
   const fechaBase=esMesActual?hoyReal:fechaCorte;
   const diasTranscurridos=fechaBase.getDate();
@@ -1422,7 +1435,7 @@ function renderDashboard(datosCrudos){
 
   const dd=String(fechaCorte.getDate()).padStart(2,"0");
   const mm=String(fechaCorte.getMonth()+1).padStart(2,"0");
-  document.getElementById("subtitle-mes").textContent=`${nombreMesVisible(mesTab)} · corte al ${dd}/${mm}`;
+  document.getElementById("subtitle-mes").textContent=`${nombreMesVisible(mesTab)} · corte al ${dd}/${mm}`+(MES_FALTANTE&&!esMesActual?` · Aún no existe la pestaña de ${MES_FALTANTE}`:"");
   document.getElementById("corte-label").textContent=`${MESES[fechaCorte.getMonth()]} ${fechaCorte.getFullYear()}`;
 
   // Asesores activos siempre aparecen (aunque no hayan vendido); si en el
@@ -1519,12 +1532,13 @@ function renderDashboard(datosCrudos){
 
   // Recuadro de hoy: meta de hoy (mismo cálculo que "Necesitas $X por día":
   // lo que falta del mes entre los días que quedan) contra lo que se lleva.
-  const metaHoy=Math.max(metaMia-oMio.v,0)/diasRestantes;
+  // Con meta estacional configurada para el mes, la meta de hoy es la del reparto estacional.
+  const metaHoy=EST_ACTUAL?EST_ACTUAL.metaHoy:Math.max(metaMia-oMio.v,0)/diasRestantes;
   document.getElementById("hoy-meta-bloque").hidden=!esMesActual;
   document.getElementById("hoy-barra-wrap").hidden=!esMesActual;
   if(esMesActual){
     setTexto("hoy-lbl",esPersonal?"Tu día de hoy":"Hoy · agencia");
-    setTexto("hoy-meta-lbl","Meta de hoy");
+    setTexto("hoy-meta-lbl",EST_ACTUAL?"Meta de hoy · estacional":"Meta de hoy");
     setTexto("hoy-meta",metaHoy>0?fmt(metaHoy):"Cumplida");
     const avanceHoy=metaHoy>0?montoDia/metaHoy*100:100;
     const barra=document.getElementById("hoy-barra");
