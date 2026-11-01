@@ -208,6 +208,15 @@ main{padding:12px 16px 40px;max-width:1040px;margin:auto}
 .m-hoy{--m:var(--m-hoy)} .m-asesores{--m:var(--m-asesores)} .m-racha{--m:var(--m-racha);--ink:var(--ink-racha)}
 .m-vc{--m:var(--m-vc)} .m-entregas{--m:var(--m-entregas)} .m-resenas{--m:var(--m-resenas)}
 .m-expedientes{--m:var(--m-expedientes)} .m-pilot{--m:var(--m-pilot)}
+.m-estacional{--m:linear-gradient(135deg,#0f8f7e,#0b6357)}
+.est-sem{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;color:#fff}
+.est-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.est-grid{grid-template-columns:1fr}}
+.est-tabla{width:100%;border-collapse:collapse;font-size:13px}
+.est-tabla th,.est-tabla td{padding:6px 4px;border-bottom:1px solid var(--border);text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.est-tabla th:first-child,.est-tabla td:first-child{text-align:left;font-family:inherit}
+.est-tabla tr.ev td{color:var(--accent);font-weight:600}
+.est-tabla tr.hoy td{background:rgba(127,127,127,.12)}
 .m-racha .mos-ico{background:rgba(0,0,0,.08)}
 [data-theme="dark"] .m-racha .mos-ico{background:rgba(255,255,255,.18)}
 
@@ -461,6 +470,13 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
         <div class="mos-sub" id="mos-hoy-sub"></div>
       </button>
 
+      <button class="mosaico m-estacional" data-ir="estacional" id="mos-estacional" hidden>
+        <div class="mos-top"><span class="mos-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg></span><span class="mos-tag" id="tag-estacional" hidden></span></div>
+        <div class="mos-nombre" id="mos-estacional-nombre">Meta estacional</div>
+        <div class="mos-dato" id="mos-estacional-dato">—</div>
+        <div class="mos-sub" id="mos-estacional-sub"></div>
+      </button>
+
       <button class="mosaico m-asesores" data-ir="asesores">
         <div class="mos-top"><span class="mos-ico">
           <svg class="solo-gerente" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -567,6 +583,22 @@ body.desde-app #btn-cambiar-usuario{display:none!important}
         <div class="card-title">Tu parte</div>
         <div id="tu-parte-body"></div>
       </div>
+    </div>
+
+    <!-- Meta estacional -->
+    <div data-detalle="estacional" hidden>
+      <div class="small" id="est-intro" style="margin:-6px 0 10px"></div>
+      <div class="est-grid">
+        <div class="card"><div class="card-title">Hoy</div><div id="est-hoy"></div></div>
+        <div class="card"><div class="card-title">Acumulado</div><div id="est-acum"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Meta acumulada vs. venta real</div>
+        <div class="chart-container chart-alto"><canvas id="chart-estacional" aria-label="Meta estacional acumulada contra la venta real acumulada"></canvas></div>
+        <div class="small" id="est-texto-grafica"></div>
+      </div>
+      <div class="card solo-gerente" id="est-asesores-card"><div class="card-title">Por asesor</div><div id="est-asesores"></div></div>
+      <div class="card"><div class="card-title">Meta día por día</div><div class="table-scroll" id="est-dias"></div></div>
     </div>
 
     <!-- Hoy -->
@@ -813,7 +845,8 @@ const DETALLES={
   entregas:{titulo:"Entregadas",clase:"m-entregas"},
   resenas:{titulo:"Reseñas",clase:"m-resenas"},
   expedientes:{titulo:"Expedientes",clase:"m-expedientes"},
-  pilot:{titulo:"Cuadre con Pilot",clase:"m-pilot"}
+  pilot:{titulo:"Cuadre con Pilot",clase:"m-pilot"},
+  estacional:{titulo:"Meta estacional",clase:"m-estacional"}
 };
 const vistaPortada=document.getElementById("vista-portada");
 const vistaDetalle=document.getElementById("vista-detalle");
@@ -968,6 +1001,123 @@ async function cargarMesesDesdeSheets(){
   }
 }
 
+/* =====================  META ESTACIONAL  =====================
+   Reparte la meta del mes por día según cómo se vendió el mismo mes del año
+   anterior (pestaña HISTORICO_DIARIO): 3 tramos (antes, evento, después) con
+   su % del año pasado; dentro del evento día 1 con día 1…; fuera del evento,
+   por el promedio de venta de cada día de la semana (sin los días del evento).
+   La configuración (objetivo de concurso y al 100%, ticket y fechas del
+   evento) está en CONFIGURACION › META ESTACIONAL y se lee del Apps Script
+   del cotizador (accion=metaEstacional). */
+const URL_ESTACIONAL="https://script.google.com/macros/s/AKfycbwpwfk__fzINCd7YkKh6g-nsjXjowrxNcc8QhfYxRfAVUVERDg-GBP4o3wBAbX3TV4C/exec";
+let ESTACIONAL=null, chartEstacional=null;
+async function cargarEstacional(){
+  try{
+    const r=await fetch(`${URL_ESTACIONAL}?accion=metaEstacional&clave=${encodeURIComponent(SHEETS_API_CLAVE)}&_=${Date.now()}`);
+    const j=await r.json(); if(j&&j.ok)ESTACIONAL=j;
+  }catch(e){ console.warn("Meta estacional no disponible:",e); }
+}
+const ESTACIONAL_P=cargarEstacional();
+const fechaDMY=s=>{const m=String(s||"").match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):null;};
+function mesAnio(tab){const t=String(tab||"").toUpperCase(),mi=MESES.findIndex(m=>t.includes(m)),y=(t.match(/\d{4}/)||[])[0];return mi<0?null:{m:mi,y:y?+y:2025};}   // las pestañas sin año son las de 2025
+/** Pesos por día del mes (suman 1) o null si no hay configuración o histórico. */
+function pesosEstacionales(conf,hist,y,m){
+  const dias=new Date(y,m+1,0).getDate();
+  const prev=hist.map(h=>({...h,f:fechaDMY(h.fecha)})).filter(h=>h.f&&h.f.getFullYear()===y-1&&h.f.getMonth()===m).sort((a,b)=>a.f-b.f);
+  const tot=prev.reduce((a,h)=>a+h.venta,0); if(!prev.length||!tot)return null;
+  const fuera=prev.filter(h=>!h.evento), ev=prev.filter(h=>h.evento);
+  const suma={},cuenta={}; fuera.forEach(h=>{const w=h.f.getDay();suma[w]=(suma[w]||0)+h.venta;cuenta[w]=(cuenta[w]||0)+1;});
+  const prom=w=>cuenta[w]?suma[w]/cuenta[w]:0;
+  const pesos=new Array(dias+1).fill(0);
+  const reparte=(lista,share)=>{const s=lista.reduce((a,d)=>a+prom(new Date(y,m,d).getDay()),0);lista.forEach(d=>{pesos[d]=s?share*prom(new Date(y,m,d).getDay())/s:share/lista.length;});};
+  const ini=fechaDMY(conf.inicio),fin=fechaDMY(conf.fin);
+  const todos=[...Array(dias)].map((_,i)=>i+1);
+  if(ev.length&&ini&&fin&&ini.getMonth()===m&&fin.getMonth()===m){
+    const e0=ev[0].f, evTot=ev.reduce((a,h)=>a+h.venta,0);
+    const pa=fuera.filter(h=>h.f<e0).reduce((a,h)=>a+h.venta,0)/tot, pe=evTot/tot, pd=fuera.filter(h=>h.f>e0).reduce((a,h)=>a+h.venta,0)/tot;
+    const A=todos.filter(d=>d<ini.getDate()),E=todos.filter(d=>d>=ini.getDate()&&d<=fin.getDate()),D=todos.filter(d=>d>fin.getDate());
+    reparte(A,pa); reparte(D,pd);
+    const evPeso=E.map((d,i)=>ev[Math.min(i,ev.length-1)].venta), sE=evPeso.reduce((a,b)=>a+b,0);
+    E.forEach((d,i)=>{pesos[d]=sE?pe*evPeso[i]/sE:pe/E.length;});
+  }else reparte(todos,1);
+  return {pesos,tramos:null};
+}
+function semEst(pct){return pct>=100?{t:"Al día",c:cssVar("--ok")}:pct>=90?{t:"Cerca",c:cssVar("--warn")}:{t:"Abajo",c:cssVar("--bad")};}
+function renderEstacional(o){
+  const mos=document.getElementById("mos-estacional");
+  const ma=mesAnio(o.mesTab);
+  const conf=ESTACIONAL&&ma?(ESTACIONAL.meses||[]).find(c=>{const x=mesAnio(c.mes);return x&&x.m===ma.m&&x.y===ma.y;}):null;
+  const P=conf?pesosEstacionales(conf,ESTACIONAL.historico||[],ma.y,ma.m):null;
+  if(!conf||!P||!conf.objetivo){ mos.hidden=true; return; }
+  mos.hidden=false;
+  const partes=o.esPersonal?ASESORES_ACTIVOS.length:1;
+  const objetivo=conf.objetivo/partes, obj100=(conf.objetivo100||conf.objetivo/1.15)/partes, T=conf.ticket||0;
+  const dias=P.pesos.length-1, dia=Math.min(o.diasTranscurridos,dias);
+  const real=new Array(dias+1).fill(0), uds=new Array(dias+1).fill(0);
+  o.datosVista.forEach(d=>{const f=parseFechaLatina(d["FECHA"]);if(f&&f.getMonth()===ma.m&&f.getDate()<=dias){real[f.getDate()]+=numMiles(d["PRECIO"])/1.16;uds[f.getDate()]++;}});
+  const acM=[0],ac1=[0],acR=[0],acU=[0];
+  for(let d=1;d<=dias;d++){acM[d]=acM[d-1]+objetivo*P.pesos[d];ac1[d]=ac1[d-1]+obj100*P.pesos[d];acR[d]=acR[d-1]+real[d];acU[d]=acU[d-1]+uds[d];}
+  const motos=v=>T?Math.ceil(v-1e-6>0?v/T:0):0;
+  const metaHoy=objetivo*P.pesos[dia], motosHoy=motos(acM[dia])-motos(acM[dia-1]||0);
+  const vendidoHoy=o.esMesActual?real[dia]:0, difHoy=vendidoHoy-metaHoy;
+  const avance=acM[dia]?acR[dia]/acM[dia]*100:0, sem=semEst(avance);
+  const ini=fechaDMY(conf.inicio),fin=fechaDMY(conf.fin), enEvento=d=>ini&&fin&&d>=ini.getDate()&&d<=fin.getDate();
+  // Mosaico de la portada
+  setTexto("mos-estacional-nombre",conf.evento?`Meta ${tituloBonito(conf.evento)}`:"Meta estacional");
+  setTexto("mos-estacional-dato",`${Math.round(avance)}% de lo que deberías`);
+  setTexto("mos-estacional-sub",`Deberías ir en ${fmtCorto(acM[dia])} · vas en ${fmtCorto(acR[dia])}`);
+  const tag=document.getElementById("tag-estacional"); tag.hidden=false; tag.textContent=sem.t;
+  // Detalle
+  setTexto("est-intro",`${o.esPersonal?"Tu meta":"Meta de la agencia"}: ${fmt(objetivo)} (concurso)${o.esPersonal?" · la mitad de la agencia":""}. Repartida según cómo se vendió ${nombreMesVisible(o.mesTab).replace(/\d{4}/,"").trim().toLowerCase()} ${ma.y-1}${conf.evento?`; ${tituloBonito(conf.evento)} del ${ini.getDate()} al ${fin.getDate()}`:""}. Ticket de referencia ${fmt(T)}.`);
+  document.getElementById("est-hoy").innerHTML=`
+    <div class="mini-num">${fmt(metaHoy)} <span>· ${motosHoy} moto${motosHoy===1?"":"s"}</span></div>
+    <div class="kpi-row"><span>Meta del día ${dia}${enEvento(dia)?" · "+esc(tituloBonito(conf.evento)):""}</span><span class="value">${fmt(metaHoy)}</span></div>
+    <div class="kpi-row"><span>Vendido ${o.esMesActual?"hoy":"ese día"}</span><span class="value">${fmt(o.esMesActual?vendidoHoy:real[dia])} · ${uds[dia]} moto${uds[dia]===1?"":"s"}</span></div>
+    <div class="kpi-row"><span>Diferencia</span><span class="value" style="color:${(o.esMesActual?difHoy:real[dia]-metaHoy)>=0?cssVar("--ok"):cssVar("--bad")}">${(o.esMesActual?difHoy:real[dia]-metaHoy)>=0?"+":"−"}${fmt(Math.abs(o.esMesActual?difHoy:real[dia]-metaHoy))}</span></div>`;
+  document.getElementById("est-acum").innerHTML=`
+    <div class="mini-num">${Math.round(avance)}% <span class="est-sem" style="background:${sem.c}">${sem.t}</span></div>
+    <div class="kpi-row"><span>Deberías ir en</span><span class="value">${fmt(acM[dia])} · ${motos(acM[dia])} motos</span></div>
+    <div class="kpi-row"><span>Vas en</span><span class="value">${fmt(acR[dia])} · ${acU[dia]} motos</span></div>
+    <div class="kpi-row"><span>${acR[dia]>=acM[dia]?"Arriba":"Te falta"}</span><span class="value">${fmt(Math.abs(acM[dia]-acR[dia]))}</span></div>
+    <div class="kpi-row"><span>Al 100% deberías ir en</span><span class="value">${fmt(ac1[dia])} · ${motos(ac1[dia])} motos</span></div>
+    <div class="small" style="margin-top:6px">El % es contra lo que deberías llevar a hoy, no contra el mes completo. Verde 100% o más · amarillo 90–99% · rojo menos de 90%.</div>`;
+  // Por asesor (solo gerente)
+  if(!o.esPersonal){
+    const filas=ASESORES_ACTIVOS.map(n=>{
+      let r=0,u=0; o.datosCompletos.forEach(d=>{const f=parseFechaLatina(d["FECHA"]);if(vendedorDe(d)===n&&f&&f.getMonth()===ma.m&&f.getDate()<=dia){r+=numMiles(d["PRECIO"])/1.16;u++;}});
+      const m=acM[dia]/ASESORES_ACTIVOS.length, pc=m?r/m*100:0, se=semEst(pc);
+      return `<tr><td>${esc(nombreBonito(n))}</td><td>${fmt(m)}</td><td>${motos(m)}</td><td>${fmt(r)}</td><td>${u}</td><td><span class="est-sem" style="background:${se.c}">${Math.round(pc)}%</span></td></tr>`;
+    }).join("");
+    document.getElementById("est-asesores").innerHTML=`<table class="est-tabla"><tr><th>Asesor</th><th>Debería ir</th><th>Motos</th><th>Va en</th><th>Motos</th><th>Avance</th></tr>${filas}</table>
+      <div class="small" style="margin-top:6px">Cada asesor lleva la mitad de la meta de la agencia.</div>`;
+  }else document.getElementById("est-asesores").innerHTML="";
+  // Tabla día por día
+  const sem2=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+  let tabla=`<table class="est-tabla"><tr><th>Día</th><th>Meta del día</th><th>Acumulada</th><th>Motos</th><th>Real acum.</th></tr>`;
+  for(let d=1;d<=dias;d++){
+    const wd=sem2[new Date(ma.y,ma.m,d).getDay()];
+    tabla+=`<tr class="${enEvento(d)?"ev":""} ${d===dia?"hoy":""}"><td>${wd} ${d}${enEvento(d)?" ★":""}</td><td>${fmt(objetivo*P.pesos[d])}</td><td>${fmt(acM[d])}</td><td>${motos(acM[d])}</td><td>${d<=dia?fmt(acR[d]):"—"}</td></tr>`;
+  }
+  document.getElementById("est-dias").innerHTML=tabla+`</table><div class="small" style="margin-top:6px">★ días del evento. Motos = meta acumulada ÷ ticket, siempre hacia arriba.</div>`;
+  // Gráfica
+  const canvas=document.getElementById("chart-estacional");
+  setTexto("est-texto-grafica",`Línea punteada: meta acumulada día por día (sube más en el ${conf.evento?tituloBonito(conf.evento):"evento"}). Línea azul: ${o.esPersonal?"tu ":""}venta sin IVA acumulada hasta el día ${dia}.`);
+  if(typeof Chart==="undefined")return;
+  try{
+    if(chartEstacional)chartEstacional.destroy();
+    const cT=cssVar("--muted"),cG=cssVar("--border"),cA=cssVar("--accent");
+    chartEstacional=new Chart(canvas.getContext("2d"),{type:"line",
+      data:{labels:[...Array(dias)].map((_,i)=>String(i+1)),datasets:[
+        {label:o.esPersonal?"Tu venta acumulada":"Venta acumulada",data:acR.slice(1).map((v,i)=>i+1<=dia?v:null),borderColor:cA,backgroundColor:cA,borderWidth:2,pointRadius:2.5,tension:0,spanGaps:false},
+        {label:"Meta acumulada",data:acM.slice(1),borderColor:cT,borderWidth:2,borderDash:[5,5],pointRadius:0,tension:0}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:"index",intersect:false},
+        plugins:{legend:{position:"top",align:"start",labels:{color:cssVar("--text"),usePointStyle:true,pointStyle:"line",boxWidth:24,font:{family:"Inter",size:12}}},
+          tooltip:{callbacks:{title:it=>`Día ${it[0].label}`,label:c=>`${c.dataset.label}: ${fmt(c.raw)}`}}},
+        scales:{x:{ticks:{color:cT,font:{family:"IBM Plex Mono",size:10},maxRotation:0,autoSkip:true,maxTicksLimit:11},grid:{display:false},border:{color:cG}},
+          y:{beginAtZero:true,ticks:{color:cT,font:{family:"IBM Plex Mono",size:10},callback:v=>fmtCorto(v),maxTicksLimit:6},grid:{color:cG},border:{display:false}}}}});
+  }catch(err){ console.error("No se pudo dibujar la meta estacional:",err); }
+}
+function tituloBonito(t){return String(t||"").toLowerCase().replace(/(^|\s)\S/g,x=>x.toUpperCase());}
 async function cargarDatosDesdeSheets(){
   if(!urlConfigurada()||!selectMes.value)return;
   const mes=selectMes.value;
@@ -991,6 +1141,7 @@ async function cargarDatosDesdeSheets(){
     }
     loader.style.display="none";
     dashboard.style.display="block";
+    await ESTACIONAL_P;
     renderDashboard(validos);
     mostrarRuta();
   }catch(err){
@@ -1342,6 +1493,8 @@ function renderDashboard(datosCrudos){
   const exp=renderExpediente(datosVista);
   const pil=renderPilot(datosVista);
   renderPendientes({ent,res,exp,pil},esPersonal);
+  try{ renderEstacional({datosCompletos,datosVista,esPersonal,mesTab,fechaBase,diasTranscurridos,diasDelMes,esMesActual}); }
+  catch(err){ console.error("Meta estacional:",err); document.getElementById("mos-estacional").hidden=true; }
 
   // Ventas del día: hoy (fecha del teléfono) si es el mes en curso; si es
   // un mes cerrado, el último día con venta.
